@@ -44,6 +44,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
+      
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -62,4 +67,3 @@ jobs:
           BUCKET="${{ secrets.AWS_S3_BUCKET }}"
           TARGET_DIR=$( [ -d build/dist ] && echo build/dist || echo build/build )
           aws s3 sync "$TARGET_DIR" "s3://$BUCKET" --delete
-          
