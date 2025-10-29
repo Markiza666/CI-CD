@@ -1,14 +1,14 @@
-@import 'abstracts/variables';
-@import 'abstracts/mixins';
+@use 'abstracts/variables';
+@use 'abstracts/mixins';
 
-@import 'base/reset';
-@import 'base/typography';
-@import 'base/base';
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/base';
 
-@import 'layout/header';
-@import 'layout/forms';
-@import 'layout/pages';
+@use 'layout/header';
+@use 'layout/forms';
+@use 'layout/pages';
 
-@import 'components/buttons';
-@import 'components/cards';
-@import 'components/messages';
+@use 'components/buttons';
+@use 'components/cards';
+@use 'components/messages';

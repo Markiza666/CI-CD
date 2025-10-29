@@ -1,9 +1,9 @@
-@import '../abstracts/variables';
+@use '../abstracts/variables' as v;
 
 .submit-button {
     // Primary action button (e.g., Log In, Register)
     width: 100%;
-    background-color: $color-primary;
+    background-color: v.$color-primary;
     color: white;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
@@ -11,15 +11,15 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 150ms ease-in-out, transform 150ms ease-out;
-    box-shadow: $shadow-default;
+    box-shadow: v.$shadow-default;
     
     // AC 8.1: GPU-acceleration
     will-change: transform;
 
     &:hover {
-        background-color: $color-primary-hover;
+        background-color: v.$color-primary-hover;
         transform: translateY(-2px);
-        box-shadow: $shadow-hover;
+        box-shadow: v.$shadow-hover;
     }
 }
 
@@ -33,19 +33,19 @@
     transition: background-color 150ms, color 150ms;
     
     &.register {
-        background-color: $color-primary;
+        background-color: v.$color-primary;
         color: white;
         &:hover {
-            background-color: $color-primary-hover;
+            background-color: v.$color-primary-hover;
         }
     }
 
     &.unregister {
         background-color: white;
-        color: $color-error;
-        border-color: $color-error;
+        color: v.$color-error;
+        border-color: v.$color-error;
         &:hover {
-            background-color: lighten($color-error, 40%);
+            background-color: lighten(v.$color-error, 40%);
         }
     }
 }
