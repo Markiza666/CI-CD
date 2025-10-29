@@ -1,0 +1,21 @@
+.page-title {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 800; // Extra bold
+}
+
+// Profile Page Layout
+.profile-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.profile-section {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: $shadow-default;
+    margin-bottom: 2rem;
+}

@@ -1,0 +1,14 @@
+@import '../abstracts/variables';
+
+body {
+    background-color: $color-background;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: $color-text;
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: $max-width;
+    margin: 0 auto;
+    padding: 0 $spacing-unit; 
+}

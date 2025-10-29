@@ -1,0 +1,28 @@
+@import '../abstracts/variables';
+
+.status-message {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.loading {
+    color: $color-primary;
+    background-color: lighten($color-primary, 40%);
+}
+
+.error-message {
+    color: $color-error;
+    background-color: lighten($color-error, 40%);
+    border-left: 4px solid $color-error;
+}
+
+.empty-message {
+    text-align: center;
+    color: $color-text-secondary;
+    padding: 2rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 0.5rem;
+}

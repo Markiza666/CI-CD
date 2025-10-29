@@ -1,0 +1,32 @@
+@import '../abstracts/variables';
+
+h1, h2, h3, h4 {
+    color: $color-text;
+    margin-bottom: $spacing-unit;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+p {
+    color: $color-text-secondary;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: $color-primary;
+    text-decoration: none;
+    transition: color 150ms ease-in-out;
+
+    &:hover {
+        color: darken($color-primary, 10%);
+        text-decoration: underline;
+    }
+}

@@ -1,0 +1,25 @@
+@mixin breakpoint($size) {
+    @if $size == desktop {
+        @media (min-width: 1024px) { @content; }
+    } @else if $size == tablet {
+        @media (min-width: 768px) and (max-width: 1023px) { @content; }
+    } @else {
+        // Fallback for custom values
+        @media (min-width: $size) { @content; }
+    }
+}
+
+/**
+ * Mixin for applying line clamping to text.
+ * @param {Number} $lines - The number of lines to clamp the text to.
+ */
+@mixin line-clamp($lines) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    
+    // Webkit- specific property for line clamping
+    -webkit-line-clamp: $lines;
+    
+    // Fallback for other browsers
+    overflow: hidden;
+}
