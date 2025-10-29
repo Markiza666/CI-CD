@@ -1,0 +1,40 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.main-header {
+    background-color: $color-text; 
+    box-shadow: $shadow-default;
+    padding: $spacing-unit;
+    
+    .header-container {
+        @include breakpoint(desktop) {
+            max-width: $max-width;
+            margin: 0 auto;
+        }
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .app-logo {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .nav-list {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+
+        a {
+            color: white;
+            padding: 0.5rem 0;
+            &:hover {
+                color: $color-primary;
+                text-decoration: none;
+            }
+        }
+    }
+}

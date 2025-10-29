@@ -1,0 +1,56 @@
+@import '../abstracts/variables';
+
+.form-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    box-shadow: $shadow-default;
+    border-radius: 0.75rem;
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: $color-text;
+    }
+    
+    .form-layout {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .input-group {
+        margin-bottom: 0.5rem;
+    }
+
+    .input-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        color: $color-text-secondary;
+        font-size: 0.875rem; // text-sm
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db; // gray-300
+        border-radius: 0.5rem;
+        transition: border-color 150ms;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+        }
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .register-link {
+        font-size: 0.875rem;
+    }
+}

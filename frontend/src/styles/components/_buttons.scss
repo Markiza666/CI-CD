@@ -1,0 +1,51 @@
+@import '../abstracts/variables';
+
+.submit-button {
+    // Primary action button (e.g., Log In, Register)
+    width: 100%;
+    background-color: $color-primary;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms ease-in-out, transform 150ms ease-out;
+    box-shadow: $shadow-default;
+    
+    // AC 8.1: GPU-acceleration
+    will-change: transform;
+
+    &:hover {
+        background-color: $color-primary-hover;
+        transform: translateY(-2px);
+        box-shadow: $shadow-hover;
+    }
+}
+
+.toggle-button {
+    // Buttons for registration/unregistration on MeetupDetail
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 150ms, color 150ms;
+    
+    &.register {
+        background-color: $color-primary;
+        color: white;
+        &:hover {
+            background-color: $color-primary-hover;
+        }
+    }
+
+    &.unregister {
+        background-color: white;
+        color: $color-error;
+        border-color: $color-error;
+        &:hover {
+            background-color: lighten($color-error, 40%);
+        }
+    }
+}
