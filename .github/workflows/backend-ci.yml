@@ -14,6 +14,8 @@ env:
 
 jobs:
   test_build:
+    # Kör på PR ENDAST om Dockerfile finns. På main kör vi alltid.
+    if: ${{ github.event_name != 'pull_request' || hashFiles('backend/Dockerfile') != '' }}
     runs-on: ubuntu-latest
     defaults:
       run:
