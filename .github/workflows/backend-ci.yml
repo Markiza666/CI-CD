@@ -14,8 +14,8 @@ env:
 
 jobs:
   test_build:
-    # Kör på PR ENDAST om Dockerfile finns. På main kör vi alltid.
-    if: ${{ github.event_name != 'pull_request' || hashFiles('backend/Dockerfile') != '' }}
+    # Run this job only when a Pull Request is created or updated.
+    if: ${{ github.event_name == 'pull_request' }}  # We want to test the code as soon as someone suggests a change, but we don't want to waste resources testing it again once it's already been merged into main (then the deploy job will take over).
     runs-on: ubuntu-latest
     defaults:
       run:
