@@ -1,0 +1,33 @@
+@use '../abstracts/variables' as v;
+@use 'sass:color';
+
+h1, h2, h3, h4 {
+    color: v.$color-text;
+    margin-bottom: v.$spacing-unit;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+p {
+    color: v.$color-text-secondary;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: v.$color-primary;
+    text-decoration: none;
+    transition: color 150ms ease-in-out;
+
+    &:hover {
+        color: darken(v.$color-primary, 10%);
+        text-decoration: underline;
+    }
+}

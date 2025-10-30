@@ -1,0 +1,67 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as m;
+
+.meetups-grid {
+    display: grid;
+    gap: 1rem;
+    max-width: v.$max-width;
+    margin: 0 auto;
+}
+
+.meetup-card {
+    background-color: white;
+    padding: 1.5rem;
+    box-shadow: v.$shadow-default;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb; // gray-200
+    transition: box-shadow 300ms, border-color 300ms;
+
+    &:hover {
+        box-shadow: v.$shadow-hover;
+        border-color: v.$color-primary;
+    }
+
+    .card-title {
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+        
+        .card-link {
+            color: v.$color-primary;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+    
+    .card-date-location {
+        font-size: 0.875rem;
+        color: v.$color-text-secondary;
+        margin-bottom: 1rem;
+    }
+
+    .card-description {
+        display: -webkit-box;
+        @include m.line-clamp(3);
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-footer {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f3f4f6; // separator
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-participants {
+        font-size: 0.875rem;
+        color: v.$color-text-secondary;
+    }
+
+    .details-link {
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+}

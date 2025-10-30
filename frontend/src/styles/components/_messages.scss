@@ -1,0 +1,28 @@
+@use '../abstracts/variables' as v;
+
+.status-message {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.loading {
+    color: v.$color-primary;
+    background-color: lighten(v.$color-primary, 40%);
+}
+
+.error-message {
+    color: v.$color-error;
+    background-color: lighten(v.$color-error, 40%);
+    border-left: 4px solid v.$color-error;
+}
+
+.empty-message {
+    text-align: center;
+    color: v.$color-text-secondary;
+    padding: 2rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 0.5rem;
+}
