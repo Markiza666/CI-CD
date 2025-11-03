@@ -4,10 +4,14 @@ on:
   workflow_dispatch: {}
   pull_request:
     branches: [dev]
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
   push:
     branches: [main]
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/meetups-backend
@@ -37,12 +41,20 @@ jobs:
       - name: Skip tests
         run: echo "Skipping tests (no test script)"
 
-      # 🧪 Docker build test – fixat med TAG-variabeln
+      # (valfritt) liten sanity check
+      - name: Verify backend files
+        run: |
+          echo "PWD: $(pwd)"
+          ls -la backend
+          test -f backend/Dockerfile && echo "✅ Dockerfile finns"
+
+      # 🐳 Docker build (test) – enkel build med tydlig Dockerfile & context
       - name: Docker build (test)
         run: |
           TAG=pr-${{ github.event.pull_request.number || github.run_number }}
-          echo "Building Docker image with tag: $TAG"
-          docker build -f backend/Dockerfile -t $IMAGE_NAME:$TAG backend
+          IMAGE=${{ env.IMAGE_NAME }}
+          echo "Building Docker image: $IMAGE:$TAG"
+          docker build -f backend/Dockerfile -t $IMAGE:$TAG backend
 
   release_deploy:
     if: github.ref == 'refs/heads/main'
@@ -60,10 +72,11 @@ jobs:
       - name: Build & Push Docker image
         run: |
           GIT_SHA=${{ github.sha }}
-          echo "Building and pushing Docker image for commit: $GIT_SHA"
-          docker build -f backend/Dockerfile -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest backend
-          docker push $IMAGE_NAME:$GIT_SHA
-          docker push $IMAGE_NAME:latest
+          IMAGE=${{ env.IMAGE_NAME }}
+          echo "Building & pushing $IMAGE:$GIT_SHA and :latest"
+          docker build -f backend/Dockerfile -t $IMAGE:$GIT_SHA -t $IMAGE:latest backend
+          docker push $IMAGE:$GIT_SHA
+          docker push $IMAGE:latest
 
       - name: Trigger Render deploy (Deploy Hook)
         run: |
