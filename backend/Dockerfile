@@ -8,7 +8,7 @@ RUN npm ci --only=production
 
 COPY . .
 
-# build tys to js
+# build ts to js
 RUN npm run build
 
 EXPOSE 3000
