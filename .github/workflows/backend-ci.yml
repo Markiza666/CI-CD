@@ -3,25 +3,24 @@ name: Backend CI/CD
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [dev]
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    branches: [dev]           # kör ALLTID på PR mot dev
   push:
-    branches: [main]
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    branches: [main]          # deploy sker på main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/meetups-backend
 
 jobs:
   test_build:
-    # Kör på PR ENDAST om Dockerfile finns. På main kör vi alltid.
+    # På PR: kör bara om Dockerfile finns. På main körs ändå via "push".
     if: ${{ github.event_name != 'pull_request' || hashFiles('backend/Dockerfile') != '' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -31,23 +30,28 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'backend/package-lock.json'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install deps
+        working-directory: backend
+        run: npm ci || npm install
 
-      - name: Lint (if configured)
+      - name: Lint (optional)
+        working-directory: backend
         run: npm run lint --if-present
 
-      - name: Run tests (if configured)
+      - name: Test (optional)
+        working-directory: backend
         run: npm test --if-present
 
+      # Säkert docker-build på PR: pekar explicit på backend/Dockerfile + context=backend
       - name: Docker build (PR test)
-        run: docker build -t $IMAGE_NAME:pr-${{ github.event.number || github.run_number }} .
+        run: docker build -f backend/Dockerfile -t $IMAGE_NAME:pr-${{ github.run_number }} backend
 
   release_deploy:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Login to Docker Hub
@@ -57,17 +61,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build & Push Docker image
-        working-directory: backend
         run: |
           GIT_SHA=${{ github.sha }}
-          docker build -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest .
+          # Bygg från backend/ med explicit Dockerfile
+          docker build -f backend/Dockerfile -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest backend
           docker push $IMAGE_NAME:$GIT_SHA
           docker push $IMAGE_NAME:latest
 
       - name: Trigger Render deploy (Deploy Hook)
         run: |
           if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
-            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            echo "Triggering Render deploy…"
+            curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
           else
             echo "No Render deploy hook URL set, skipping."
           fi
