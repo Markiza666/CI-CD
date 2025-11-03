@@ -15,8 +15,6 @@ env:
 
 jobs:
   test_build:
-    # På PR: kör bara om Dockerfile finns. På main körs ändå via "push".
-    if: ${{ github.event_name != 'pull_request' || hashFiles('backend/Dockerfile') != '' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -42,8 +40,11 @@ jobs:
         working-directory: backend
         run: npm test --if-present
 
-      # Säkert docker-build på PR: pekar explicit på backend/Dockerfile + context=backend
+      # Kör docker build bara när:
+      # - det är INTE en pull_request (dvs main-push), ELLER
+      # - filen backend/Dockerfile finns i branchen
       - name: Docker build (PR test)
+        if: ${{ github.event_name != 'pull_request' || hashFiles('backend/Dockerfile') != '' }}
         run: docker build -f backend/Dockerfile -t $IMAGE_NAME:pr-${{ github.run_number }} backend
 
   release_deploy:
@@ -63,7 +64,6 @@ jobs:
       - name: Build & Push Docker image
         run: |
           GIT_SHA=${{ github.sha }}
-          # Bygg från backend/ med explicit Dockerfile
           docker build -f backend/Dockerfile -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest backend
           docker push $IMAGE_NAME:$GIT_SHA
           docker push $IMAGE_NAME:latest
