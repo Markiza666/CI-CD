@@ -15,9 +15,6 @@ env:
 jobs:
   test_build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,18 +27,22 @@ jobs:
           cache-dependency-path: 'backend/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        working-directory: backend
+        run: npm ci || npm install
 
       - name: Lint (optional)
+        working-directory: backend
         run: npm run lint --if-present
 
-      
       - name: Skip tests
-        run: echo "Skipping tests (no test script found)"
+        run: echo "Skipping tests (no test script)"
 
-      
+      # 🧪 Docker build test – fixat med TAG-variabeln
       - name: Docker build (test)
-        run: docker build -t $IMAGE_NAME:pr-${{ github.event.number || github.run_number }} .
+        run: |
+          TAG=pr-${{ github.event.pull_request.number || github.run_number }}
+          echo "Building Docker image with tag: $TAG"
+          docker build -f backend/Dockerfile -t $IMAGE_NAME:$TAG backend
 
   release_deploy:
     if: github.ref == 'refs/heads/main'
@@ -57,17 +58,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build & Push Docker image
-        working-directory: backend
         run: |
           GIT_SHA=${{ github.sha }}
-          docker build -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest .
+          echo "Building and pushing Docker image for commit: $GIT_SHA"
+          docker build -f backend/Dockerfile -t $IMAGE_NAME:$GIT_SHA -t $IMAGE_NAME:latest backend
           docker push $IMAGE_NAME:$GIT_SHA
           docker push $IMAGE_NAME:latest
 
       - name: Trigger Render deploy (Deploy Hook)
         run: |
           if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
-            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            echo "Triggering Render deploy…"
+            curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
           else
             echo "No Render deploy hook URL set, skipping."
           fi
