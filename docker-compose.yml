@@ -11,13 +11,19 @@ services:
       - ./frontend:/app
     stdin_open: true
     tty: true
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev"]
   backend:
     build: ./backend
     container_name: backend
     ports:
       - "3000:3000"
-    env_file:
-      - .env
-
     volumes:
       - ./backend:/app
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY=${API_KEY}
+    command: ["npm", "run", "dev"]
