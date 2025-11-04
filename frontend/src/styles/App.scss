@@ -1,4 +1,4 @@
-@use 'abstracts/variables';
+@use 'abstracts/variables' as v;
 @use 'abstracts/mixins';
 
 @use 'base/reset';
@@ -8,6 +8,7 @@
 @use 'layout/header';
 @use 'layout/forms';
 @use 'layout/pages';
+@use 'layout/profile';
 
 @use 'components/buttons';
 @use 'components/cards';

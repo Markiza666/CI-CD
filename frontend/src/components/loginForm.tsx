@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import apiClient from '../api/apiClient';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
 
 // AC 2.1: Component responsible for user login.
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate();// NEW: Get the location object
+    const location = useLocation();
+    
+    // Determine where the user came from (default to /profile)
+    // The state object is structured as { from: { pathname: '/desired-path' } }
+    const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/profile';
+    
+    const { login } = useAuth();
 
     // AC 2.2: Handles form submission and API interaction
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,32 +29,30 @@ const LoginForm: React.FC = () => {
                 password,
             });
 
-            // AC 2.2: On successful login, the client receives an authentication token (JWT)
             const { token } = response.data;
             
             if (token) {
-                // AC 2.2: Save token in Local Storage for future protected calls
-                localStorage.setItem('authToken', token);
+                // AC 2.2: Use Context to save token. Context handles LocalStorage sync.
+                login(token); 
                 
-                // AC 7.1: Redirect to a protected page (e.g., /profile)
                 console.log("Login successful! Token saved.");
-                navigate('/profile'); 
+                // AC 7.1: Redirect to the page the user originally tried to access
+                navigate(from, { replace: true }); // CRITICAL CHANGE
             } else {
                 setError('Login failed: No token received.');
             }
 
         } catch (err: any) {
-            // AC 2.1: Handle errors from P1's API (e.g., incorrect password/user not found)
+            // AC 2.1: Handle API errors
             const errorMessage = err.response?.data?.message || 'Incorrect email or password.';
             setError(errorMessage);
         }
     };
 
     return (
-        // AC 2.1: Login form structure
+        // ... (rest of the render logic remains the same)
         <div className="form-container">
             <h2 className="form-title">Log In</h2>
-            
             {/* Error Message Display */}
             {error && (
                 <p className="error-message" role="alert">
@@ -100,7 +106,6 @@ const LoginForm: React.FC = () => {
             </form>
             
             <div className="form-footer"> 
-                {/* AC 1.1: Link to the registration page */}
                 <Link to="/register" className="register-link"> 
                     Don't have an account? Register here.
                 </Link>

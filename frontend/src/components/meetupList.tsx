@@ -1,94 +1,97 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
-import { Meetup } from '../interfaces'; // AC 3.1: Uses Meetup interface for type safety
+import { Meetup, MeetupFilter } from '../interfaces';
+import MeetupFilterForm from './meetupFilterForm';
 import { Link } from 'react-router-dom';
 
-// AC 3.1: Component responsible for displaying a list of all meetups.
+// AC 3.1: Component responsible for displaying a list of meetups.
 const MeetupList: React.FC = () => {
-    // Initialize state with the Meetup interface array
-    const [meetups, setMeetups] = useState<Meetup[]>([]); 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [meetups, setMeetups] = useState<Meetup[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    // Default filter state (US 4.1)
+    const [filters, setFilters] = useState<MeetupFilter>({
+        searchQuery: '',
+        city: undefined,
+        date: undefined,
+        isAttending: false,
+    });
+    
+    // Function to handle changes received from MeetupFilterForm
+    const handleFilterChange = (newFilters: MeetupFilter) => {
+        setFilters(newFilters);
+        // We don't call fetchMeetups here, we rely on the useEffect dependency
+    };
+
+    // --- Data Fetching (AC 3.1) ---
+    // The fetch function now depends on the 'filters' state
     useEffect(() => {
         const fetchMeetups = async () => {
+            setIsLoading(true);
+            setError(null);
+            
             try {
-                // AC 3.1: Fetch list of meetups (P1 API: GET /api/meetups)
-                const response = await apiClient.get('/meetups');
+                // AC 3.1, 4.1, 4.2, 4.3: Send filter criteria as query parameters to the API
+                const response = await apiClient.get<Meetup[]>('/meetups', {
+                    params: filters 
+                    // Axios automatically converts the filters object into 
+                    // a query string: /meetups?searchQuery=...&city=...
+                });
+                
                 setMeetups(response.data);
-                setLoading(false);
             } catch (err: any) {
                 console.error("Failed to fetch meetups:", err);
-                setError('Could not load meetups. Please try again later.');
-                setLoading(false);
+                setError('Failed to load meetups. Please try again later.');
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchMeetups();
-    }, []);
+    }, [filters]); // Rerun effect whenever the filter state changes
 
-    // Helper function to format the date
+    // Helper function to format the date 
     const formatDate = (dateString: Date | string) => {
-        // Simple formatting, adjust as needed (e.g., using date-fns)
         return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
     };
 
-    if (loading) {
-        // AC 3.1: Loading state
-        return <div className="status-message loading">Loading meetups...</div>; 
-    }
-
-    if (error) {
-        // AC 3.1: Error state
-        return <div className="status-message error">{error}</div>; 
-    }
-
+    // --- Main Render ---
     return (
-        <div className="meetup-list-page"> {/* Main container for the page */}
-            <h1 className="page-title">Upcoming Meetups</h1>
+        <div className="meetup-list-page mt-10">
+            <h1 className="text-4xl font-bold mb-6">Upcoming Meetups</h1>
             
-            {meetups.length === 0 ? (
-                // AC 3.1: Empty state
-                <p className="empty-message">No upcoming meetups found.</p>
-            ) : (
-                <div className="meetups-grid"> {/* Container for the list of items */}
-                    {meetups.map((meetup) => (
-                        <article 
-                            key={meetup._id} 
-                            className="meetup-card"
-                        >
-                            {/* AC 3.1: Link to detailed view */}
-                            <Link to={`/meetups/${meetup._id}`} className="card-link">
-                                <h2 className="card-title">{meetup.title}</h2>
-                            </Link>
-                            <p className="card-date-location">
-                                {formatDate(meetup.date)} in {meetup.location}
-                            </p>
-                            <p className="card-description">
-                                {meetup.description}
-                            </p>
-                            
-                            <footer className="card-footer">
-                                <span className="card-participants">
-                                    {meetup.participants.length} attending
-                                </span> 
-                                <Link 
-                                    to={`/meetups/${meetup._id}`}
-                                    className="details-link"
-                                >
-                                    View Details &rarr;
-                                </Link>
-                            </footer>
-                        </article>
-                    ))}
-                </div>
+            {/* Render the filter form */}
+            <MeetupFilterForm 
+                onFilterChange={handleFilterChange}
+                currentFilters={filters}
+            />
+
+            {isLoading && <p className="status-message loading">Loading meetups...</p>}
+            {error && <p className="status-message error">{error}</p>}
+
+            {!isLoading && !error && meetups.length === 0 && (
+                <p className="status-message info">No meetups found matching your criteria.</p>
             )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {meetups.map(meetup => (
+                    <div key={meetup._id} className="meetup-card p-4 border rounded shadow-lg transition duration-300 hover:shadow-xl">
+                        <Link to={`/meetups/${meetup._id}`} className="text-xl font-semibold text-indigo-600 hover:text-indigo-800 block mb-2">
+                            {meetup.title}
+                        </Link>
+                        <p className="text-sm text-gray-600 mb-1">
+                            {formatDate(meetup.date)}
+                        </p>
+                        <p className="text-sm text-gray-600 mb-3">
+                            Location: {meetup.location}
+                        </p>
+                        <p className="text-gray-700 line-clamp-2">{meetup.description}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

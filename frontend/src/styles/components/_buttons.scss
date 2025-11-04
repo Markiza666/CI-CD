@@ -1,4 +1,5 @@
 @use '../abstracts/variables' as v;
+@use 'sass:color';
 
 .submit-button {
     // Primary action button (e.g., Log In, Register)
@@ -20,6 +21,40 @@
         background-color: v.$color-primary-hover;
         transform: translateY(-2px);
         box-shadow: v.$shadow-hover;
+    }
+}
+
+.delete-button {
+    background-color: v.$color-error;
+    color: v.$color-light;
+    border: 1px solid v.$color-error;
+    
+    //
+    &:hover {
+        background-color: color.adjust(v.$color-error, $lightness: -10%); 
+    }
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    
+    .submit-button {
+        flex-grow: 1;
+    }
+}
+
+.edit-link-button {
+    @extend .submit-button;
+    background-color: v.$color-secondary;
+    
+    display: inline-block; 
+    text-align: center;
+    padding: 0.5rem 1rem; 
+    
+    &:hover {
+        background-color: color.adjust(v.$color-secondary, $lightness: -10%);
     }
 }
 
@@ -45,7 +80,7 @@
         color: v.$color-error;
         border-color: v.$color-error;
         &:hover {
-            background-color: lighten(v.$color-error, 40%);
+            background-color: color.adjust(v.$color-error, $lightness: 40%);
         }
     }
 }

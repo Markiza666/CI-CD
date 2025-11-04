@@ -1,99 +1,121 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/apiClient';
-// AC 7.3: Import the common interfaces for consistency
-import { User, Meetup } from '../interfaces'; 
+import { ProfileData, Meetup } from '../interfaces'; 
+import { useAuth } from '../context/authContext';
+import { Link } from 'react-router-dom';
 
-// AC 7.2: Component responsible for displaying protected user data.
+// AC 7.3: Component responsible for displaying the user's profile and activities.
 const ProfilePage: React.FC = () => {
-    // State now uses the imported types User and Meetup
-    const [user, setUser] = useState<User | null>(null);
-    const [attendingMeetups, setAttendingMeetups] = useState<Meetup[]>([]);
+    // Get the login status and token status from the AuthContext
+    const { isAuthenticated, logout } = useAuth();
+    
+    // State to hold the fetched profile data
+    const [profileData, setProfileData] = useState<ProfileData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        
-        // AC 7.1: Security Check 1 - If no token exists, redirect to login
-        if (!token) {
-            navigate('/login');
+        // Redundant check, but good practice since ProtectedRoute might not have fired yet
+        if (!isAuthenticated) { 
+            // If not authenticated, the ProtectedRoute should handle redirecting, 
+            // but we ensure a clear error state here.
+            setIsLoading(false);
+            setError('You must be logged in to view your profile.');
             return;
         }
 
         const fetchProfileData = async () => {
-            setIsLoading(true);
-            setError(null);
             try {
-                // AC 7.2 & 7.3: Call P1's protected API (GET /api/user/profile)
-                const response = await apiClient.get('/user/profile');
-                const { user, attendingMeetups } = response.data;
-                
-                setUser(user);
-                setAttendingMeetups(attendingMeetups || []);
+                // AC 7.3: Fetch comprehensive user data and related meetups (GET /api/profile)
+                // This assumes your backend provides user data, attending, AND created meetups.
+                const response = await apiClient.get<ProfileData>('/profile');
+                setProfileData(response.data);
             } catch (err: any) {
-                // AC 7.2: Security Check 2 - Handle token expiration or invalid token (401/403 errors)
-                if (err.response?.status === 401 || err.response?.status === 403) {
-                    localStorage.removeItem('authToken');
-                    navigate('/login');
-                } else {
-                    setError('Could not load profile data. Please try again later.'); 
-                }
+                console.error("Failed to fetch profile data:", err);
+                const msg = err.response?.data?.message || 'Could not load profile data.';
+                setError(msg);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchProfileData();
-    }, [navigate]);
+    }, [isAuthenticated]); // Rerun fetch if authentication status changes
+
+    // Helper function to format the date (copied from MeetupList/Detail)
+    const formatDate = (dateString: Date | string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    };
     
-    // Loading state
-    if (isLoading) return <p className="status-message loading">Loading your profile...</p>;
-    
-    // Error state
+    // Helper component to render a list of meetups
+    const MeetupListSection: React.FC<{ title: string, meetups: Meetup[] }> = ({ title, meetups }) => (
+        <section className="profile-meetup-list mb-8 p-4 border rounded shadow-md">
+            <h2 className="text-2xl font-semibold mb-4 border-b pb-2">{title} ({meetups.length})</h2>
+            {meetups.length === 0 ? (
+                <p className="text-gray-500">No meetups found here.</p>
+            ) : (
+                <ul className="space-y-3">
+                    {meetups.map(meetup => (
+                        <li key={meetup._id} className="border-l-4 border-indigo-500 pl-3">
+                            <Link to={`/meetups/${meetup._id}`} className="text-indigo-600 hover:text-indigo-800 font-medium block">
+                                {meetup.title}
+                            </Link>
+                            <p className="text-sm text-gray-600">{formatDate(meetup.date)} at {meetup.location}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </section>
+    );
+
+    // --- Render States ---
+    if (isLoading) return <p className="status-message loading">Loading profile...</p>;
     if (error) return <p className="status-message error">{error}</p>;
-    
-    // Not Logged In state
-    if (!user) return <p className="status-message">You must be logged in to view this page.</p>;
+    if (!profileData) return <p className="status-message">Profile data is unavailable.</p>;
 
+    const { user, attendingMeetups, createdMeetups } = profileData;
+
+    // --- Main Render (AC 7.3) ---
     return (
-        <div className="profile-page"> 
-            <h1 className="page-title">My Profile</h1>
+        <div className="profile-page mt-10">
+            <header className="profile-header mb-8 pb-4 border-b flex justify-between items-center">
+                <h1 className="text-4xl font-bold">Welcome, {user.firstName || user.email}!</h1>
+                <button 
+                    onClick={logout} 
+                    className="logout-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
+                >
+                    Logout
+                </button>
+            </header>
             
-            {/* User Information (AC 7.3) */}
-            <section className="profile-section user-info-card"> 
-                <h2 className="section-title">User Information</h2>
+            <section className="user-details mb-8 p-6 bg-gray-50 rounded shadow-inner">
+                <h2 className="text-2xl font-semibold mb-4">Your Details</h2>
                 <p><strong>Email:</strong> {user.email}</p>
-                {/* Assuming user has an 'id' property or similar */}
-                <p><strong>User ID:</strong> {user._id || 'N/A'}</p> 
+                <p><strong>Location:</strong> {user.city || 'Not specified'}</p>
+                {/* You might add an "Edit Profile" button here later */}
             </section>
+            
+            {/* Meetups the user is attending (AC 7.3) */}
+            <MeetupListSection 
+                title="Meetups You Are Attending" 
+                meetups={attendingMeetups} 
+            />
+            
+            <hr className="my-8" />
 
-            {/* Attending Meetups (AC 7.3) */}
-            <section className="profile-section meetups-card">
-                <h2 className="section-title">My Registered Meetups</h2>
-                
-                {attendingMeetups.length > 0 ? (
-                    <ul className="meetup-list">
-                        {attendingMeetups.map((meetup) => (
-                            // FIX: Using meetup._id if that's what the API returns, or meetup.id if that's in your shared interface.
-                            // I'm using meetup._id which is standard, assuming your shared interface uses it.
-                            <li key={meetup._id} className="meetup-list-item"> 
-                                {/* FIX: Using meetup._id for the Link, too. */}
-                                <Link to={`/meetups/${meetup._id}`} className="meetup-title-link"> 
-                                    {meetup.title}
-                                </Link>
-                                <span className="meetup-date-location">
-                                    {new Date(meetup.date).toLocaleDateString()}
-                                    {meetup.location}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="empty-message">You are not registered for any meetups yet.</p>
-                )}
-            </section>
+            {/* Meetups the user created (AC 7.3) */}
+            <MeetupListSection 
+                title="Meetups You Created" 
+                meetups={createdMeetups} 
+            />
+
+            <footer className="mt-10">
+                <Link to="/create-meetup" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    + Create a New Meetup
+                </Link>
+            </footer>
         </div>
     );
 };
