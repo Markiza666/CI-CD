@@ -8,7 +8,7 @@ on:
       - 'backend/**'
       - '.github/workflows/backend-ci.yml'
   push:
-    branches: [main]
+    branches: [dev, main]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-ci.yml'
