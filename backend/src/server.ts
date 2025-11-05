@@ -8,10 +8,15 @@ import profileRoutes from './routes/profile';
 dotenv.config();
 const app = express();
 
+const allowedOrigins = [
+	'http://localhost:5173',
+	'https://github-deploy-key.onrender.com', // din frontend på Render
+];
+
 const corsOptions = {
-    origin: 'http://localhost:5173', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, 
+	origin: allowedOrigins,
+	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+	credentials: true,
 };
 
 app.use(cors(corsOptions));
