@@ -7,12 +7,12 @@ import db from '../db';
 
 const router = Router();
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
 	const { email, password, name } = req.body;
 	const hashed = await bcrypt.hash(password, 10);
-	const id = uuidv4();
+	const userId = uuidv4();
 
-	await db.query(`INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`, [id, email, hashed, name]);
+	await db.query(`INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`, [userId, email, hashed, name]);
 	res.status(201).json({ message: 'User created' });
 });
 
@@ -30,4 +30,3 @@ router.post('/login', async (req, res) => {
 });
 
 export default router;
-

@@ -16,6 +16,8 @@ const RegisterForm: React.FC = () => {
     // Handles form submission (AC 1.2: Interaction with P1 API)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Försöker registrera användare med:", email);
+        
         setError('');
         setIsSuccess(false);
 
