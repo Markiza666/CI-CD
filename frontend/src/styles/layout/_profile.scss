@@ -1,0 +1,56 @@
+@use '../abstracts/variables' as v;
+@use 'sass:color';
+
+.profile-page {
+    max-width: 800px;
+    margin: 2rem auto;
+
+    .profile-header {
+        border-bottom: 2px solid v.$color-border;
+        padding-bottom: 1.5rem;
+    }
+
+    .user-details {
+        background-color: v.$color-background-secondary;
+        padding: 1.5rem;
+        border-radius: v.$border-radius;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+        p {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .profile-meetup-list {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border: 1px solid v.$color-border;
+        border-radius: v.$border-radius;
+
+        h2 {
+            border-bottom: 1px solid v.$color-border;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding: 0.5rem 0;
+            border-left: 4px solid v.$color-primary;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+
+            a {
+                font-weight: bold;
+                text-decoration: none;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}

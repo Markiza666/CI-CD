@@ -1,23 +1,21 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
 
 // AC 7.1: Component's only responsibility is displaying navigation based on auth status.
 const Header: React.FC = () => {
     const navigate = useNavigate();
-    
-    // AC 7.1: Authentication status is checked to determine visibility of links
-    const isAuthenticated = !!localStorage.getItem('authToken');
+    // Use useAuth hook to get real-time state and functions
+    const { isAuthenticated, logout } = useAuth(); 
 
     const handleLogout = () => {
-        // AC 2.3: Remove token on logout
-        localStorage.removeItem('authToken');
-        console.log('User logged out.');
+        // AC 2.3: Call centralized logout function, which updates state and localStorage
+        logout(); 
         
         // AC 2.3: Redirect user after logout
         navigate('/login', { replace: true });
         
-        // Simple way to force a refresh on header state if needed, though navigate should handle it.
-        window.location.reload(); 
+        // Removed: window.location.reload() is no longer needed
     };
 
     return (

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../context/authContext';
 // AC 1.1: Component responsible for user registration.
 const RegisterForm: React.FC = () => {
-    // Define state for form fields
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     
     const navigate = useNavigate();
+    // Get the login function from context
+    const { login } = useAuth(); 
 
     // Handles form submission (AC 1.2: Interaction with P1 API)
     const handleSubmit = async (e: React.FormEvent) => {
@@ -26,7 +27,6 @@ const RegisterForm: React.FC = () => {
 
         try {
             // AC 1.2: Call P1's API (POST /api/auth/register)
-            // AC 1.3: On success, a token should be returned
             const response = await apiClient.post('/auth/register', {
                 email,
                 password,
@@ -35,7 +35,9 @@ const RegisterForm: React.FC = () => {
             // AC 1.3: Save the token and redirect on successful registration
             const { token } = response.data; 
             if (token) {
-                localStorage.setItem('authToken', token);
+                // AC 1.3: Use Context to save token. Context handles LocalStorage sync.
+                login(token); 
+                
                 setIsSuccess(true);
                 console.log('Registration successful! Redirecting to profile.');
                 navigate('/profile'); 
@@ -49,7 +51,7 @@ const RegisterForm: React.FC = () => {
     };
 
     return (
-        // AC 1.1: Registration form structure
+        // ... (rest of the render logic remains the same)
         <div className="form-container">
             <h2 className="form-title">Register Account</h2>
             
