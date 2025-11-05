@@ -21,6 +21,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/meetups', meetupRoutes);
 app.use('/api/profile', profileRoutes);
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 5000, () => {
 	console.log('API running...');
 });

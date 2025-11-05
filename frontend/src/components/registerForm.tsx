@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
 
         try {
             // AC 1.2: Call P1's API (POST /api/auth/register)
-            const response = await apiClient.post('/auth/register', {
+            const response = await apiClient.post('/auth/register', { 
                 email,
                 password,
             });
