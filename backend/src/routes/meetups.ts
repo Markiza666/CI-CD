@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { Request, Response } from 'express';
 import db from '../db';
 import auth from '../middleware/authMiddleware';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,8 +23,9 @@ router.get('/:id', async (req, res) => {
 	res.json(result.rows[0]);
 });
 
-router.post('/:id/register', auth, async (req, res) => {
+router.post('/:id/register', auth, async (req:Request, res: Response) => {
 	const meetupId = req.params.id;
+	const userId = req.userId;
 
 	const capacityCheck = await db.query(`
     SELECT capacity, (
@@ -39,8 +41,9 @@ router.post('/:id/register', auth, async (req, res) => {
 	res.status(201).json({ message: 'Registered' });
 });
 
-router.delete('/:id/register', auth, async (req, res) => {
-	const result = await db.query(`DELETE FROM registrations WHERE meetup_id = $1 AND user_id = $2`, [req.params.id, req.userId]);
+router.delete('/:id/register', auth, async (req: Request, res: Response) => {
+	const userId = req.userId;
+	const result = await db.query(`DELETE FROM registrations WHERE meetup_id = $1 AND user_id = $2`, [req.params.id,userId]);
 	if (result.rowCount === 0) return res.status(403).json({ error: 'Not registered or not owner' });
 	res.json({ message: 'Unregistered' });
 });
