@@ -3,7 +3,7 @@
 @use'../abstracts/mixins' as m;
 
 .main-header {
-    background-color: v.$color-text; 
+    background-color: v.$text-color; 
     box-shadow: v.$shadow-default;
     padding: v.$spacing-unit;
     
@@ -33,7 +33,7 @@
             color: white;
             padding: 0.5rem 0;
             &:hover {
-                color: v.$color-primary;
+                color: v.$primary-color;
                 text-decoration: none;
             }
         }

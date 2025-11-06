@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import apiClient from '../api/apiClient';
-import { Meetup, MeetupFilter } from '../interfaces';
-import MeetupFilterForm from './meetupFilterForm';
+import apiClient from '../../api/apiClient';
+import { Meetup, MeetupFilter } from '../../interfaces';
+import MeetupFilterForm from '../meetupFilterForm/meetupFilterForm';
 import { Link } from 'react-router-dom';
+import styles from '../meetupList.module/meetupList.module.scss';
 
 // AC 3.1: Component responsible for displaying a list of meetups.
 const MeetupList: React.FC = () => {
@@ -60,8 +61,8 @@ const MeetupList: React.FC = () => {
 
     // --- Main Render ---
     return (
-        <div className="meetup-list-page mt-10">
-            <h1 className="text-4xl font-bold mb-6">Upcoming Meetups</h1>
+        <div className={styles.meetupListPage}>
+            <h1 className={styles.pageTitle}>Upcoming Meetups</h1>
             
             {/* Render the filter form */}
             <MeetupFilterForm 
@@ -69,26 +70,26 @@ const MeetupList: React.FC = () => {
                 currentFilters={filters}
             />
 
-            {isLoading && <p className="status-message loading">Loading meetups...</p>}
-            {error && <p className="status-message error">{error}</p>}
+            {isLoading && <p className={`${styles.statusMessage} ${styles.loading}`}>Loading meetups...</p>}
+            {error && <p className={`${styles.statusMessage} ${styles.error}`}>{error}</p>}
 
             {!isLoading && !error && meetups.length === 0 && (
-                <p className="status-message info">No meetups found matching your criteria.</p>
+                <p className={`${styles.statusMessage} ${styles.info}`}>No meetups found matching your criteria.</p>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={styles.meetupGrid}>
                 {meetups.map(meetup => (
-                    <div key={meetup._id} className="meetup-card p-4 border rounded shadow-lg transition duration-300 hover:shadow-xl">
-                        <Link to={`/meetups/${meetup._id}`} className="text-xl font-semibold text-indigo-600 hover:text-indigo-800 block mb-2">
+                    <div key={meetup._id} className={styles.meetupCard}>
+                        <Link to={`/meetups/${meetup._id}`} className={styles.cardLink}>
                             {meetup.title}
                         </Link>
-                        <p className="text-sm text-gray-600 mb-1">
+                        <p className={styles.cardDate}>
                             {formatDate(meetup.date)}
                         </p>
-                        <p className="text-sm text-gray-600 mb-3">
+                        <p className={styles.cardLocation}>
                             Location: {meetup.location}
                         </p>
-                        <p className="text-gray-700 line-clamp-2">{meetup.description}</p>
+                        <p className={styles.cardDescription}>{meetup.description}</p>
                     </div>
                 ))}
             </div>

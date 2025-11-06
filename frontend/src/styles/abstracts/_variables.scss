@@ -1,19 +1,18 @@
-$color-primary: #4f46e5;      // Indigo 600
-$color-primary-hover: #3e35a1; // Indigo 700
-$color-text: #1f2937;         // Gray 800
-$color-text-secondary: #6b7280; // Gray 500
-$color-background: #f3f4f6;   // Gray 100
-$color-error: #ef4444;        // Red 500
-$color-light: #ffffff;      // White
-$color-secondary: #14b8a6;     // Teal 500
-$color-background-secondary: #fafafa; // Light-Gray
-
-$color-border: #e0e0e0;
+$primary-color: #4f46e5;         // Indigo 600
+$primary-hover: #3e35a1;         // Indigo 700
+$secondary-color: #14b8a6;       // Teal 500
+$text-color: #1f2937;            // Gray 800
+$text-color-secondary: #6b7280;  // Gray 500
+$bg-light: #f3f4f6;              // Gray 100
+$bg-white: #ffffff;              // Vit
+$bg-secondary: #fafafa;          // Light-Gray
+$error-color: #ef4444;           // Red 500
 
 // Layout
+$border-color: #e0e0e0;
+$border-radius: 0.5rem;
 $max-width: 1024px;
 $spacing-unit: 1rem;
-$border-radius: 0.5rem;
 
 $shadow-default: 0 4px 6px rgba(0, 0, 0, 0.1);
 $shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);

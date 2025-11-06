@@ -14,20 +14,14 @@ const apiClient = axios.create({
 
 // Interceptor to attach the JWT token to every request if available
 apiClient.interceptors.request.use(
-    (config) => {
-        // Check local storage for the authentication token
-        const token = localStorage.getItem('authToken');
-
-        // If the token exists, attach it to the Authorization header (Bearer scheme)
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        // Handle request errors
-        return Promise.reject(error);
-    }
+    (config) => {
+        const rawToken = localStorage.getItem('authToken'); 
+        if (rawToken) {
+            config.headers.Authorization = `Bearer ${rawToken}`;
+        }
+        return config;
+    },
+    // ...
 );
 
 export default apiClient;

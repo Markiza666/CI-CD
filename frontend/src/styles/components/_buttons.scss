@@ -4,8 +4,8 @@
 .submit-button {
     // Primary action button (e.g., Log In, Register)
     width: 100%;
-    background-color: v.$color-primary;
-    color: white;
+    background-color: v.$primary-color;
+    color: v.$bg-white;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     border: none;
@@ -18,20 +18,20 @@
     will-change: transform;
 
     &:hover {
-        background-color: v.$color-primary-hover;
+        background-color: v.$primary-color;
         transform: translateY(-2px);
         box-shadow: v.$shadow-hover;
     }
 }
 
 .delete-button {
-    background-color: v.$color-error;
-    color: v.$color-light;
-    border: 1px solid v.$color-error;
+    background-color: v.$error-color;
+    color: v.$bg-light;
+    border: 1px solid v.$error-color;
     
     //
     &:hover {
-        background-color: color.adjust(v.$color-error, $lightness: -10%); 
+        background-color: color.adjust(v.$error-color, $lightness: -10%); 
     }
 }
 
@@ -47,14 +47,14 @@
 
 .edit-link-button {
     @extend .submit-button;
-    background-color: v.$color-secondary;
+    background-color: v.$secondary-color;
     
     display: inline-block; 
     text-align: center;
     padding: 0.5rem 1rem; 
     
     &:hover {
-        background-color: color.adjust(v.$color-secondary, $lightness: -10%);
+        background-color: color.adjust(v.$secondary-color, $lightness: -10%);
     }
 }
 
@@ -68,19 +68,19 @@
     transition: background-color 150ms, color 150ms;
     
     &.register {
-        background-color: v.$color-primary;
+        background-color: v.$primary-color;
         color: white;
         &:hover {
-            background-color: v.$color-primary-hover;
+            background-color: v.$primary-color;
         }
     }
 
     &.unregister {
         background-color: white;
-        color: v.$color-error;
-        border-color: v.$color-error;
+        color: v.$error-color;
+        border-color: v.$error-color;
         &:hover {
-            background-color: color.adjust(v.$color-error, $lightness: 40%);
+            background-color: color.adjust(v.$error-color, $lightness: 40%);
         }
     }
 }

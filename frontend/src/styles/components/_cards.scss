@@ -19,7 +19,7 @@
 
     &:hover {
         box-shadow: v.$shadow-hover;
-        border-color: v.$color-primary;
+        border-color: v.$primary-color;
     }
 
     .card-title {
@@ -27,7 +27,7 @@
         font-size: 1.25rem;
         
         .card-link {
-            color: v.$color-primary;
+            color: v.$primary-color;
             &:hover {
                 text-decoration: underline;
             }
@@ -36,7 +36,7 @@
     
     .card-date-location {
         font-size: 0.875rem;
-        color: v.$color-text-secondary;
+        color: v.$text-color-secondary;
         margin-bottom: 1rem;
     }
 
@@ -58,7 +58,7 @@
     
     .card-participants {
         font-size: 0.875rem;
-        color: v.$color-text-secondary;
+        color: v.$text-color-secondary;
     }
 
     .details-link {

@@ -2,7 +2,7 @@
 @use '../abstracts/variables' as v;
 
 h1, h2, h3, h4 {
-    color: v.$color-text;
+    color: v.$text-color;
     margin-bottom: v.$spacing-unit;
     line-height: 1.2;
 }
@@ -16,18 +16,18 @@ h2 {
 }
 
 p {
-    color: v.$color-text-secondary;
+    color: v.$text-color-secondary;
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
 
 a {
-    color: v.$color-primary;
+    color: v.$primary-color;
     text-decoration: none;
     transition: color 150ms ease-in-out;
 
     &:hover {
-        color: color.adjust(v.$color-primary, $lightness: -10%);
+        color: color.adjust(v.$primary-color, $lightness: -10%);
         text-decoration: underline;
     }
 }

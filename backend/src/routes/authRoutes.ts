@@ -12,9 +12,9 @@ router.post('/register', async (req: Request, res: Response) => {
 	const hashed = await bcrypt.hash(password, 10);
 	const userId = uuidv4();
 
-	await db.query(`INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`, [userId, email, hashed, name]);
-	res.status(201).json({ message: 'User created' });
-});
+    await db.query(`INSERT INTO users (user_id, email, password_hash, name) VALUES ($1, $2, $3, $4)`, [userId, email, hashed, name]);
+        res.status(201).json({ message: 'User created' });
+    });
 
 router.post('/login', async (req, res) => {
 	const { email, password } = req.body;
@@ -25,8 +25,7 @@ router.post('/login', async (req, res) => {
 		return res.status(401).json({ error: 'Invalid credentials' });
 	}
 
-	const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-	res.json({ token });
+	const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 });
 
 export default router;

@@ -2,27 +2,25 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Importing our new components
-import { AuthProvider } from './context/authContext'; 
-import ProtectedRoute from './components/protectedRoute';
+import { AuthProvider } from '../context/authContext'; 
+import ProtectedRoute from '../components/protectedRoute';
 
 // Importing all major components
-import RegisterForm from './components/registerForm'; 
-import LoginForm from './components/loginForm';     
-import MeetupList from './components/meetupList.module/meetupList';   
-import ProfilePage from './pages/profilePage';      
-import MeetupDetail from './pages/meetupDetail'; 
-import Header from './components/header';           
-import CreateMeetupForm from './components/createMeetupForm';
-import EditMeetupForm from './components/editMeetupForm';
-import layoutStyles from './styles/layout/Layout.module.scss';
-import typographyStyles from './styles/base/Errors.module.scss';
+import RegisterForm from '../components/registerForm'; 
+import LoginForm from '../components/loginForm';     
+import MeetupList from '../components/meetupList.module/meetupList';   
+import ProfilePage from '../pages/profilePage';      
+import MeetupDetail from '../pages/meetupDetail'; 
+import Header from '../components/header';           
+import CreateMeetupForm from '../components/createMeetupForm';
+import EditMeetupForm from '../components/editMeetupForm';
 
 const App: React.FC = () => {
     return (
         <AuthProvider>
             <Router>
                 <Header />
-                <main className={layoutStyles.container}>
+                <main className="container mx-auto p-4 max-w-4xl">
                     <Routes>
                         {/* Public Routes */}
                         <Route path="/" element={<MeetupList />} /> 
@@ -43,7 +41,7 @@ const App: React.FC = () => {
 
                         {/* Catch-all/404 Page */}
                         <Route path="*" element={
-                            <h2 className={typographyStyles.err}>
+                            <h2 className="text-3xl text-red-600 mt-10">
                                 404 - Page is not found!
                             </h2>
                         } />

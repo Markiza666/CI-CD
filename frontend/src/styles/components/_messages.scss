@@ -10,20 +10,20 @@
 }
 
 .loading {
-    border-color: v.$color-primary;
-    background-color: color.adjust(v.$color-primary, $lightness: 40%);
-    color: color.adjust(v.$color-primary, $lightness: -10%);
+    border-color: v.$primary-color;
+    background-color: color.adjust(v.$primary-color, $lightness: 40%);
+    color: color.adjust(v.$primary-color, $lightness: -10%);
 }
 
 .error-message {
-    border-color: v.$color-error;
-    background-color: color.adjust(v.$color-error, $lightness: 40%);
-    color: color.adjust(v.$color-error, $lightness: -10%);
+    border-color: v.$error-color;
+    background-color: color.adjust(v.$error-color, $lightness: 40%);
+    color: color.adjust(v.$error-color, $lightness: -10%);
 }
 
 .empty-message {
     text-align: center;
-    color: v.$color-text-secondary;
+    color: v.$text-color-secondary;
     padding: 2rem;
     border: 1px dashed #d1d5db;
     border-radius: 0.5rem;
