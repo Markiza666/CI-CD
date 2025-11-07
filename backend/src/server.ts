@@ -20,6 +20,10 @@ const corsOptions = {
 	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 	credentials: true,
 };
+app.use((req, res, next) => {
+	console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+	next();
+});
 
 // ✅ Lägg till Helmet med CSP
 app.use(
@@ -38,7 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/meetups', meetupRoutes);
 app.use('/api/profile', profileRoutes);
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 5000, () => {
 	console.log('API running...');
 });
 
