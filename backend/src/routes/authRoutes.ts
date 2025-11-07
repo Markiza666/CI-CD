@@ -76,10 +76,10 @@ try {
 	console.log("🔍 Kontroll före token-skapning:");
 	console.log("JWT_SECRET:", JWT_SECRET);
 	console.log("Typ av JWT_SECRET:", typeof JWT_SECRET);
-	console.log("User ID:", user?.user_id);
+	console.log("User ID:", user.id);
 	// 🔐 Skapa riktig token
 	console.log("🔐 Signing token with secret:", JWT_SECRET);
-	const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
+	const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
 		expiresIn: "1h",
 	});
 	console.log("✅ Token skapad:", token);
