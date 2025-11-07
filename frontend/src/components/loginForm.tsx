@@ -76,6 +76,7 @@ const LoginForm: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="input-field"
+                        placeholder="t.ex. anna.developer@mail.com"
                     />
                 </div>
                 
@@ -94,6 +95,7 @@ const LoginForm: React.FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="input-field"
+                        placeholder='Your password'
                     />
                 </div>
                 

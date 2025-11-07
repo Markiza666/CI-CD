@@ -101,6 +101,7 @@ const RegisterForm: React.FC = () => {
                         required
                         className="input-field"
                         autoComplete="email"
+                        placeholder="e.g., anna.developer@mail.com"
                     />
                 </div>
 
@@ -114,6 +115,7 @@ const RegisterForm: React.FC = () => {
                         required
                         className="input-field"
                         autoComplete="name"
+                        placeholder="Your full name"
                     />
                 </div>
                 
@@ -133,7 +135,7 @@ const RegisterForm: React.FC = () => {
                         required
                         className="input-field"
                         autoComplete="new-password"
-                    />
+                        placeholder="Min. 8 characters"                    />
                 </div>
                 
                 <button 
