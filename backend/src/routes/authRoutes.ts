@@ -15,8 +15,12 @@ router.post("/register", async (req: Request, res: Response) => {
 			typeof import("uuid")
 		>);
 		const uuidv4 = uuidMod.v4;
+
+		// 🧼 Normalisera e-post
+		const email = req.body.email.trim().toLowerCase();
+		const { password, name } = req.body;
 		
-		const { email, password, name } = req.body;
+		//const { email, password, name } = req.body;
 
 		// Extra/valfritt
 		if (!email || !password || !name) {
@@ -51,7 +55,9 @@ router.post("/register", async (req: Request, res: Response) => {
 
 router.post("/login", async (req, res) => {
 try {
-	const { email, password } = req.body;
+	const email = req.body.email.trim().toLowerCase();
+	const { password } = req.body;
+	//const { email, password } = req.body;
 	const result = await db.query(`SELECT * FROM users WHERE email = $1`, [
 		email,
 	]);
