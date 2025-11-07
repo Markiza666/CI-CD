@@ -25,4 +25,3 @@ pool.connect()
 export default {
 	query: (text: string, params?: any[]) => pool.query(text, params),
 };
-
