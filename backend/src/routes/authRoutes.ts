@@ -55,6 +55,11 @@ try {
 		email,
 	]);
 	const user = result.rows[0];
+	console.log("Login attempt:", email);
+	console.log("User from DB:", user);
+	console.log("Password provided:", password);
+	console.log("Password hash from DB:", user.password_hash);
+	console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
 		return res.status(401).json({ error: "Invalid credentials" });
@@ -63,6 +68,7 @@ try {
 	const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET!, {
 		expiresIn: "1h",
 	});
+	
 
 	// 👇 Skicka tillbaka token till frontend
 	return res.status(200).json({ token });
