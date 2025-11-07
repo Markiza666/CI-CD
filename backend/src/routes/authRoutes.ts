@@ -33,6 +33,8 @@ router.post("/register", async (req: Request, res: Response) => {
 		const hashed = await bcrypt.hash(password, 10);
 		const userId = uuidv4();
 
+		console.log("Registering:", { email, userId }); // Debugging
+
 		await db.query(
 			`INSERT INTO users (user_id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
 			[userId, email, hashed, name]
@@ -47,6 +49,7 @@ router.post("/register", async (req: Request, res: Response) => {
 });
 
 router.post("/login", async (req, res) => {
+try {
 	const { email, password } = req.body;
 	const result = await db.query(`SELECT * FROM users WHERE email = $1`, [
 		email,
@@ -60,6 +63,13 @@ router.post("/login", async (req, res) => {
 	const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET!, {
 		expiresIn: "1h",
 	});
+
+	// 👇 Skicka tillbaka token till frontend
+	return res.status(200).json({ token });
+} catch (error) {
+	console.error("Login error:", error);
+	return res.status(500).json({ error: "Login failed" });
+}
 });
 
 export default router;
