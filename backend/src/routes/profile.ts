@@ -7,7 +7,7 @@ import auth from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.get('/meetups', auth, async (req, res) => {
+router.get('/meetups', auth, async (req: Request, res: Response) => {
 	const result = await db.query(`
     SELECT m.* FROM meetups m
     JOIN registrations r ON r.meetup_id = m.id
