@@ -12,7 +12,7 @@ const app = express();
 
 const allowedOrigins = [
 	"http://localhost:5173",
-	"https://github-deploy-key.onrender.com",
+	"https://backend-api-latest-5mz4.onrender.com",
 ];
 
 const corsOptions = {
@@ -32,6 +32,16 @@ const corsOptions = {
 	credentials: true,
 };
 
+// ✅ Lägg till Helmet med CSP
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			defaultSrc: ["'self'"],
+			fontSrc: ["'self'", "https://backend-api-latest-5mz4.onrender.com"],
+		},
+	})
+);
+
 app.use(cors(corsOptions));
 // app.options("*", cors(corsOptions));
 app.options(/.*/, cors(corsOptions)); // regex-variant
@@ -47,15 +57,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/meetups", meetupRoutes);
 app.use("/api/profile", profileRoutes);
 
-// ✅ Lägg till Helmet med CSP
-app.use(
-	helmet.contentSecurityPolicy({
-		directives: {
-			defaultSrc: ["'self'"],
-			fontSrc: ["'self'", "https://backend-api-latest-5mz4.onrender.com"],
-		},
-	})
-);
+
 
 app.listen(process.env.PORT || 5000, () => {
 	console.log("API running...");
