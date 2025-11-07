@@ -116,55 +116,55 @@ router.get("/", async (req: Request, res: Response) => {
 
 });  // här slutar insert
 
-//router.get("/:id", async (req, res) => {
-//	const result = await db.query(`SELECT * FROM meetups WHERE id = $1`, [
-//		req.params.id,
-//	]);
-//	res.json(result.rows[0]);
-//});
+router.get("/:id", async (req, res) => {
+	const result = await db.query(`SELECT * FROM meetups WHERE id = $1`, [
+		req.params.id,
+	]);
+	res.json(result.rows[0]);
+});
 
-//router.post("/:id/register", auth, async (req: Request, res: Response) => {
-//	const meetupId = req.params.id;
-//	const userId = req.userId;
+router.post("/:id/register", auth, async (req: Request, res: Response) => {
+	const meetupId = req.params.id;
+	const userId = req.userId;
 
-//	const capacityCheck = await db.query(
-//		`
- //   SELECT capacity, (
- //     SELECT COUNT(*) FROM registrations WHERE meetup_id = $1
- //   ) AS current FROM meetups WHERE id = $1
- //`,
-//		[meetupId]
-//	);
+	const capacityCheck = await db.query(
+		`
+   SELECT capacity, (
+     SELECT COUNT(*) FROM registrations WHERE meetup_id = $1
+   ) AS current FROM meetups WHERE id = $1
+`,
+		[meetupId]
+	);
 
-//	if (capacityCheck.rows[0].current >= capacityCheck.rows[0].capacity) {
-//		return res.status(400).json({ error: "Meetup is full" });
-//	}
-//
-	//   await db.query(
-	//     `INSERT INTO registrations (id, user_id, meetup_id) VALUES ($1, $2, $3)`,
-	//     [uuidv4(), req.userId, meetupId]
-	//   );
+	if (capacityCheck.rows[0].current >= capacityCheck.rows[0].capacity) {
+		return res.status(400).json({ error: "Meetup is full" });
+	}
 
-//	const { v4: uuidv4 } = await import("uuid"); //  funkar i CJS
-//	await db.query(
-//		`INSERT INTO registrations (id, user_id, meetup_id)
- //  VALUES ($1, $2, $3)`,
-//		[uuidv4(), req.userId, meetupId]
-//	);
+    //await db.query(
+	  //   `INSERT INTO registrations (id, user_id, meetup_id) VALUES ($1, $2, $3)`,
+	    // [uuidv4(), req.userId, meetupId]
+	   //);
 
-//	res.status(201).json({ message: "Registered" });
-//});
+	const { v4: uuidv4 } = await import("uuid"); //  funkar i CJS
+	await db.query(
+		`INSERT INTO registrations (id, user_id, meetup_id)
+  VALUES ($1, $2, $3)`,
+		[uuidv4(), req.userId, meetupId]
+	);
 
-//router.delete("/:id/register", auth, async (req: Request, res: Response) => {
-//	const userId = req.userId;
-//	const result = await db.query(
-//		`DELETE FROM registrations WHERE meetup_id = $1 AND user_id = $2`,
-//		[req.params.id, userId]
-//	);
-//	if (result.rowCount === 0)
-//		return res.status(403).json({ error: "Not registered or not owner" });
-//	res.json({ message: "Unregistered" });
-//});
+	res.status(201).json({ message: "Registered" });
+});
 
-//export default router;
+router.delete("/:id/register", auth, async (req: Request, res: Response) => {
+	const userId = req.userId;
+	const result = await db.query(
+		`DELETE FROM registrations WHERE meetup_id = $1 AND user_id = $2`,
+		[req.params.id, userId]
+	);
+	if (result.rowCount === 0)
+		return res.status(403).json({ error: "Not registered or not owner" });
+	res.json({ message: "Unregistered" });
+});
+
+export default router;
 
