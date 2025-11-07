@@ -4,13 +4,13 @@ version: "3.8"
 services:
   frontend:
     build: 
-      context: ../dev/frontend
-      dockerfile: ./frontend/dockerfile
+      context: /workspaces/dev/frontend
+      dockerfile: /workspaces/CI-CD/frontend/Dockerfile
     container_name: frontend
     ports:
       - "5173:5173"
     volumes:
-      - ../dev/frontend:/app
+      - /workspaces/dev/frontend:/app
     stdin_open: true
     tty: true
     environment:
@@ -18,13 +18,13 @@ services:
     command: ["npm", "run", "dev"]
   backend:
     build:
-      context: ../dev/backend
-      dockerfile: ./backend/dockerfile
+      context: /workspaces/dev/backend
+      dockerfile: /workspaces/CI-CD/backend/Dockerfile
     container_name: backend
     ports:
       - "3000:3000"
     volumes:
-      - ../dev/backend:/app
+      - /workspaces/dev/backend:/app
     environment:
       - NODE_ENV=development
       - DATABASE_URL=${DATABASE_URL}
