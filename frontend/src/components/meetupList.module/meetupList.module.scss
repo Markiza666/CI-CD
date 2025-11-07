@@ -30,7 +30,7 @@
 
     &.error {
         background-color: color.adjust(v.$error-color, $lightness: 50%); 
-        color: darken(v.$error-color, 15%);
+        color: color.adjust(v.$error-color, $lightness: -15%);
     }
 
     &.info {

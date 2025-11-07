@@ -4,12 +4,13 @@
 @use 'base/reset';
 @use 'base/typography';
 @use 'base/base';
+@use 'base/errors.module';
 
 @use 'layout/header';
 @use 'layout/forms';
 @use 'layout/pages';
 @use 'layout/profile';
-@use 'layout/Layout.module';
+@use 'layout/layout.module';
 
 @use 'components/buttons';
 @use 'components/cards';

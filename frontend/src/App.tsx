@@ -14,8 +14,8 @@ import MeetupDetail from './pages/meetupDetail';
 import Header from './components/header';           
 import CreateMeetupForm from './components/createMeetupForm';
 import EditMeetupForm from './components/editMeetupForm';
-import layoutStyles from './styles/layout/Layout.module.scss';
-import typographyStyles from './styles/base/Errors.module.scss';
+import layoutStyles from './styles/layout/layout.module.scss';
+import typographyStyles from './styles/base/errors.module.scss';
 
 const App: React.FC = () => {
     return (

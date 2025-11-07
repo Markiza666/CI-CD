@@ -82,6 +82,7 @@ const RegisterForm: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="input-field"
+                        autoComplete="email"
                     />
                 </div>
                 
@@ -100,6 +101,7 @@ const RegisterForm: React.FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="input-field"
+                        autoComplete="new-password"
                     />
                 </div>
                 
