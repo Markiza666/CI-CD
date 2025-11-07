@@ -119,7 +119,7 @@ const MeetupDetail: React.FC = () => {
                 <div className="action-buttons-group">
                     {/* Registration Button (AC 4.1) */}
                     {isAuthenticated && (
-                        <button 
+                        <button type='button'
                             // ... (registration logic) ...
                             className={isAttending ? "toggle-button unregister" : "toggle-button register"}
                         >
