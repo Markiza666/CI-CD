@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import helmet from 'helmet'; // 👈 Importera Helmet
+
 import authRoutes from './routes/authRoutes';
 import meetupRoutes from './routes/meetups';
 import profileRoutes from './routes/profile';
@@ -10,7 +12,7 @@ const app = express();
 
 const allowedOrigins = [
 	'http://localhost:5173',
-	'https://github-deploy-key.onrender.com', // din frontend på Render
+	'https://github-deploy-key.onrender.com',
 ];
 
 const corsOptions = {
@@ -18,6 +20,16 @@ const corsOptions = {
 	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 	credentials: true,
 };
+
+// ✅ Lägg till Helmet med CSP
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			defaultSrc: ["'self'"],
+			fontSrc: ["'self'", 'https://backend-api-latest-5mz4.onrender.com'],
+		},
+	})
+);
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -29,3 +41,4 @@ app.use('/api/profile', profileRoutes);
 app.listen(process.env.PORT || 3000, () => {
 	console.log('API running...');
 });
+
