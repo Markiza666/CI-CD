@@ -73,13 +73,16 @@ try {
 	} catch (err) {
 		console.error("❌ Token creation failed:", err);
 	}
-
+	console.log("🔍 Kontroll före token-skapning:");
+	console.log("JWT_SECRET:", JWT_SECRET);
+	console.log("Typ av JWT_SECRET:", typeof JWT_SECRET);
+	console.log("User ID:", user?.user_id);
 	// 🔐 Skapa riktig token
 	console.log("🔐 Signing token with secret:", JWT_SECRET);
 	const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
 		expiresIn: "1h",
 	});
-	
+	console.log("✅ Token skapad:", token);
 
 	// 👇 Skicka tillbaka token till frontend
 	return res.status(200).json({ token });
