@@ -5,7 +5,8 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node -r dotenv/config dist/server.js",
-		"dev": "ts-node-dev --respawn -r dotenv/config src/server.ts"
+		"dev": "ts-node-dev --respawn -r dotenv/config src/server.ts",
+		"db:seed": "ts-node -r dotenv/config scripts/seed.ts"
 	},
 	"keywords": [],
 	"author": "",

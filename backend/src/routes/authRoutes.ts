@@ -9,7 +9,12 @@ const router = Router();
 
 router.post("/register", async (req: Request, res: Response) => {
 	try {
-		const { v4: uuidv4 } = await import("uuid"); // 👈 funkar i CJS
+		//const { v4: uuidv4 } = await import("uuid"); // 👈 funkar i CJS
+		const uuidMod = await (eval('import("uuid")') as Promise<
+			typeof import("uuid")
+		>);
+		const uuidv4 = uuidMod.v4;
+		
 		const { email, password, name } = req.body;
 
 		// Extra/valfritt
