@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { JWT_SECRET } from "../config";
 import jwt from "jsonwebtoken";
 // import { v4 as uuidv4 } from 'uuid';
 import db from "../db";
@@ -59,13 +60,23 @@ try {
 	console.log("User from DB:", user);
 	console.log("Password provided:", password);
 	console.log("Password hash from DB:", user.password_hash);
-	console.log("JWT_SECRET:", process.env.JWT_SECRET);
+	
 
 	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
 		return res.status(401).json({ error: "Invalid credentials" });
 	}
 
-	const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET!, {
+	// 🔍 Testa JWT_SECRET innan du skapar riktig token
+	try {
+		const testToken = jwt.sign({ test: true }, JWT_SECRET, { expiresIn: "1h" });
+		console.log("✅ Test token:", testToken);
+	} catch (err) {
+		console.error("❌ Token creation failed:", err);
+	}
+
+	// 🔐 Skapa riktig token
+	console.log("🔐 Signing token with secret:", JWT_SECRET);
+	const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
 		expiresIn: "1h",
 	});
 	
