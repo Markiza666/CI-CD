@@ -1,12 +1,12 @@
 // Component: User Icon Button
-@use './abstracts/variables' as v;
+@use '../config/variables' as v;
 @use 'sass:color';
 
 .user-profile-icon {
-    color: v.$color-text-subtle; 
+    color: v.$text-subtle-color;
 
     &:hover {
-        color: v.$color-primary;
+        color: v.$primary-color;
     }
 
     transition: color 0.2s ease-in-out;

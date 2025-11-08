@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
 
 .form-container {
     max-width: 400px;
@@ -42,7 +42,7 @@
         &:focus {
             outline: none;
             border-color: v.$primary-color;
-            box-shadow: 0 0 0 2px rgba($primary-color, 0.2); // Uses Sass color variable
+            box-shadow: 0 0 0 2px rgba(v.$primary-color, 0.2); // Uses Sass color variable
         }
     }
 

@@ -1,14 +1,12 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
 @use'../abstracts/mixins' as m;
 
-.main-header {
-    // NOTE: Changed background-color to match previous implementation (white/light), 
-    // but kept your variable reference for future flexibility.
+.app-header {
     background-color: v.$bg-white; 
     box-shadow: v.$shadow-default;
-    padding: v.$spacing-unit 0; // Padding only vertical, container handles horizontal
-    
+    padding: v.$spacing-unit 0;
+
     .header-container {
         @include m.breakpoint(desktop) {
             max-width: v.$max-width;
@@ -19,6 +17,56 @@
         justify-content: space-between;
         align-items: center;
         padding: 0 v.$spacing-unit; // Horizontal padding for mobile
+
+        .header-title {
+            color: v.$accent-color;
+            font-size: 1.5rem; // Equivalent to text-2xl
+            font-weight: 800; // Equivalent to font-extrabold
+            letter-spacing: 0.05em; // Equivalent to tracking-wider
+            
+            a:hover & { // Style the title on link hover
+                opacity: 0.8;
+            }
+        }
+
+        .header-nav {
+            display: flex; // Critical for putting nav items side-by-side
+            align-items: center;
+            gap: 1.5rem; // Equivalent to space-x-4
+
+            .nav-link {
+                color: v.$text-light-color;
+                text-decoration: none;
+                transition: color 0.2s;
+
+                &:hover {
+                    color: v.$accent-color;
+                }
+            }
+
+            .profile-link-group {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem; // Spacing between icon and username
+
+                .user-profile-icon {
+                    @extend .nav-link; // Inherit basic link styles
+                    display: flex; 
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    .user-icon {
+                        width: 1.25rem; // Equivalent to w-5
+                        height: 1.25rem; // Equivalent to h-5
+                    }
+
+                    .username-text {
+                        font-size: 0.875rem; // Equivalent to text-sm
+                        font-weight: 500; // Equivalent to font-medium
+                    }
+                }
+            }
+        }
     }
 
     .app-logo {
@@ -41,4 +89,19 @@
             }
         }
     }
+}
+
+.login-icon {
+    width: 1rem; // Equivalent to w-4
+    height: 1rem; // Equivalent to h-4
+}
+
+.login-button {
+    @extend .nav-link;
+    @include m.button-base(v.$accent-color, v.$bg-secondary); // Use your mixin for buttons
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
 }

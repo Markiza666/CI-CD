@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
 
 body {
     background-color: v.$bg-light;
@@ -12,4 +12,9 @@ body {
     max-width: v.$max-width;
     margin: 0 auto;
     padding: 0 v.$spacing-unit; 
-}
+
+.loading-indicator {
+    text-align: center;
+    padding: 50px;
+    color: v.$text-color-secondary; 
+}}

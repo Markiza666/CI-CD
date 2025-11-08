@@ -12,9 +12,11 @@ const CreateMeetupForm: React.FC = () => {
     const [formData, setFormData] = useState<NewMeetup>({
         title: '',
         description: '',
-        // Recommended format: YYYY-MM-DDTHH:mm
         date: '', 
         location: '',
+        category: 'Technology',
+        time: '18:00',
+        capacity: 50,
     });
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,10 +28,21 @@ const CreateMeetupForm: React.FC = () => {
         return null;
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // --- KORRIGERING: Lägg till HTMLSelectElement i typen ---
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        let newValue: string | number;
+
+        if (name === 'capacity') {
+            // Se till att capacity sparas som ett nummer, inte en sträng
+            newValue = parseInt(value) || 0;
+        } else {
+            newValue = value;
+        }
+
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: newValue,
         });
     };
 
@@ -85,6 +98,24 @@ const CreateMeetupForm: React.FC = () => {
                     />
                 </div>
 
+                <div className="form-group">
+                    <label htmlFor="category">Category</label>
+                    {/* NOTE: Tvingade konverteringen 'as (e: React.ChangeEvent<HTMLSelectElement>) => void' är nu borttagen */}
+                    <select 
+                        id="category" 
+                        name="category" 
+                        value={formData.category} 
+                        onChange={handleChange} 
+                        required
+                    >
+                        {/* Lägg till dina faktiska kategorier här */}
+                        <option value="Technology">Technology</option>
+                        <option value="Nature">Nature</option>
+                        <option value="Art">Art & Culture</option>
+                        <option value="Food">Food & Drink</option>
+                    </select>
+                </div>
+                
                 <div className="form-group">
                     <label htmlFor="location">Location</label>
                     <input 
@@ -108,6 +139,19 @@ const CreateMeetupForm: React.FC = () => {
                         onChange={handleChange} 
                         required 
                     />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="capacity">Max Participants (Capacity)</label>
+                    <input 
+                        type="number" 
+                        id="capacity" 
+                        name="capacity" 
+                        value={formData.capacity} 
+                        onChange={handleChange} 
+                        min="1"
+                        required 
+                    />
                 </div>
 
                 <div className="form-group">

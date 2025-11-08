@@ -1,6 +1,6 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v; // Updated path
-@use '../abstracts/mixins' as m;    // Updated path
+@use '../config/variables' as v;
+@use '../abstracts/mixins' as m;
 
 .meetups-grid {
     // This class should be used to style the grid container
