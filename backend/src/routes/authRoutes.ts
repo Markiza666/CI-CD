@@ -121,5 +121,25 @@ router.get("/debug-token", (req, res) => {
 		return res.status(500).json({ error: "Token generation failed" });
 	}
 });
+//test route to verify token
+router.get("/verify-token", (req, res) => {
+	try {
+		const authHeader = req.headers.authorization;
+
+		if (!authHeader || !authHeader.startsWith("Bearer ")) {
+			return res.status(401).json({ error: "Missing or invalid Authorization header" });
+		}
+
+		const token = authHeader.split(" ")[1];
+		const decoded = jwt.verify(token, JWT_SECRET);
+
+		console.log("✅ Token verified:", decoded);
+		return res.json({ decoded });
+	} catch (error) {
+		const err = error as Error;
+		console.error("❌ Token verification failed:", err.message);
+		return res.status(401).json({ error: "Invalid or expired token" });
+	}
+});
 
 export default router;
