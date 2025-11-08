@@ -2,6 +2,8 @@
 @use 'sass:color';
 
 .profile-page {
+    // NOTE: This class definition conflicts with .profile-page in _pages.scss. 
+    // I kept this version as it contains more detail.
     max-width: 800px;
     margin: 2rem auto;
 

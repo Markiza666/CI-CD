@@ -9,14 +9,14 @@
 }
 
 // Profile Page Layout
-.profile-page {
+.profile-page-wrapper { // Renamed to avoid class conflict with _profiles.scss
     max-width: 800px;
     margin: 2rem auto;
     padding: 1rem;
 }
 
 .profile-section {
-    background-color: white;
+    background-color: v.$bg-white;
     padding: 1.5rem;
     border-radius: 0.75rem;
     box-shadow: v.$shadow-default;

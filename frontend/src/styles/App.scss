@@ -1,3 +1,5 @@
+// Entry point for all SCSS modules
+
 @use 'abstracts/variables' as v;
 @use 'abstracts/mixins';
 
@@ -15,3 +17,4 @@
 @use 'components/buttons';
 @use 'components/cards';
 @use 'components/messages';
+@use 'components/user/icon';

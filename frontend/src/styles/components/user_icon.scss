@@ -1,0 +1,19 @@
+// Component: User Icon Button
+@use './abstracts/variables' as v;
+@use 'sass:color';
+
+.user-profile-icon {
+    color: v.$color-text-subtle; 
+
+    &:hover {
+        color: v.$color-primary;
+    }
+
+    transition: color 0.2s ease-in-out;
+
+    .lucide-icon {
+        width: 1.5rem; 
+        height: 1.5rem;
+        display: block; 
+    }
+}

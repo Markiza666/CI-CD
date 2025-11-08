@@ -22,16 +22,23 @@
         transform: translateY(-2px);
         box-shadow: v.$shadow-hover;
     }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: v.$shadow-default;
+    }
 }
 
 .delete-button {
+    @extend .submit-button; // Extend base button styles
+    width: auto; // Override width for group usage
     background-color: v.$error-color;
-    color: v.$bg-light;
-    border: 1px solid v.$error-color;
+    color: v.$bg-white; // Changed from $bg-light for contrast
     
     //
     &:hover {
         background-color: color.adjust(v.$error-color, $lightness: -10%); 
+        transform: translateY(-2px);
     }
 }
 
@@ -46,15 +53,18 @@
 }
 
 .edit-link-button {
+    // Extends submit-button style for use as an inline link button
     @extend .submit-button;
     background-color: v.$secondary-color;
     
     display: inline-block; 
     text-align: center;
     padding: 0.5rem 1rem; 
-    
+    width: auto;
+
     &:hover {
         background-color: color.adjust(v.$secondary-color, $lightness: -10%);
+        transform: translateY(-2px);
     }
 }
 
@@ -65,22 +75,24 @@
     font-weight: 600;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: background-color 150ms, color 150ms;
+    transition: background-color 150ms, color 150ms, border-color 150ms;
     
     &.register {
         background-color: v.$primary-color;
         color: white;
         &:hover {
-            background-color: v.$primary-color;
+            background-color: color.adjust(v.$primary-color, $lightness: -5%); 
         }
     }
 
     &.unregister {
-        background-color: white;
+        background-color: v.$bg-white;
         color: v.$error-color;
         border-color: v.$error-color;
+        
+        // Adjusting lightness here to ensure hover state is lighter than white background
         &:hover {
-            background-color: color.adjust(v.$error-color, $lightness: 40%);
+            background-color: color.adjust(v.$error-color, $lightness: 30%); // Light red background
         }
     }
 }

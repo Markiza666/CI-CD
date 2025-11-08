@@ -7,6 +7,7 @@
     padding: 1rem;
     border-radius: 0.5rem;
     font-weight: 500;
+    border: 1px solid transparent; // Added for consistent box model
 }
 
 .loading {
@@ -25,6 +26,8 @@
     text-align: center;
     color: v.$text-color-secondary;
     padding: 2rem;
-    border: 1px dashed #d1d5db;
+    border: 1px dashed v.$border-color;
     border-radius: 0.5rem;
+    // Added background to distinguish it from the main background
+    background-color: v.$bg-white; 
 }

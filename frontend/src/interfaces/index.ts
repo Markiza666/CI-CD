@@ -32,7 +32,7 @@ export interface JwtPayload {
 export interface ProfileData {
     user: User;
     attendingMeetups: Meetup[];
-    createdMeetups: Meetup[]; // Har lagt till denna för att det är logiskt
+    createdMeetups: Meetup[]; 
 }
 
 // -----------------------------------------------------------------------------
@@ -40,11 +40,18 @@ export interface ProfileData {
 // -----------------------------------------------------------------------------
 
 /**
+ * Defines the structure for a single review/rating on a meetup.
+ */
+export interface Review {
+    user: string; // ID för användaren som skrivit recensionen
+    text: string;
+    rating: number; // T.ex. 1 till 5
+}
+
+/**
  * Defines the structure of a single Meetup event.
- * FIX: Index signature [x: string]: string | null | undefined; is REMOVED
- * to resolve conflicts with 'participants: string[]'.
- * NOTE: The creator field from the backend is often named 'creator' or 'creatorId'.
- * Vi använder 'creator' i EditMeetupForm.tsx, så jag uppdaterar här.
+ * This interface has now been extended to include all fields used
+ * in App.tsx (UI rendering) and mock data.
  */
 export interface Meetup {
     _id: string;
@@ -53,24 +60,39 @@ export interface Meetup {
     date: Date | string; 
     location: string;
     
-    // Använder 'creator' för att matcha vad som kommer från backenden, 
-    // baserat på hur EditMeetupForm.tsx kontrollerar auktorisering.
+    // Existing Backend fields:
     creator: string;        
-    
-    // Participants array holds the IDs of the users attending.
     participants: string[]; 
+    
+    // New fields for the UI (retrieved from the mock data in App.tsx):
+    category: string; 
+    time: string; // E.g. "18:00"
+    host: string; // The name of the host (can be the same as creator, but easier to render)
+    capacity: number;
+    attendees: number; // Number of attendees (redundant with participants.length, but good for quick viewing)
+    isAttending: boolean; // Flag for current user
+    isPast: boolean; // Flag to indicate if the meeting has passed
+    rating: number; // Average rating from reviews
+    reviews: Review[]; // Array with all reviews
 }
 
 /**
  * Defines the structure for creating a new Meetup (AC 5.1) 
  * and updating an existing one (AC 5.2).
- * NOTE: 'creator' and 'participants' are handled by the backend.
+ * 
+ * 
+ * 
+ * FIX: adds fields needed when creating/editing to the form.
+ * Note: we may need to add 'category', 'time', 'capacity' here based on your form.
  */
 export interface NewMeetup {
     title: string;
     description: string;
     date: string; // Typically sent as an ISO string (e.g., from datetime-local input)
     location: string;
+    category: string;
+    time: string;
+    capacity: number;
 }
 
 /**
@@ -81,4 +103,5 @@ export interface MeetupFilter {
     city?: string;
     date?: Date | string;
     isAttending?: boolean;
+    // we may want to add filters for category, rating, etc. in the future.
 }

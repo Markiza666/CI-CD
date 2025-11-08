@@ -3,9 +3,11 @@
 @use'../abstracts/mixins' as m;
 
 .main-header {
-    background-color: v.$text-color; 
+    // NOTE: Changed background-color to match previous implementation (white/light), 
+    // but kept your variable reference for future flexibility.
+    background-color: v.$bg-white; 
     box-shadow: v.$shadow-default;
-    padding: v.$spacing-unit;
+    padding: v.$spacing-unit 0; // Padding only vertical, container handles horizontal
     
     .header-container {
         @include m.breakpoint(desktop) {
@@ -16,10 +18,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 0 v.$spacing-unit; // Horizontal padding for mobile
     }
 
     .app-logo {
-        color: white;
+        color: v.$primary-color; // Changed to primary color for visibility
         font-size: 1.5rem;
         font-weight: bold;
     }
@@ -30,11 +33,11 @@
         align-items: center;
 
         a {
-            color: white;
+            color: v.$text-color; // Changed text color for better contrast against white header
             padding: 0.5rem 0;
             &:hover {
                 color: v.$primary-color;
-                text-decoration: none;
+                text-decoration: underline; // Explicit underline
             }
         }
     }
