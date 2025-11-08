@@ -1,12 +1,15 @@
 // React Context
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User } from '../interfaces';
 
 // 1. Define type safety for the AuthContext
 interface AuthContextType {
     isAuthenticated: boolean;
+    user: User | null;
     token: string | null;
     login: (newToken: string) => void;
     logout: () => void;
+    loading: boolean;
 }
 
 // 2. Create the Context with default undefined state
@@ -17,58 +20,65 @@ const AUTH_TOKEN_KEY = 'authToken';
 
 // 3. Auth Provider Component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  
-    // State hook, initialized by reading the token from LocalStorage
-    const [token, setToken] = useState<string | null>(() => {
-        // Initial read upon component mount
-        return localStorage.getItem(AUTH_TOKEN_KEY);
-    });
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [token, setToken] = useState<string | null>(null);
+
+    // Funktioner för att ändra tillstånd (mockat)
     
-    // Calculated state
-    const isAuthenticated = !!token;
-
-    // Synchronization: Runs every time 'token' state changes
-    useEffect(() => {
-        if (token) {
-            // Save to LocalStorage when token is set
-            localStorage.setItem(AUTH_TOKEN_KEY, token);
-            console.log('Auth Token saved to localStorage.');
-        } else {
-            // Remove from LocalStorage when token is null (logged out)
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            console.log('Auth Token removed from localStorage.');
-        }
-    }, [token]);
-
-    // Login function (sets state, triggering the useEffect above)
-    const login = (newToken: string) => {
-        setToken(newToken);
+    // Simulerar inloggning
+    const login = (username: string) => { 
+        setLoading(true);
+        setTimeout(() => {
+            // Mock-inloggningen ska använda argumentet 'username'
+            setIsAuthenticated(true);
+            setToken('mock-jwt-token-12345');
+            setUser({ 
+                _id: 'mock-u1', 
+                // Nu är 'username' tillgänglig!
+                username: username || 'Markiza', 
+                email: 'mock.user@systemutvecklare.se' 
+            });
+            setLoading(false);
+        }, 500);
     };
 
-    // Logout function (sets state, triggering the useEffect above)
+
+    // Simulerar registrering (gör samma sak i mock-läge)
+    const register = (username: string) => {
+        login(username);
+    };
+
+    // Simulerar utloggning
     const logout = () => {
-        setToken(null); 
+        setIsAuthenticated(false);
+        setUser(null);
+        setToken(null);
     };
 
-    const contextValue: AuthContextType = {
+    const value = {
         isAuthenticated,
-        token,
+        user,
         login,
+        register,
         logout,
+        loading,
+        token,
     };
 
     return (
-        <AuthContext.Provider value={contextValue}>
-        {children}
+        <AuthContext.Provider value={value}>
+            {children}
         </AuthContext.Provider>
     );
 };
 
 // 4. Custom Hook for easy consumption
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+export const useAuth = (): AuthContextType => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };

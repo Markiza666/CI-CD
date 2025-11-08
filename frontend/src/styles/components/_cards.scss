@@ -1,12 +1,21 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
 @use '../abstracts/mixins' as m;
 
 .meetups-grid {
+    // This class should be used to style the grid container
     display: grid;
-    gap: 1rem;
-    max-width: v.$max-width;
-    margin: 0 auto;
+    // Overriding the inline styles in App.tsx using the SCSS class 'meetup-list-grid'
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem; 
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 .meetup-card {
@@ -14,7 +23,7 @@
     padding: 1.5rem;
     box-shadow: v.$shadow-default;
     border-radius: 0.75rem;
-    border: 1px solid #e5e7eb; // gray-200
+    border: 1px solid v.$border-color; 
     transition: box-shadow 300ms, border-color 300ms;
 
     &:hover {
@@ -42,7 +51,7 @@
 
     .card-description {
         display: -webkit-box;
-        @include m.line-clamp(3);
+        @include m.line-clamp(3); // Using imported mixin
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -50,7 +59,7 @@
     .card-footer {
         margin-top: 1rem;
         padding-top: 0.75rem;
-        border-top: 1px solid #f3f4f6; // separator
+        border-top: 1px solid v.$bg-secondary; // separator
         display: flex;
         justify-content: space-between;
         align-items: center;
