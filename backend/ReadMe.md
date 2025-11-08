@@ -28,22 +28,26 @@ Server: Node.js + Express
 ```bash
 git clone https://github.com/dittnamn/meetup-backend.git
 cd meetup-backend
+```
 
 ### 2. Installera beroenden
 
 ```bash
 npm install
-3. Skapa .env-fil
+```
+### 3. Skapa .env-fil
 ```env
 PORT=5000
 DATABASE_URL=postgresql://user:pass@localhost:5432/meetup
 JWT_SECRET=din-lokala-hemlighet
 → Lägg till .env i .gitignore → Skapa en .env.example för att visa vilka variabler som krävs
+```
 
 ### 4. Starta servern
 ```bash
 npm run dev
 → Backend körs på http://localhost:5000
+```
 
 ## 📦 API-struktur
 Route	Metod	Beskrivning
@@ -53,9 +57,9 @@ Route	Metod	Beskrivning
 /api/meetups	GET	Lista alla meetups
 🔐 Autentisering
 Skyddade routes kräver en Authorization-header:
-
 ```Kod
 Authorization: Bearer <din-token>
+```
 
 ## 🐳 Docker & Deployment
 Lokalt med Docker (valfritt)
@@ -63,6 +67,7 @@ Lokalt med Docker (valfritt)
 docker build -t meetup-backend .
 docker run -p 5000:5000 --env-file .env meetup-backend
 → Endast om du vill testa containermiljön lokalt
+```
 
 ## ☁️ Deployment på Render
 Render använder automatiskt din Dockerfile för att bygga och köra backend i molnet.
@@ -98,6 +103,7 @@ COPY . .
 EXPOSE 5000
 
 CMD ["npm", "run", "dev"]
+```
 → Byt till start om du vill köra produktion
 
 ## 📄 .env.example
@@ -105,4 +111,5 @@ CMD ["npm", "run", "dev"]
 PORT=5000
 DATABASE_URL=postgresql://user:pass@localhost:5432/meetup
 JWT_SECRET=din-lokala-hemlighet
+```
 → Kopiera till .env och fyll i dina egna värden
