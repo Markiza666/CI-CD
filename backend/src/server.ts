@@ -71,6 +71,10 @@ app.get("/api/debug", (req, res) => {
 		headers: req.headers,
 	});
 });
+app.get("/api/ping", (req, res) => {
+	console.log("✅ /api/ping route triggered");
+	res.json({ message: "pong from server.ts" });
+});
 
 app.listen(process.env.PORT || 5000, () => {
 	console.log("API running...");
