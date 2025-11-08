@@ -95,6 +95,9 @@ try {
 	return res.status(200).json({ token });
 } catch (error) {
 	console.error("Login error:", error);
+	if (error instanceof Error) {
+	console.error(error.stack);
+	}
 	return res.status(500).json({ error: "Login failed" });
 }
 });
