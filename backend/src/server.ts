@@ -62,7 +62,15 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 	res.status(500).json({ error: "Internal server error" });
 });
 
-
+//Test route
+app.get("/api/debug", (req, res) => {
+	res.json({
+		message: "Server is alive!",
+		timestamp: new Date().toISOString(),
+		ip: req.ip,
+		headers: req.headers,
+	});
+});
 
 app.listen(process.env.PORT || 5000, () => {
 	console.log("API running...");
