@@ -41,7 +41,7 @@ router.post("/register", async (req: Request, res: Response) => {
 		console.log("Registering:", { email, userId }); // Debugging
 
 		await db.query(
-			`INSERT INTO users (user_id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
+			`INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
 			[userId, email, hashed, name]
 		);
 
@@ -140,6 +140,12 @@ router.get("/verify-token", (req, res) => {
 		console.error("❌ Token verification failed:", err.message);
 		return res.status(401).json({ error: "Invalid or expired token" });
 	}
+});
+
+//test ping route
+router.get("/ping", (req, res) => {
+	console.log("✅ /api/auth/ping route triggered");
+	res.json({ message: "pong" });
 });
 
 export default router;
