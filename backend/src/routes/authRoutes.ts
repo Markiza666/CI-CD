@@ -102,4 +102,24 @@ try {
 }
 });
 
+router.get("/debug-token", (req, res) => {
+	try {
+		if (!JWT_SECRET) {
+			console.error("❌ JWT_SECRET is missing");
+			return res.status(500).json({ error: "JWT_SECRET is not set" });
+		}
+
+		const dummyPayload = { userId: "debug-user", role: "tester" };
+		const token = jwt.sign(dummyPayload, JWT_SECRET, { expiresIn: "1h" });
+
+		console.log("✅ Debug token created:", token);
+		return res.json({ token });
+	} catch (error) {
+		const err = error as Error;
+		console.error("🔥 Token creation failed:", err.message);
+		console.error(err.stack);
+		return res.status(500).json({ error: "Token generation failed" });
+	}
+});
+
 export default router;
