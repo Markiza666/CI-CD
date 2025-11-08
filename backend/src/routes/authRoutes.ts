@@ -62,15 +62,16 @@ try {
 		email,
 	]);
 	const user = result.rows[0];
-	console.log("Login attempt:", email);
+	//console.log("Login attempt:", email);
 	console.log("User from DB:", user);
 	console.log("Password provided:", password);
-	console.log("Password hash from DB:", user.password_hash);
+	
 	
 
 	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
 		return res.status(401).json({ error: "Invalid credentials" });
 	}
+	console.log("Password hash from DB:", user.password_hash);
 
 	// 🔍 Testa JWT_SECRET innan du skapar riktig token
 	try {

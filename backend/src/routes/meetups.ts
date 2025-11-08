@@ -10,6 +10,7 @@ router.get("/", async (req: Request, res: Response) => {
 	try {
 		// const q = req.query.q as string;
 		// Läs vilka kolumner som finns
+		console.log("🔍 Incoming query params:", req.query);
 		const cols = await db.query(`
       SELECT column_name
       FROM information_schema.columns
@@ -55,6 +56,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 		// 1) Försök hämta data
 		const sql = `SELECT * FROM meetups ${whereSQL} ${orderSQL}`;
+		console.log("🔍 Running query:", sql, params); // ← Lägg den här
 		let result = await db.query(sql, params);
 
 		// 2) Om tomt – gör en liten engångs-seed och hämta igen
