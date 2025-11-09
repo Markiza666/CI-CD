@@ -1,7 +1,7 @@
 // Entry point for all SCSS modules
 
 @use 'config/variables' as v;
-@use 'abstracts/mixins';
+@use 'abstracts/mixins' as m;
 
 @use 'base/reset';
 @use 'base/typography';
