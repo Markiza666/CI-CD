@@ -1,0 +1,86 @@
+/* Definiera dina variabler i en separat fil (_variables.scss) och importera här */
+$max-width: 900px;
+$_primary-color: #4f46e5; // Motsvarar indigo-600
+$_primary-hover: #4338ca; // Motsvarar indigo-700
+$_danger-color: #ef4444; // Motsvarar red-500
+$_danger-hover: #dc2626; // Motsvarar red-700
+$_background-light: #f9fafb; // Motsvarar gray-50
+$_shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); // Motsvarar shadow-md
+
+.profile-page {
+    max-width: $max-width;
+    margin: 40px auto;
+    padding: 0 20px;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    &__title {
+        font-size: 2.25rem; /* text-4xl */
+        font-weight: bold;
+    }
+
+    &__logout-button {
+        background-color: $_danger-color;
+        color: white;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $_danger-hover;
+        }
+    }
+
+    &__user-details {
+        margin-bottom: 32px;
+        padding: 24px;
+        background-color: $_background-light;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05); /* shadow-inner */
+    }
+
+    /* ... Stilar för meetups-sektionerna ... */
+    &__meetup-section {
+        margin-bottom: 32px;
+        padding: 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        box-shadow: $_shadow;
+
+        &-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+    }
+
+    &__meetup-item {
+        border-left: 4px solid $_primary-color;
+        padding-left: 12px;
+        // ...
+    }
+    
+    &__create-button {
+        background-color: $_primary-color;
+        color: white;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 0.25rem;
+        display: inline-block;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $_primary-hover;
+        }
+    }
+}

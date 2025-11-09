@@ -76,7 +76,6 @@ const RegisterForm: React.FC = () => {
     };
 
     return (
-        // ... (rest of the render logic remains the same)
         <div className="form-container">
             <h2 className="form-title">Register Account</h2>
             

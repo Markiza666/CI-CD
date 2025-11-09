@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import apiClient from '../api/apiClient';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
+import { User } from '../interfaces';
 
 // AC 2.1: Component responsible for user login.
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();// NEW: Get the location object
+    const [isLoading, setIsLoading] = useState(false); 
+    
+    const navigate = useNavigate();
     const location = useLocation();
     
-    // Determine where the user came from (default to /profile)
-    // The state object is structured as { from: { pathname: '/desired-path' } }
+    // Determine where the user came from (default to /profile). Used for protected routes redirection.
     const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/profile';
     
     const { login } = useAuth();
@@ -21,38 +23,36 @@ const LoginForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         try {
             // AC 2.2: Call P1's API (POST /api/auth/login)
-            const response = await apiClient.post('/auth/login', {
-                email,
-                password,
+            const response = await apiClient.post<{ token: string, user: User }>('/auth/login', { 
+                email, password 
             });
-
-            const { token } = response.data;
             
-            if (token) {
-                // AC 2.2: Use Context to save token. Context handles LocalStorage sync.
-                login(token); 
-                
-                console.log("Login successful! Token saved.");
-                // AC 7.1: Redirect to the page the user originally tried to access
-                navigate(from, { replace: true }); // CRITICAL CHANGE
-            } else {
-                setError('Login failed: No token received.');
-            }
+            const { token, user } = response.data; 
+
+            // 1. Send BOTH token and user object to AuthContext to persist login state
+            login(token, user); 
+
+            // 2. Navigate to the intended page ('from') or to the profile page
+            navigate(from, { replace: true }); 
 
         } catch (err: any) {
-            // AC 2.1: Handle API errors
+            // AC 2.1: Handle API errors (e.g., 401 Unauthorized)
             const errorMessage = err.response?.data?.message || 'Incorrect email or password.';
             setError(errorMessage);
+        } finally {
+            // Turn off loading indicator regardless of the result
+            setIsLoading(false); 
         }
     };
 
     return (
-        // ... (rest of the render logic remains the same)
         <div className="form-container">
             <h2 className="form-title">Log In</h2>
+            
             {/* Error Message Display */}
             {error && (
                 <p className="error-message" role="alert">
@@ -77,6 +77,8 @@ const LoginForm: React.FC = () => {
                         required
                         className="input-field"
                         placeholder="t.ex. anna.developer@mail.com"
+                        disabled={isLoading}
+                        autoComplete="email"
                     />
                 </div>
                 
@@ -96,14 +98,17 @@ const LoginForm: React.FC = () => {
                         required
                         className="input-field"
                         placeholder='Your password'
+                        disabled={isLoading}
+                        autoComplete="current-password"
                     />
                 </div>
                 
                 <button 
                     type="submit"
                     className="submit-button"
+                    disabled={isLoading} // Disable button during loading
                 >
-                    Log In
+                    {isLoading ? 'Logging In...' : 'Log In'} {/* Simple loading feedback */}
                 </button>
             </form>
             

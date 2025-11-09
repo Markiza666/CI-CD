@@ -1,19 +1,19 @@
 /* Defines design tokens like colors, fonts, and spacing variables. */
 
 // Colors
-$primary-color: #2563eb;
-$secondary-color: #10b981;
-$accent-color: #3498db;
-$error-color: #ef4444;
+$primary-color: #2563eb;    // Blue for primary action
+$secondary-color: #10b981;  // Green for success/secondary action
+$accent-color: #3498db;     // Light blue for highlights/header accent
+$error-color: #ef4444;      // Red for errors
 
 $bg-white: #ffffff;
-$bg-light: #f9fafb;
-$bg-secondary: #f3f4f6;
+$bg-light: #f9fafb;         // Used for body background
+$bg-secondary: #f3f4f6;     // Used for light backgrounds/separators
 
 $text-color: #1f2937;
-$text-color-secondary: #6b7280;
+$text-color-secondary: #6b7280; // Subdued text
 $text-dark-color: #333;
-$text-light-color: #ecf0f1;
+$text-light-color: #ecf0f1; // Text on dark background
 $text-subtle-color: #6c757d;
 
 // Layout variables
@@ -22,13 +22,49 @@ $media-breakpoints: (
     desktop: 1024px,
     large-desktop: 1440px
 );
-$max-width: 75rem;
+$max-width: 75rem;          // 1200px
 $spacing-unit: 1rem;
 
 // Design Elements
 $border-color: #e5e7eb;
 $border-radius: 0.5rem;
 
-// Shadows (AC 8.1: Default and Hover)
+// Shadows
 $shadow-default: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 $shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+
+// /* Defines design tokens like colors, fonts, and spacing variables. */
+
+// // Colors
+// $primary-color: #2563eb;
+// $secondary-color: #10b981;
+// $accent-color: #3498db;
+// $error-color: #ef4444;
+
+// $bg-white: #ffffff;
+// $bg-light: #f9fafb;
+// $bg-secondary: #f3f4f6;
+
+// $text-color: #1f2937;
+// $text-color-secondary: #6b7280;
+// $text-dark-color: #333;
+// $text-light-color: #ecf0f1;
+// $text-subtle-color: #6c757d;
+
+// // Layout variables
+// $media-breakpoints: (
+//     tablet: 768px,
+//     desktop: 1024px,
+//     large-desktop: 1440px
+// );
+// $max-width: 75rem;
+// $spacing-unit: 1rem;
+
+// // Design Elements
+// $border-color: #e5e7eb;
+// $border-radius: 0.5rem;
+
+// // Shadows (AC 8.1: Default and Hover)
+// $shadow-default: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+// $shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
