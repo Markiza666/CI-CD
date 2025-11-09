@@ -7,7 +7,7 @@ import auth from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.get('/', auth, async (req: Request, res: Response) => {
+router.get('/meetups', auth, async (req: Request, res: Response) => {
     // 1. Hämta användardetaljer
     const userResult = await db.query(
         `SELECT id, email, name, city FROM users WHERE id = $1`, 

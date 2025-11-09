@@ -71,7 +71,14 @@ try {
 	
 	// 🔐 Skapa riktig token
 	
-	const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+	const token = jwt.sign(
+        { 
+            userId: user.id,
+            name: user.name,
+            email: user.email
+        }, 
+        JWT_SECRET, 
+        {
 		expiresIn: "1h",
 	});
 	
