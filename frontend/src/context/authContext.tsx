@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
+// Se till att dessa interfaces nu inkluderar 'name'
 import { User, JwtPayload } from '../interfaces'; 
 import { decodeJwt } from '../utils/jwt'; 
 
@@ -11,7 +12,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     user: User | null;
     token: string | null;
-    login: (token: string, userData: User) => void;
+    login: (token: string) => void; // Tog bort UserData här, då den ska hämtas från payload
     logout: () => void;
     loading: boolean;
 }
@@ -21,20 +22,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // --- HJÄLPFUNKTIONER ---
 
 /**
- * 🛠️ Steg 1: Hämta ett giltigt, o-utgånget JWT-payload.
- * Denna funktion hanterar både avkodning, kontroll av '_id'/'sub', och utgångsdatum.
- */
+ * 🛠️ Steg 1: Hämta ett giltigt, o-utgånget JWT-payload.
+ */
 const getValidPayload = (token: string): JwtPayload | null => {
     const payload = decodeJwt(token);
     
     if (!payload) return null;
     
-    // Kontrollera att ett användar-ID finns (antingen _id eller sub)
+    // Kontrollera att ett användar-ID finns (antingen _id, sub eller userId)
     const userId = payload._id || payload.sub || payload.userId; 
 
     if (!userId) { 
         console.warn("JWT payload is missing the critical '_id', 'sub', or 'userId' field. Token ignored.");
-        return null;
+        return null;
     }
 
     // Kontrollera utgångsdatum (exp)
@@ -47,25 +47,31 @@ const getValidPayload = (token: string): JwtPayload | null => {
 }
 
 /**
- * 🛠️ Steg 2: Mappa det avkodade payloadet till det enklare User-objektet.
- */
+ * 🛠️ Steg 2: Mappa det avkodade payloadet till det enklare User-objektet.
+ * KORRIGERAD: Använder payload.name om det finns.
+ */
 const mapPayloadToUser = (payload: JwtPayload): User => {
-    // Vi vet att ID finns här eftersom getValidPayload kontrollerade det
+    // Vi vet att ID finns här
     const userId = payload._id || payload.sub || payload.userId || "";
     
     let userIdentifier: string;
     
-    if (payload.email) {
+    // Använd name om det finns i payloadet
+    if (payload.username) {
+        userIdentifier = payload.username;
+    } else if (payload.email) {
         userIdentifier = payload.email.split('@')[0];
     } else {
+        // Fallback till generiskt ID om ingen identifierare finns
         userIdentifier = `user_${userId.substring(0, 8)}`; 
     }
-
+    
+    // returnerar det nu korrekta user-objektet (med det nya name-fältet)
     return {
-        _id: userId,
-        email: payload.email || undefined,
-        username: payload.username || userIdentifier,
-    } as User;
+        _id: userId,
+        email: payload.email,
+        name: payload.username || userIdentifier, // <-- ANVÄNDER name, inte username
+    } as User;
 }
 
 // --- PROVIDER COMPONENT ---
@@ -73,64 +79,67 @@ const mapPayloadToUser = (payload: JwtPayload): User => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const initialToken = localStorage.getItem(AUTH_TOKEN_KEY);
     
-    // Använd getValidPayload för att validera token redan vid initialiseringen
-    const initialPayload = initialToken ? getValidPayload(initialToken) : null;
-    const initialUser = initialPayload ? mapPayloadToUser(initialPayload) : null;
+    // Validera token redan vid initialiseringen
+    const initialPayload = initialToken ? getValidPayload(initialToken) : null;
+    const initialUser = initialPayload ? mapPayloadToUser(initialPayload) : null;
     
-    // Om payloadet inte var giltigt, nollställ initialToken så att staterna matchar
-    const validInitialToken = initialPayload ? initialToken : null;
+    // Om payloadet inte var giltigt, nollställ initialToken
+    const validInitialToken = initialPayload ? initialToken : null;
 
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!validInitialToken && !!initialUser);
     const [user, setUser] = useState<User | null>(initialUser);
-    const [loading, setLoading] = useState<boolean>(true); // Sätt alltid till true initialt
-    const [token, setToken] = useState<string | null>(validInitialToken); // Använd den validerade tokenen
+    const [loading, setLoading] = useState<boolean>(true); 
+    const [token, setToken] = useState<string | null>(validInitialToken); 
 
 
-    const logout = () => { // Flyttad upp för att kunna användas i useEffect
+    // Använd useCallback för att stabilisera funktionen (bra praxis)
+    const logout = useCallback(() => {
         setIsAuthenticated(false);
         setUser(null);
         setToken(null);
         localStorage.removeItem(AUTH_TOKEN_KEY);
+    }, []);
+    
+    // Ändrat: login-funktionen behöver inte userData, den hämtar det från den nya tokenen
+    const login = (newToken: string) => {
+        const payload = getValidPayload(newToken);
+        
+        if (payload) {
+            setToken(newToken);
+            setUser(mapPayloadToUser(payload)); // Hämta användardata direkt från payload
+            setIsAuthenticated(true);
+            localStorage.setItem(AUTH_TOKEN_KEY, newToken);
+        } else {
+            // Logga ut om den nya tokenen är ogiltig
+            logout(); 
+        }
     };
-    
-    const login = (newToken: string, userData: User) => {
-        setToken(newToken);
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem(AUTH_TOKEN_KEY, newToken);
-    };
-    
-    // OBS! useEffect behöver nu 'token' och 'logout' i dependencies.
+    
     useEffect(() => {
-        const validateTokenFromServer = async () => {
-            // Kontrollera om token finns och om user inte är satt (kan hända vid refresh)
-            if (token && !user) {
-                const payload = getValidPayload(token);
-                
-                // Om token är ogiltig eller utgången (hanteras i getValidPayload)
-                if (!payload) {
-                    console.warn("Token was deemed invalid or expired during initialization.");
-                    logout();
-                    setLoading(false);
-                    return;
-                }
-                
-                // Om tokenen var giltig men user saknas (ska ej hända med ny initialisering)
-                setUser(mapPayloadToUser(payload));
-                setIsAuthenticated(true);
+        const validateTokenLocally = () => {
+            // Kontrollera vid uppstart/tokenändring
+            if (token && !user) {
+                const payload = getValidPayload(token);
+                
+                if (!payload) {
+                    console.warn("Token was deemed invalid or expired during validation.");
+                    logout();
+                    setLoading(false);
+                    return;
+                }
+                
+                setUser(mapPayloadToUser(payload));
+                setIsAuthenticated(true);
             }
-
-            // I en riktig applikation skulle du lägga till ett serveranrop här 
-            // för att verifiera tokenens giltighet, t.ex. apiClient.get('/profile').
-            
+            
+            // Vi kör alltid denna sist för att indikera att initial laddning är klar
             setLoading(false);
         };
-        
-        // Vi kör denna logik ELLER när token ändras
-        validateTokenFromServer();
         
-    }, [token, logout, user]); // Lägg till dependencies för att undvika varningar
+        validateTokenLocally();
+        
+    }, [token, logout, user]);
     
     const value = {
         isAuthenticated,

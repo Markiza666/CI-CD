@@ -9,7 +9,7 @@
 export interface User {
     _id: string;        // Unique ID, used as primary key
     email?: string;      // User's email (unique)
-    username: string;
+    username?: string;
     firstName?: string; // Optional user details
     lastName?: string;  // Optional user details
     city?: string;      // Optional user location

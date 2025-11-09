@@ -81,6 +81,7 @@ const ProfilePage: React.FC = () => {
         <div className="profile-page"> {/* Huvudklass för hela sidan */}
             <header className="profile__header">
                 <h1 className="profile__title">Welcome, {user.firstName || user.email}!</h1>
+                console.log("User info:", user);
                 <button 
                     onClick={logout} 
                     className="profile__logout-button"

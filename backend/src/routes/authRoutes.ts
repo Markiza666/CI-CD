@@ -9,81 +9,81 @@ import db from "../db";
 const router = Router();
 
 router.post("/register", async (req: Request, res: Response) => {
-	try {
-		
-		const uuidMod = await (eval('import("uuid")') as Promise<
-			typeof import("uuid")
-		>);
-		const uuidv4 = uuidMod.v4;
+    try {
 
-		// 🧼 Normalisera e-post
-		const email = req.body.email.trim().toLowerCase();
-		const { password, name } = req.body;
-		
-		
+        const uuidMod = await (eval('import("uuid")') as Promise<
+            typeof import("uuid")
+        >);
+        const uuidv4 = uuidMod.v4;
 
-		// Extra/valfritt
-		if (!email || !password || !name) {
-			return res.status(400).json({ error: "email, password och name krävs" });
-		}
+        // 🧼 Normalisera e-post
+        const email = req.body.email.trim().toLowerCase();
+        const { password, name } = req.body;
 
-		const exists = await db.query(
-			"SELECT 1 FROM users WHERE email = $1 LIMIT 1",
-			[email]
-		);
-		if (exists.rowCount && exists.rowCount > 0) {
-			return res.status(409).json({ error: "E-post används redan" });
-		}
 
-		const hashed = await bcrypt.hash(password, 10);
-		const userId = uuidv4();
 
-		//console.log("Registering:", { email, userId }); // Debugging
+        // Extra/valfritt
+        if (!email || !password || !name) {
+            return res.status(400).json({ error: "email, password och name krävs" });
+        }
 
-		await db.query(
-			`INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
-			[userId, email, hashed, name]
-		);
+        const exists = await db.query(
+            "SELECT 1 FROM users WHERE email = $1 LIMIT 1",
+            [email]
+        );
+        if (exists.rowCount && exists.rowCount > 0) {
+            return res.status(409).json({ error: "E-post används redan" });
+        }
 
-		return res.status(201).json({ message: "User created" });
-	} catch (error) {
-		console.error("Register error:", error);
+        const hashed = await bcrypt.hash(password, 10);
+        const userId = uuidv4();
 
-		return res.status(500).json({ error: "Registration failed" });
-	}
+        //console.log("Registering:", { email, userId }); // Debugging
+
+        await db.query(
+            `INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
+            [userId, email, hashed, name]
+        );
+
+return res.status(201).json({ message: "User created" });
+    } catch (error) {
+        console.error("Register error:", error);
+
+        return res.status(500).json({ error: "Registration failed" });
+    }
 });
 
 router.post("/login", async (req, res) => {
 try {
-	const email = req.body.email.trim().toLowerCase();
-	const { password } = req.body;
-	
-	const result = await db.query(`SELECT * FROM users WHERE email = $1`, [
-		email,
-	]);
-	const user = result.rows[0];
-	
+    const email = req.body.email.trim().toLowerCase();
+    const { password } = req.body;
 
-	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-		return res.status(401).json({ error: "Invalid credentials" });
-	}
+    const result = await db.query(`SELECT * FROM users WHERE email = $1`, [
+        email,
+    ]);
+    const user = result.rows[0];
 
-	
-	// 🔐 Skapa riktig token
-	
-	const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-		expiresIn: "1h",
-	});
-	
 
-	// 👇 Skicka tillbaka token till frontend
-	return res.status(200).json({ token });
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+        return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+
+    // 🔐 Skapa riktig token
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+        expiresIn: "1h",
+    });
+
+
+    // 👇 Skicka tillbaka token till frontend
+    return res.status(200).json({ token });
 } catch (error) {
-	console.error("Login error:", error);
-	if (error instanceof Error) {
-	console.error(error.stack);
-	}
-	return res.status(500).json({ error: "Login failed" });
+    console.error("Login error:", error);
+    if (error instanceof Error) {
+    console.error(error.stack);
+    }
+    return res.status(500).json({ error: "Login failed" });
 }
 });
 
