@@ -7,7 +7,7 @@ import auth from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.get('/meetups', auth, async (req: Request, res: Response) => {
+router.get('/', auth, async (req: Request, res: Response) => {
     // 1. Hämta användardetaljer
     const userResult = await db.query(
         `SELECT id, email, name, city FROM users WHERE id = $1`, 
@@ -57,14 +57,14 @@ router.get('/meetups', auth, async (req: Request, res: Response) => {
     });
 });
 
-// router.get('/meetups', auth, async (req: Request, res: Response) => {
-// 	const result = await db.query(`
-//     SELECT m.* FROM meetups m
-//     JOIN registrations r ON r.meetup_id = m.id
-//     WHERE r.user_id = $1
-//   `, [req.userId]);
-// 	res.json(result.rows);
-// });
+router.get('/meetups', auth, async (req: Request, res: Response) => {
+	const result = await db.query(`
+    SELECT m.* FROM meetups m
+    JOIN registrations r ON r.meetup_id = m.id
+    WHERE r.user_id = $1
+  `, [req.userId]);
+	res.json(result.rows);
+});
 
 export default router;
 
