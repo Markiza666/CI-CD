@@ -1,4 +1,4 @@
-@use '../../styles/abstracts/variables' as v;
+@use '../../styles/config/variables' as v;
 @use '../../styles/abstracts/mixins';
 @use 'sass:color';
 
@@ -74,7 +74,7 @@
         text-decoration: none;
 
         &:hover {
-            color: v.$primary-hover;
+            color: v.$shadow-hover;
         }
     }
 

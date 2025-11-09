@@ -1,100 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/apiClient';
-import { Meetup, MeetupFilter } from '../../interfaces';
-import MeetupFilterForm from '../meetupFilterForm/meetupFilterForm';
+import { ProfileData, Meetup } from '../../interfaces/index'; 
+import { useAuth } from '../../context/authContext';
 import { Link } from 'react-router-dom';
-import styles from '../meetupList.module/meetupList.module.scss';
 
-// AC 3.1: Component responsible for displaying a list of meetups.
-const MeetupList: React.FC = () => {
-    const [meetups, setMeetups] = useState<Meetup[]>([]);
+// AC 7.3: Component responsible for displaying the user's profile and activities.
+const ProfilePage: React.FC = () => {
+    // Get the login status and token status from the AuthContext
+    const { isAuthenticated, logout } = useAuth();
+    
+    // State to hold the fetched profile data
+    const [profileData, setProfileData] = useState<ProfileData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Default filter state (US 4.1)
-    const [filters, setFilters] = useState<MeetupFilter>({
-        searchQuery: '',
-        city: undefined,
-        date: undefined,
-        isAttending: false,
-    });
-    
-    // Function to handle changes received from MeetupFilterForm
-    const handleFilterChange = (newFilters: MeetupFilter) => {
-        setFilters(newFilters);
-        // We don't call fetchMeetups here, we rely on the useEffect dependency
-    };
-
-    // --- Data Fetching (AC 3.1) ---
-    // The fetch function now depends on the 'filters' state
     useEffect(() => {
-        const fetchMeetups = async () => {
-            setIsLoading(true);
-            setError(null);
-            
+        // Redundant check, but good practice since ProtectedRoute might not have fired yet
+        if (!isAuthenticated) { 
+            // If not authenticated, the ProtectedRoute should handle redirecting, 
+            // but we ensure a clear error state here.
+            setIsLoading(false);
+            setError('You must be logged in to view your profile.');
+            return;
+        }
+
+        const fetchProfileData = async () => {
             try {
-                // AC 3.1, 4.1, 4.2, 4.3: Send filter criteria as query parameters to the API
-                const response = await apiClient.get<Meetup[]>('/meetups', {
-                    params: filters 
-                    // Axios automatically converts the filters object into 
-                    // a query string: /meetups?searchQuery=...&city=...
-                });
-                
-                setMeetups(response.data);
+                // AC 7.3: Fetch comprehensive user data and related meetups (GET /api/profile)
+                // This assumes your backend provides user data, attending, AND created meetups.
+                const response = await apiClient.get<ProfileData>('/profile');
+                setProfileData(response.data);
             } catch (err: any) {
-                console.error("Failed to fetch meetups:", err);
-                setError('Failed to load meetups. Please try again later.');
+                console.error("Failed to fetch profile data:", err);
+                const msg = err.response?.data?.message || 'Could not load profile data.';
+                setError(msg);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchMeetups();
-    }, [filters]); // Rerun effect whenever the filter state changes
+        fetchProfileData();
+    }, [isAuthenticated]); // Rerun fetch if authentication status changes
 
-    // Helper function to format the date 
+    // Helper function to format the date (copied from MeetupList/Detail)
     const formatDate = (dateString: Date | string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
     };
+    
+    // Helper component to render a list of meetups
+    const MeetupListSection: React.FC<{ title: string, meetups: Meetup[] }> = ({ title, meetups }) => (
+        <section className="profile-meetup-list mb-8 p-4 border rounded shadow-md">
+            <h2 className="text-2xl font-semibold mb-4 border-b pb-2">{title} ({meetups.length})</h2>
+            {meetups.length === 0 ? (
+                <p className="text-gray-500">No meetups found here.</p>
+            ) : (
+                <ul className="space-y-3">
+                    {meetups.map(meetup => (
+                        <li key={meetup._id} className="border-l-4 border-indigo-500 pl-3">
+                            <Link to={`/meetups/${meetup._id}`} className="text-indigo-600 hover:text-indigo-800 font-medium block">
+                                {meetup.title}
+                            </Link>
+                            <p className="text-sm text-gray-600">{formatDate(meetup.date)} at {meetup.location}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </section>
+    );
 
-    // --- Main Render ---
+    // --- Render States ---
+    if (isLoading) return <p className="status-message loading">Loading profile...</p>;
+    if (error) return <p className="status-message error">{error}</p>;
+    if (!profileData) return <p className="status-message">Profile data is unavailable.</p>;
+
+    const { user, attendingMeetups, createdMeetups } = profileData;
+
+    // --- Main Render (AC 7.3) ---
     return (
-        <div className={styles.meetupListPage}>
-            <h1 className={styles.pageTitle}>Upcoming Meetups</h1>
+        <div className="profile-page mt-10">
+            <header className="profile-header mb-8 pb-4 border-b flex justify-between items-center">
+                <h1 className="text-4xl font-bold">Welcome, {user.firstName || user.email}!</h1>
+                <button 
+                    onClick={logout} 
+                    className="logout-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
+                >
+                    Logout
+                </button>
+            </header>
             
-            {/* Render the filter form */}
-            <MeetupFilterForm 
-                onFilterChange={handleFilterChange}
-                currentFilters={filters}
+            <section className="user-details mb-8 p-6 bg-gray-50 rounded shadow-inner">
+                <h2 className="text-2xl font-semibold mb-4">Your Details</h2>
+                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Location:</strong> {user.city || 'Not specified'}</p>
+                {/* You might add an "Edit Profile" button here later */}
+            </section>
+            
+            {/* Meetups the user is attending (AC 7.3) */}
+            <MeetupListSection 
+                title="Meetups You Are Attending" 
+                meetups={attendingMeetups} 
+            />
+            
+            <hr className="my-8" />
+
+            {/* Meetups the user created (AC 7.3) */}
+            <MeetupListSection 
+                title="Meetups You Created" 
+                meetups={createdMeetups} 
             />
 
-            {isLoading && <p className={`${styles.statusMessage} ${styles.loading}`}>Loading meetups...</p>}
-            {error && <p className={`${styles.statusMessage} ${styles.error}`}>{error}</p>}
-
-            {!isLoading && !error && meetups.length === 0 && (
-                <p className={`${styles.statusMessage} ${styles.info}`}>No meetups found matching your criteria.</p>
-            )}
-
-            <div className={styles.meetupGrid}>
-                {meetups.map(meetup => (
-                    <div key={meetup._id} className={styles.meetupCard}>
-                        <Link to={`/meetups/${meetup._id}`} className={styles.cardLink}>
-                            {meetup.title}
-                        </Link>
-                        <p className={styles.cardDate}>
-                            {formatDate(meetup.date)}
-                        </p>
-                        <p className={styles.cardLocation}>
-                            Location: {meetup.location}
-                        </p>
-                        <p className={styles.cardDescription}>{meetup.description}</p>
-                    </div>
-                ))}
-            </div>
+            <footer className="mt-10">
+                <Link to="/create-meetup" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    + Create a New Meetup
+                </Link>
+            </footer>
         </div>
     );
 };
 
-export default MeetupList;
+export default ProfilePage;

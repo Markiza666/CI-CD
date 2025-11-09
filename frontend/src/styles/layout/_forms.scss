@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
 
 .form-container {
     max-width: 400px;
@@ -28,7 +28,7 @@
         display: block;
         margin-bottom: 0.25rem;
         font-weight: 500;
-        color: v.$bg-secondary;
+        color: v.$text-color-secondary; // Changed from $bg-secondary for better visibility
         font-size: 0.8rem;
     }
 
@@ -37,12 +37,12 @@
         padding: 0.75rem;
         border: 1px solid #d1d5db; // gray-300
         border-radius: 0.5rem;
-        transition: v.$border-color 150ms;
+        transition: border-color 150ms, box-shadow 150ms; // Removed variable for transition
 
         &:focus {
             outline: none;
             border-color: v.$primary-color;
-            box-shadow: 0 0 0 2px rgba(v.$primary-color, 0.2);
+            box-shadow: 0 0 0 2px rgba(v.$primary-color, 0.2); // Uses Sass color variable
         }
     }
 
