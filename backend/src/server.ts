@@ -62,7 +62,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 	res.status(500).json({ error: "Internal server error" });
 });
 
-const PORT = Number(process.env.PORT) || 10000;
+const PORT = Number(process.env.PORT) || 5000;
 app.listen(PORT, () => {
 	console.log(`🚀 API running on port ${PORT}`);
 });
