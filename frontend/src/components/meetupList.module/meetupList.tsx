@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
 import { Meetup } from '../../interfaces/index';
-import styles from '../meetupList.module/meetupList.module.scss'; 
+import styles from '../meetupList.module/meetupList.module.scss';
+import { useAuth } from '../../context/authContext';
 
 // AC 2.1: Component responsible for displaying a list of meetups
 const MeetupList: React.FC = () => {
     const [meetups, setMeetups] = useState<Meetup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         const fetchMeetups = async () => {
@@ -24,7 +27,6 @@ const MeetupList: React.FC = () => {
                 setIsLoading(false);
             }
         };
-
         fetchMeetups();
     }, []);
 
@@ -42,6 +44,15 @@ const MeetupList: React.FC = () => {
     // --- Main Render (AC 2.1) ---
     return (
         <div className={styles.meetupListPage}>
+            <div className={styles.actionContainer}>
+                <Link 
+                    to="/create-meetup" 
+                    className={styles.createButton} 
+                    title={isAuthenticated ? 'Create a new meetup' : 'Log in required to create a meetup'}
+                >
+                    Create a New Meetup
+                </Link>
+            </div>
             <h1 className={styles.pageTitle}>All Available Meetups ({meetups.length})</h1>
             
             {meetups.length === 0 ? (

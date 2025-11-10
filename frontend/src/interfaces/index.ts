@@ -96,7 +96,6 @@ export interface NewMeetup {
     date: string; // Typically sent as an ISO string (e.g., from datetime-local input)
     location: string;
     category: string;
-    time: string;
     capacity: number;
 }
 

@@ -15,7 +15,6 @@ const CreateMeetupForm: React.FC = () => {
         date: '', 
         location: '',
         category: 'Technology',
-        time: '18:00',
         capacity: 50,
     });
     const [error, setError] = useState<string | null>(null);
