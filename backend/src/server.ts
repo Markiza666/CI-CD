@@ -71,3 +71,10 @@ const PORT = process.env.PORT || "5000";
 app.listen(Number(PORT), "0.0.0.0", () => {
 	console.log(`🚀 API running on port ${PORT}`);
 });
+// 🔻 Fånga Render’s nedstängningssignal
+process.on("SIGTERM", () => {
+	console.log("🛑 SIGTERM received — shutting down gracefully");
+});
+process.on("SIGINT", () => {
+	console.log("🛑 SIGINT received — exiting via Ctrl+C");
+});
