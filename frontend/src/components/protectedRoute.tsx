@@ -4,10 +4,11 @@ import { useAuth } from '../context/authContext'; // Import our custom hook
 // Component responsible for protecting specific routes.
 // US 7.1: Ensures only authenticated users can access child routes.
 const ProtectedRoute: React.FC = () => {
-  // Use our centralized authentication status
-  const { isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
+    // Använd vår centraliserade autentiseringsstatus
+    const { isAuthenticated, loading } = useAuth();
+    const location = useLocation(); // Hämta den aktuella URL:en
+
+    if (loading) {
         return <div className="loading-indicator">Loading authentication...</div>;
     }
 
@@ -17,7 +18,8 @@ const ProtectedRoute: React.FC = () => {
     }
 
     // 3. Om INTE inloggad: Omdirigera till inloggningssidan
-    return <Navigate to="/login" replace />;
+    // Skickar med den aktuella sökvägen i state för att kunna omdirigera efter inloggning.
+    return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

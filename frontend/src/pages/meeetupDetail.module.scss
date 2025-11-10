@@ -1,0 +1,93 @@
+@use '../styles/config/variables' as v;
+@use 'sass:math';
+@use 'sass:color';
+
+.meetupDetailPage {
+    max-width: 900px;
+    margin: v.$spacing-unit * 1.5 auto;
+    padding: v.$spacing-unit * 1.5;
+    background-color: v.$bg-white;
+    border-radius: v.$border-radius;
+    box-shadow: v.$shadow-default;
+}
+
+.detailHeader {
+    border-bottom: 2px solid v.$primary-color;
+    padding-bottom: v.$spacing-unit;
+    margin-bottom: v.$spacing-unit * 1.5;
+}
+
+.detailTitle {
+    color: v.$primary-color;
+    font-size: 2rem;
+    margin: 0 0 math.div(v.$spacing-unit, 2); 
+}
+
+.detailMeta {
+    color: v.$text-dark-color;
+    font-size: 1rem;
+}
+
+.metaItem {
+    margin-right: v.$spacing-unit;
+    display: inline-block;
+}
+
+.actionButtonsGroup {
+    margin-top: v.$spacing-unit;
+    display: flex;
+    gap: math.div(v.$spacing-unit, 2);
+}
+
+.toggleButton {
+    padding: math.div(v.$spacing-unit, 2) v.$spacing-unit; 
+    border: none;
+    border-radius: v.$border-radius;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.register {
+    background-color: v.$secondary-color;
+    color: v.$text-light-color; 
+    &:hover {
+        background-color: color.adjust(v.$secondary-color, $lightness: -10%);
+    }
+}
+
+.unregister {
+    background-color: v.$error-color;
+    color: v.$text-light-color; 
+    &:hover {
+        background-color: color.adjust(v.$error-color, $lightness: -10%);
+    }
+}
+
+.editLinkButton {
+    @extend .toggleButton;
+    background-color: v.$accent-color;
+    color: v.$text-dark-color;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    &:hover {
+        background-color: color.adjust(v.$accent-color, $lightness: 10%);
+    }
+}
+
+.detailSection {
+    margin-bottom: v.$spacing-unit * 1.5;
+    padding: v.$spacing-unit;
+    border-left: 5px solid v.$secondary-color;
+    background-color: v.$bg-secondary;
+    border-radius: v.$border-radius;
+}
+
+.sectionTitle {
+    color: v.$text-dark-color;
+    font-size: 1.5rem;
+    border-bottom: 1px solid v.$border-color;
+    padding-bottom: math.div(v.$spacing-unit, 2); 
+    margin-top: 0;
+}

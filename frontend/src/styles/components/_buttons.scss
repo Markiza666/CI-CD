@@ -1,5 +1,10 @@
 @use '../config/variables' as v;
 @use 'sass:color';
+@use '../abstracts/mixins' as m;
+
+.btn {
+    @include m.button-base(v.$primary-color, v.$bg-white); // Ger en basfärg till .btn
+}
 
 .submit-button {
     // Primary action button (e.g., Log In, Register)
@@ -94,5 +99,18 @@
         &:hover {
             background-color: color.adjust(v.$error-color, $lightness: 30%); // Light red background
         }
+    }
+}
+
+.logout-button {
+    @include m.button-base(v.$error-color, v.$bg-white); 
+    width: auto; 
+    padding: 0.5rem 1rem; // Mer kompakt än submit-knappen
+    font-size: 0.9rem;
+    box-shadow: none; // Ingen skugga på länk-knappar
+
+    &:hover {
+        background-color: color.adjust(v.$error-color, $lightness: -10%); 
+        transform: none; // Ingen lyft-effekt, bara färgbyte
     }
 }

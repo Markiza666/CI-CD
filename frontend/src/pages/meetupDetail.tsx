@@ -5,6 +5,8 @@ import { Meetup, User } from '../interfaces';
 import { useAuth } from '../context/authContext'; 
 import { decodeJwt } from '../utils/jwt';
 import { Link } from 'react-router-dom';
+import styles from '../pages/meeetupDetail.module.scss';
+
 
 // AC 3.2: Component responsible for displaying a single meetup and handling registration.
 const MeetupDetail: React.FC = () => {
@@ -94,7 +96,6 @@ const MeetupDetail: React.FC = () => {
         }
     };
 
-    // --- Helper function (same as in MeetupList) ---
     const formatDate = (dateString: Date | string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -108,46 +109,46 @@ const MeetupDetail: React.FC = () => {
 
     // --- Main Render (AC 3.2) ---
     return (
-        <article className="meetup-detail-page">
-            <header className="detail-header">
-                <h1 className="detail-title">{meetup.title}</h1>
-                <p className="detail-meta">
-                    <span className="meta-item">{formatDate(meetup.date)}</span>
-                    <span className="meta-item location">Location: {meetup.location}</span>
+        <article className={styles.meetupDetailPage}>
+            <header className={styles.detailHeader}>
+                <h1 className={styles.detailTitle}>{meetup.title}</h1>
+                <p className={styles.detailMeta}>
+                    <span className={styles.metaItem}>{formatDate(meetup.date)}</span>
+                    <span className={`${styles.metaItem} ${styles.location}`}>Location: {meetup.location}</span>
                 </p>
                 
-                <div className="action-buttons-group">
-                    {/* Registration Button (AC 4.1) */}
-                    {isAuthenticated && (
-                        <button 
-                            // ... (registration logic) ...
-                            className={isAttending ? "toggle-button unregister" : "toggle-button register"}
-                        >
-                            {isAttending ? 'Unregister' : 'Register for this Meetup'}
-                        </button>
-                    )}
-                    
-                    {/* Edit Button (AC 5.2) - Only shown to creator */}
-                    {isAuthenticated && currentUserId === meetup.creator && (
-                        <Link to={`/meetups/edit/${meetup._id}`} className="edit-link-button">
-                            Edit Meetup
-                        </Link>
-                    )}
-                </div>
+                <div className={styles.actionButtonsGroup}>
+                    {/* Registration Button (AC 4.1) */}
+                    {isAuthenticated && (
+                        <button 
+                            onClick={handleRegisterToggle}
+                            className={`${styles.toggleButton} ${isAttending ? styles.unregister : styles.register}`}
+                        >
+                            {isAttending ? 'Unregister' : 'Register for this Meetup'}
+                        </button>
+                    )}
+                    
+                    {/* Edit Button (AC 5.2) - Only shown to creator */}
+                    {isAuthenticated && currentUserId === meetup.creator && (
+                        <Link to={`/meetups/edit/${meetup._id}`} className={styles.editLinkButton}>
+                            Edit Meetup
+                        </Link>
+                    )}
+                </div>
 
             </header>
             
-            <section className="detail-section description-section">
-                <h2 className="section-title">Description</h2>
-                <p className="description-text">{meetup.description}</p>
+            <section className={`${styles.detailSection} ${styles.descriptionSection}`}>
+                <h2 className={styles.sectionTitle}>Description</h2>
+                <p className={styles.descriptionText}>{meetup.description}</p>
             </section>
 
-            <section className="detail-section participants-section">
-                <h2 className="section-title">Attendees ({meetup.participants.length})</h2>
+            <section className={`${styles.detailSection} ${styles.participantsSection}`}>
+                <h2 className={styles.sectionTitle}>Attendees ({meetup.participants.length})</h2>
                 {meetup.participants.length === 0 ? (
-                    <p className="empty-message">Be the first to join this meetup!</p>
+                    <p className={styles.emptyMessage}>Be the first to join this meetup!</p>
                 ) : (
-                    <p className="participant-count">
+                    <p className={styles.participantCount}>
                         {meetup.participants.length} people are attending.
                     </p>
                 )}

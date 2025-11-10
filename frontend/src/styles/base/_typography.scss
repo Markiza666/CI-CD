@@ -2,7 +2,7 @@
 @use '../config/variables' as v;
 
 h1, h2, h3, h4 {
-    color: v.$text-color;
+    // color: v.$text-color;
     margin-bottom: v.$spacing-unit;
     line-height: 1.2;
 }

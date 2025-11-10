@@ -50,10 +50,10 @@
     }
 
     .card-description {
-        display: -webkit-box;
+        // display: -webkit-box;
         @include m.line-clamp(3); // Using imported mixin
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        // -webkit-box-orient: vertical;
+        // overflow: hidden;
     }
 
     .card-footer {

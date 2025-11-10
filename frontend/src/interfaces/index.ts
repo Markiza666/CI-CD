@@ -9,7 +9,7 @@
 export interface User {
     _id: string;        // Unique ID, used as primary key
     email?: string;      // User's email (unique)
-    username: string;
+    username?: string;
     firstName?: string; // Optional user details
     lastName?: string;  // Optional user details
     city?: string;      // Optional user location
@@ -20,10 +20,13 @@ export interface User {
  * This is used client-side to extract critical data like the user ID.
  */
 export interface JwtPayload {
-    _id: string;        // The user's ID, used by the backend
-    email: string;
-    iat: number;        // Issued At timestamp
-    exp: number;        // Expiration timestamp
+    _id?: string;        // The user's ID, used by the backend
+    sub?: string;
+    userId?: string;
+    username?: string;
+    email?: string;
+    iat?: number;        // Issued At timestamp
+    exp?: number;        // Expiration timestamp
 }
 
 /**
@@ -58,8 +61,9 @@ export interface Meetup {
     _id: string;
     title: string;
     description: string;
-    date: Date | string; 
+    date: string; 
     location: string;
+    organizer: string; // User ID
     
     // Existing Backend fields:
     creator: string;        
@@ -70,7 +74,7 @@ export interface Meetup {
     time: string; // E.g. "18:00"
     host: string; // The name of the host (can be the same as creator, but easier to render)
     capacity: number;
-    attendees: number; // Number of attendees (redundant with participants.length, but good for quick viewing)
+    attendees: string;
     isAttending: boolean; // Flag for current user
     isPast: boolean; // Flag to indicate if the meeting has passed
     rating: number; // Average rating from reviews

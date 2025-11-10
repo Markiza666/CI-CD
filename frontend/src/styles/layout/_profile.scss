@@ -1,58 +1,168 @@
 @use '../config/variables' as v;
 @use 'sass:color';
+@use '../abstracts/mixins' as m; // Glöm inte mixins
 
 .profile-page {
-    // NOTE: This class definition conflicts with .profile-page in _pages.scss. 
-    // I kept this version as it contains more detail.
     max-width: 800px;
     margin: 2rem auto;
+    padding: 0 v.$spacing-unit; // Lägg till padding på mobilen
 
     .profile-header {
         border-bottom: 2px solid v.$border-color;
         padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h1 {
+            font-size: 2.5rem; // Större rubrik
+        }
     }
 
     .user-details {
         background-color: v.$bg-secondary;
         padding: 1.5rem;
         border-radius: v.$border-radius;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: v.$shadow-default; // Använd definierad skugga
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: v.$text-color;
+        }
 
         p {
             margin-bottom: 0.5rem;
+            color: v.$text-color;
+            
+            strong {
+                font-weight: 600;
+                color: v.$text-color;
+            }
         }
     }
-
+    
+    // --- Meetup List Style (Används i MeetupListSection) ---
     .profile-meetup-list {
         margin-bottom: 2rem;
         padding: 1rem;
         border: 1px solid v.$border-color;
         border-radius: v.$border-radius;
+        box-shadow: v.$shadow-default;
+        background-color: v.$bg-white;
 
         h2 {
             border-bottom: 1px solid v.$border-color;
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
         }
 
         ul {
             list-style: none;
             padding-left: 0;
+            display: grid;
+            gap: 0.5rem; // Ger lite mellanrum mellan listelementen
         }
 
         li {
-            padding: 0.5rem 0;
+            padding: 0.5rem 0 0.5rem 1rem;
             border-left: 4px solid v.$primary-color;
-            padding-left: 1rem;
-            margin-bottom: 0.5rem;
+            transition: background-color 0.15s;
+
+            &:hover {
+                background-color: v.$bg-light;
+            }
 
             a {
                 font-weight: bold;
                 text-decoration: none;
+                font-size: 1rem;
+                display: block; // Gör länken till ett blockelement
+
                 &:hover {
                     text-decoration: underline;
                 }
             }
+            
+            p {
+                font-size: 0.875rem;
+                color: v.$text-color-secondary;
+                margin: 0;
+            }
+        }
+    }
+    
+    // Footer för knappen
+    .profile-footer {
+        margin-top: 2.5rem;
+        
+        .create-meetup-link {
+            @include m.button-base(v.$secondary-color, v.$bg-white); 
+            // Återanvänder mixin för primär knapp-stil
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
         }
     }
 }
+
+
+// @use '../config/variables' as v;
+// @use 'sass:color';
+
+// .profile-page {
+//     // NOTE: This class definition conflicts with .profile-page in _pages.scss. 
+//     // I kept this version as it contains more detail.
+//     max-width: 800px;
+//     margin: 2rem auto;
+
+//     .profile-header {
+//         border-bottom: 2px solid v.$border-color;
+//         padding-bottom: 1.5rem;
+//     }
+
+//     .user-details {
+//         background-color: v.$bg-secondary;
+//         padding: 1.5rem;
+//         border-radius: v.$border-radius;
+//         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+//         p {
+//             margin-bottom: 0.5rem;
+//         }
+//     }
+
+//     .profile-meetup-list {
+//         margin-bottom: 2rem;
+//         padding: 1rem;
+//         border: 1px solid v.$border-color;
+//         border-radius: v.$border-radius;
+
+//         h2 {
+//             border-bottom: 1px solid v.$border-color;
+//             padding-bottom: 0.5rem;
+//             margin-bottom: 1rem;
+//         }
+
+//         ul {
+//             list-style: none;
+//             padding-left: 0;
+//         }
+
+//         li {
+//             padding: 0.5rem 0;
+//             border-left: 4px solid v.$primary-color;
+//             padding-left: 1rem;
+//             margin-bottom: 0.5rem;
+
+//             a {
+//                 font-weight: bold;
+//                 text-decoration: none;
+//                 &:hover {
+//                     text-decoration: underline;
+//                 }
+//             }
+//         }
+//     }
+// }

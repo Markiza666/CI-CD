@@ -9,6 +9,8 @@
         "@testing-library/react": "^16.3.0",
         "@testing-library/user-event": "^13.5.0",
         "axios": "^1.13.0",
+        "cors": "^2.8.5",
+        "jwt-decode": "^4.0.0",
         "lucide-react": "^0.553.0",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
@@ -42,6 +44,7 @@
         ]
     },
     "devDependencies": {
+        "@types/cors": "^2.8.19",
         "@types/node": "^24.9.1",
         "@types/react": "^19.2.2",
         "@types/react-dom": "^19.2.2",
