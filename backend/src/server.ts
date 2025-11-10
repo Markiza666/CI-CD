@@ -51,6 +51,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/meetups", meetupRoutes);
 app.use("/api/profile", profileRoutes);
 
+//Test route
+app.get("/api/test", (req, res) => {
+	res.json({ message: "✅ Test route works!" });
+});
+//End test route
+
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.error("🔥 Uncaught error:", err);
 	res.status(500).json({ error: "Internal server error" });
