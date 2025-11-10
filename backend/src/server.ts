@@ -66,13 +66,8 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 app.listen(PORT, () => {
 	console.log(`🚀 API running on port ${PORT}`);
 });*/
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
-if (!PORT) {
-	console.error("❌ Missing PORT environment variable");
-	process.exit(1);
-}
-
-app.listen(Number(PORT), () => {
+app.listen(PORT, () => {
 	console.log(`🚀 API running on port ${PORT}`);
 });
