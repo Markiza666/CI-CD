@@ -156,7 +156,7 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 
 	res.status(201).json({ message: "Registered" });
 });
-// Route to create a new meetup
+// Route to create a new meetup TESTING PURPOSES
 router.post("/", auth, async (req: Request, res: Response) => {
 	const { name, description, date, capacity } = req.body;
 	const { v4: uuidv4 } = await import("uuid");
