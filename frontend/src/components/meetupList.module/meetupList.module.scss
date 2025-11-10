@@ -1,18 +1,26 @@
 @use '../../styles/config/variables' as v;
-@use '../../styles/abstracts/mixins';
+@use '../../styles/abstracts/mixins' as m;
 @use 'sass:color';
+@use 'sass:math';
+@use 'sass:map';
 
 .meetupListPage {
-    margin:auto;
+    max-width: v.$max-width;
+    margin: v.$spacing-unit * 2 auto;
+    
+    padding: 0 v.$spacing-unit; 
+    
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 
     .pageTitle {
-        font-size: 2rem;
-        font-weight: 500;
-        margin: 1rem 0;
+        font-size: v.$font-size-xl;
+        font-weight: 600;
+        
+        margin: v.$spacing-unit 0; 
+        
+        color: v.$text-dark-color;
     }
 }
     
@@ -21,40 +29,44 @@
     margin-bottom: v.$spacing-unit;
     border-radius: v.$border-radius;
     font-weight: 500;
-    
+    width: 100%;
+
     &.loading {
         background-color: color.adjust(v.$primary-color, $lightness: 60%); 
         color: v.$text-color;
         border: 1px solid v.$border-color;
+        text-align: center;
     }
 
     &.error {
         background-color: color.adjust(v.$error-color, $lightness: 50%); 
         color: color.adjust(v.$error-color, $lightness: -15%);
+        text-align: center;
     }
 
     &.info {
         background-color: v.$bg-secondary; 
         color: v.$text-color;
+        text-align: center;
     }
 }
 
 .meetupGrid {
     display: grid;
     gap: 1.5rem;
-    grid-template-columns: repeat(1, minmax(0, 1fr)); 
+    grid-template-columns: repeat(1, 1fr); 
 
-    @media (min-width: 768px) { 
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    @media (min-width: map.get(v.$media-breakpoints, tablet)) {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (min-width: 1024px) {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+    @media (min-width: map.get(v.$media-breakpoints, desktop)) {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 .meetupCard {
-    background-color: rgb(12, 49, 49);
+    background-color: v.$bg-white;
     padding: v.$spacing-unit;
     border: 1px solid v.$border-color;
     border-radius: v.$border-radius;
@@ -66,33 +78,29 @@
     }
 
     .cardLink {
-        font-size: 1.25rem;
+        font-size: v.$font-size-lg;
         font-weight: 600;
         color: v.$primary-color;
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: math.div(v.$spacing-unit, 2);
         text-decoration: none;
 
         &:hover {
-            color: v.$shadow-hover;
+            color: color.adjust(v.$primary-color, $lightness: -10%);
         }
     }
 
-    .cardDate, .card-location {
-        font-size: 0.875rem;
+    .cardDate, .cardLocation {
+        font-size: v.$font-size-sm;
         color: v.$text-color-secondary;
-        margin-bottom: 0.25rem;
-    }
-
-    .cardLocation {
-        margin-bottom: 0.75rem;
+        margin-bottom: math.div(v.$spacing-unit, 4);
     }
 
     .cardDescription {
         color: v.$text-color;
         overflow: hidden;
         display: -webkit-box;
-        @include mixins.line-clamp(2);
+        @include m.line-clamp(2);
         -webkit-box-orient: vertical;
     }
 }

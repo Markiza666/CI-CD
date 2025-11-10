@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient'; // Korrigerad relativ sökväg
 import { ProfileData, Meetup } from '../interfaces/index'; 
 import { useAuth } from '../context/authContext'; // Korrigerad relativ sökväg
 import { Link } from 'react-router-dom';
 // VIKTIGT: Importera din SCSS-fil här
-import './ProfilePage.scss'; 
+import styles from '../pages/profilePage.module.scss';
 
 // AC 7.3: Component responsible for displaying the user's profile and activities.
 const ProfilePage: React.FC = () => {
@@ -50,18 +50,18 @@ const ProfilePage: React.FC = () => {
     
     // Helper component to render a list of meetups
     const MeetupListSection: React.FC<{ title: string, meetups: Meetup[] }> = ({ title, meetups }) => (
-        <section className="profile__meetup-section"> 
-            <h2 className="profile__meetup-section-title">{title} ({meetups.length})</h2>
+        <section className={styles.meetupListSection}>
+            <h2 className={styles.listTitle}>{title} ({meetups.length})</h2>
             {meetups.length === 0 ? (
-                <p className="profile__empty-message">No meetups found here.</p>
+                <p className={styles.emptyMessage}>No meetups found here.</p>
             ) : (
-                <ul className="profile__meetup-list">
+                <ul className={styles.meetupList}>
                     {meetups.map(meetup => (
-                        <li key={meetup._id} className="profile__meetup-item">
-                            <Link to={`/meetups/${meetup._id}`} className="profile__meetup-link">
+                        <li key={meetup._id} className={styles.meetupItem}>
+                            <Link to={`/meetups/${meetup._id}`} className={styles.meetupLink}>
                                 {meetup.title}
                             </Link>
-                            <p className="profile__meetup-details">{formatDate(meetup.date)} at {meetup.location}</p>
+                            <p className={styles.meetupDetails}>{formatDate(meetup.date)} at {meetup.location}</p>
                         </li>
                     ))}
                 </ul>
@@ -78,20 +78,20 @@ const ProfilePage: React.FC = () => {
 
     // --- Main Render (AC 7.3) ---
     return (
-        <div className="profile-page"> {/* Huvudklass för hela sidan */}
-            <header className="profile__header">
-                <h1 className="profile__title">Welcome, {user.firstName || user.email}!</h1>
+       <div className={styles.profilePage}> {/* Huvudklass för hela sidan */}
+            <header className={styles.profileHeader}>
+                <h1 className={styles.title}>Welcome, {user.firstName || user.email}!</h1>
                 console.log("User info:", user);
-                <button 
+                <button type='button'
                     onClick={logout} 
-                    className="profile__logout-button"
+                    className={styles.logoutButton}
                 >
                     Logout
                 </button>
             </header>
             
-            <section className="profile__user-details">
-                <h2 className="profile__section-title">Your Details</h2>
+            <section className={styles.userDetails}>
+                <h2 className={styles.sectionTitle}>Your Details</h2>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Location:</strong> {user.city || 'Not specified'}</p>
             </section>
@@ -102,7 +102,7 @@ const ProfilePage: React.FC = () => {
                 meetups={attendingMeetups} 
             />
             
-            <hr className="profile__divider" />
+            <hr className={styles.divider} />
 
             {/* Meetups the user created (AC 7.3) */}
             <MeetupListSection 
@@ -110,8 +110,8 @@ const ProfilePage: React.FC = () => {
                 meetups={createdMeetups} 
             />
 
-            <footer className="profile__footer">
-                <Link to="/create-meetup" className="profile__create-button">
+            <footer className={styles.footer}>
+                <Link to="/create-meetup" className={styles.createButton}>
                     + Create a New Meetup
                 </Link>
             </footer>
