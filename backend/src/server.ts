@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config(); console.log("🌐 Render PORT:", process.env.PORT);
 import express from "express";
 import cors from "cors";
 import helmet from "helmet"; 
