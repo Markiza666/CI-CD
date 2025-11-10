@@ -20,5 +20,7 @@ RUN npm prune --production
 # Expose the port your Express app runs on
 EXPOSE 5000
 
+RUN ls -l dist
+
 # Start the app
 CMD [ "npm", "start" ]
