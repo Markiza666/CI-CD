@@ -156,6 +156,24 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 
 	res.status(201).json({ message: "Registered" });
 });
+// Route to create a new meetup TESTING PURPOSES
+router.post("/", auth, async (req: Request, res: Response) => {
+	const { title, description, date, capacity } = req.body;
+	const { v4: uuidv4 } = await import("uuid");
+
+	try {
+		await db.query(
+			`INSERT INTO meetups (id, title, description, date, capacity)
+       VALUES ($1, $2, $3, $4, $5)`,
+			[uuidv4(), title, description, date, capacity]
+		);
+		res.status(201).json({ message: "✅ Meetup skapad" });
+	} catch (err) {
+		console.error("POST /meetups failed:", err);
+		res.status(500).json({ error: "⛔ Kunde inte skapa meetup" });
+	}
+});
+
 
 router.delete("/:id/register", auth, async (req: Request, res: Response) => {
 	const userId = req.userId;
