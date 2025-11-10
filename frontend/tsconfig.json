@@ -15,6 +15,9 @@
         "rootDir": "./src",
         "lib": ["dom", "dom.iterable", "esnext"]
     },
-    "include": ["src/**/*"], 
+    "include": [
+        "src",
+        "src/styles/typings.d.ts"
+    ], 
     "exclude": ["node_modules"]
 }

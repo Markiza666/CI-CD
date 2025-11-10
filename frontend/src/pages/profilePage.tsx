@@ -1,101 +1,160 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/apiClient';
-// AC 7.3: Import the common interfaces for consistency
-import { User, Meetup } from '../interfaces'; 
+import { Meetup, User } from '../interfaces'; 
+import { useAuth } from '../context/authContext'; 
+import { decodeJwt } from '../utils/jwt';
+import { Link } from 'react-router-dom';
+import styles from '../pages/meeetupDetail.module.scss';
 
-// AC 7.2: Component responsible for displaying protected user data.
-const ProfilePage: React.FC = () => {
-    // State now uses the imported types User and Meetup
-    const [user, setUser] = useState<User | null>(null);
-    const [attendingMeetups, setAttendingMeetups] = useState<Meetup[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
+// AC 3.2: Component responsible for displaying a single meetup and handling registration.
+const MeetupDetail: React.FC = () => {
+    const { id } = useParams<{ id: string }>(); // Get meetup ID from URL
+    const navigate = useNavigate();
+    
+    const [meetup, setMeetup] = useState<Meetup | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isAttending, setIsAttending] = useState(false);
+    
+    // 1. USE AUTH CONTEXT
+    // Get token and auth status from Context
+    const { isAuthenticated, token } = useAuth();
+    
+    // GET ACTUAL USER ID FROM TOKEN
+    const currentUserId = token ? decodeJwt(token)?._id : null; // CRITICAL CHANGE
+
+    // --- Data Fetching (AC 3.2) ---
+    useEffect(() => {
+        if (!id) {
+            setError('Meetup ID is missing.');
+            setIsLoading(false);
+            return;
+        }
+
+        const fetchMeetupDetails = async () => {
+            try {
+                // AC 3.2: Fetch specific meetup details (GET /api/meetups/:id)
+                const response = await apiClient.get<Meetup>(`/meetups/${id}`);
+                const fetchedMeetup = response.data;
+                
+                setMeetup(fetchedMeetup);
+                
+                // Determine if the current user is attending (AC 4.1)
+                if (currentUserId) {
+                    setIsAttending(fetchedMeetup.participants.includes(currentUserId));
+                } else {
+                    setIsAttending(false);
+                }
+            } catch (err) {
+                console.error("Failed to fetch meetup details:", err);
+                setError('Could not load meetup details. It may not exist.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMeetupDetails();
+    }, [id, currentUserId]); // Now dependent on currentUserId (which depends on token)
+
+    // --- Registration Logic (AC 4.1) ---
+    const handleRegisterToggle = async () => {
+        if (!isAuthenticated || !meetup) { // isAuthenticated comes from Context
+            alert('You must be logged in to register for a meetup.');
+            navigate('/login');
+            return;
+        }
         
-        // AC 7.1: Security Check 1 - If no token exists, redirect to login
-        if (!token) {
-            navigate('/login');
+        // Safety check: Ensure we have a user ID before updating attendance
+        if (!currentUserId) {
+            alert('Cannot determine user ID.');
             return;
         }
 
-        const fetchProfileData = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                // AC 7.2 & 7.3: Call P1's protected API (GET /api/user/profile)
-                const response = await apiClient.get('/user/profile');
-                const { user, attendingMeetups } = response.data;
-                
-                setUser(user);
-                setAttendingMeetups(attendingMeetups || []);
-            } catch (err: any) {
-                // AC 7.2: Security Check 2 - Handle token expiration or invalid token (401/403 errors)
-                if (err.response?.status === 401 || err.response?.status === 403) {
-                    localStorage.removeItem('authToken');
-                    navigate('/login');
-                } else {
-                    setError('Could not load profile data. Please try again later.'); 
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        try {
+            const endpoint = isAttending ? '/meetups/unregister' : '/meetups/register';
+            
+            // AC 4.1: Call the registration/unregistration endpoint
+            await apiClient.post(endpoint, { meetupId: meetup._id });
+            
+            // Toggle local state and update participants count
+            setIsAttending(!isAttending);
+            if (meetup.participants) {
+                const newParticipants = isAttending 
+                    ? meetup.participants.filter(uid => uid !== currentUserId) // Unregister: remove ID
+                    : [...meetup.participants, currentUserId];                 // Register: add ID
+                
+                setMeetup({...meetup, participants: newParticipants});
+            }
 
-        fetchProfileData();
-    }, [navigate]);
-    
-    // Loading state
-    if (isLoading) return <p className="status-message loading">Loading your profile...</p>;
-    
-    // Error state
-    if (error) return <p className="status-message error">{error}</p>;
-    
-    // Not Logged In state
-    if (!user) return <p className="status-message">You must be logged in to view this page.</p>;
+            alert(isAttending ? 'Successfully unregistered.' : 'Successfully registered!');
+        } catch (err: any) {
+            console.error("Registration failed:", err);
+            const msg = err.response?.data?.message || 'Failed to update registration status.';
+            setError(msg);
+        }
+    };
 
-    return (
-        <div className="profile-page"> 
-            <h1 className="page-title">My Profile</h1>
-            
-            {/* User Information (AC 7.3) */}
-            <section className="profile-section user-info-card"> 
-                <h2 className="section-title">User Information</h2>
-                <p><strong>Email:</strong> {user.email}</p>
-                {/* Assuming user has an 'id' property or similar */}
-                <p><strong>User ID:</strong> {user._id || 'N/A'}</p> 
-            </section>
+    const formatDate = (dateString: Date | string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    };
 
-            {/* Attending Meetups (AC 7.3) */}
-            <section className="profile-section meetups-card">
-                <h2 className="section-title">My Registered Meetups</h2>
-                
-                {attendingMeetups.length > 0 ? (
-                    <ul className="meetup-list">
-                        {attendingMeetups.map((meetup) => (
-                            // FIX: Using meetup._id if that's what the API returns, or meetup.id if that's in your shared interface.
-                            // I'm using meetup._id which is standard, assuming your shared interface uses it.
-                            <li key={meetup._id} className="meetup-list-item"> 
-                                {/* FIX: Using meetup._id for the Link, too. */}
-                                <Link to={`/meetups/${meetup._id}`} className="meetup-title-link"> 
-                                    {meetup.title}
-                                </Link>
-                                <span className="meetup-date-location">
-                                    {new Date(meetup.date).toLocaleDateString()}
-                                    {meetup.location}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="empty-message">You are not registered for any meetups yet.</p>
-                )}
-            </section>
-        </div>
-    );
+    // --- Render States ---
+    if (isLoading) return <p className="status-message loading">Loading meetup details...</p>;
+    if (error) return <p className="status-message error">{error}</p>;
+    if (!meetup) return <p className="status-message">Meetup not found.</p>;
+
+    // --- Main Render (AC 3.2) ---
+    return (
+        <article className={styles.meetupDetailPage}>
+            <header className={styles.detailHeader}>
+                <h1 className={styles.detailTitle}>{meetup.title}</h1>
+                <p className={styles.detailMeta}>
+                    <span className={styles.metaItem}>{formatDate(meetup.date)}</span>
+                    <span className={`${styles.metaItem} ${styles.location}`}>Location: {meetup.location}</span>
+                </p>
+                
+                <div className={styles.actionButtonsGroup}>
+                    {/* Registration Button (AC 4.1) */}
+                    {isAuthenticated && (
+                        <button 
+                            onClick={handleRegisterToggle}
+                            className={`${styles.toggleButton} ${isAttending ? styles.unregister : styles.register}`}
+                        >
+                            {isAttending ? 'Unregister' : 'Register for this Meetup'}
+                        </button>
+                    )}
+                    
+                    {/* Edit Button (AC 5.2) - Only shown to creator */}
+                    {isAuthenticated && currentUserId === meetup.creator && (
+                        <Link to={`/meetups/edit/${meetup._id}`} className={styles.editLinkButton}>
+                            Edit Meetup
+                        </Link>
+                    )}
+                </div>
+
+            </header>
+            
+            <section className={`${styles.detailSection} ${styles.descriptionSection}`}>
+                <h2 className={styles.sectionTitle}>Description</h2>
+                <p className={styles.descriptionText}>{meetup.description}</p>
+            </section>
+
+            <section className={`${styles.detailSection} ${styles.participantsSection}`}>
+                <h2 className={styles.sectionTitle}>Attendees ({meetup.participants.length})</h2>
+                {meetup.participants.length === 0 ? (
+                    <p className={styles.emptyMessage}>Be the first to join this meetup!</p>
+                ) : (
+                    <p className={styles.participantCount}>
+                        {meetup.participants.length} people are attending.
+                    </p>
+                )}
+            </section>
+        </article>
+    );
 };
 
-export default ProfilePage;
+export default MeetupDetail;

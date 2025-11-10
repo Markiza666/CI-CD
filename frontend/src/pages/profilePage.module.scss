@@ -1,0 +1,141 @@
+@use '../styles/config/variables' as v;
+@use 'sass:color';
+@use 'sass:math';
+
+.profilePage {
+    max-width: v.$max-width;
+    margin: 2rem auto;
+    padding: 0 v.$spacing-unit;
+}
+
+.profileHeader {
+    margin-bottom: v.$spacing-unit * 2;
+    padding-bottom: v.$spacing-unit;
+    border-bottom: 2px solid v.$border-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: v.$text-dark-color;
+    }
+}
+
+.logoutButton {
+    background-color: v.$error-color;
+    color: v.$text-light-color;
+    font-weight: 700;
+    
+    padding: math.div(v.$spacing-unit, 2) v.$spacing-unit; 
+    
+    border-radius: v.$border-radius;
+    transition: background-color 150ms ease;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: color.adjust(v.$error-color, $lightness: -10%);
+    }
+}
+
+.userDetails {
+    margin-bottom: v.$spacing-unit * 2;
+    padding: v.$spacing-unit * 1.5;
+    background-color: v.$bg-secondary;
+    border-radius: v.$border-radius;
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+
+    .sectionTitle {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: v.$spacing-unit;
+        color: v.$text-dark-color;
+    }
+
+    p {
+        margin-bottom: math.div(v.$spacing-unit, 2);
+        color: v.$text-color;
+    }
+}
+
+.meetupListSection {
+    margin-bottom: v.$spacing-unit * 2;
+    padding: v.$spacing-unit;
+    border-radius: v.$border-radius;
+    box-shadow: v.$shadow-default;
+    border: 1px solid v.$border-color;
+
+    .emptyMessage {
+        padding: v.$spacing-unit;
+        border: 1px dashed v.$border-color;
+        border-radius: v.$border-radius;
+        color: v.$text-subtle-color;
+        text-align: center;
+        font-style: italic;
+        margin-top: v.$spacing-unit;
+    }
+
+    .listTitle {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: v.$spacing-unit;
+        border-bottom: 1px solid v.$border-color;
+        padding-bottom: math.div(v.$spacing-unit, 2);
+    }
+
+    .meetupList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: v.$spacing-unit;
+    }
+
+    .meetupItem {
+        border-left: 4px solid v.$primary-color;
+        padding-left: v.$spacing-unit;
+        
+        .meetupLink {
+            color: v.$primary-color;
+            &:hover {
+                color: color.adjust(v.$primary-color, $lightness: -10%);
+            }
+            font-weight: 500;
+            display: block;
+        }
+
+        .meetupDetails {
+            font-size: 0.875rem;
+            color: v.$text-color-secondary;
+        }
+    }
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: v.$border-color;
+    margin: v.$spacing-unit * 2 0;
+}
+
+.footer {
+    margin-top: v.$spacing-unit * 2.5;
+
+    .createButton {
+        background-color: v.$primary-color;
+        color: v.$text-light-color;
+        font-weight: 700;
+        padding: math.div(v.$spacing-unit, 2) v.$spacing-unit;
+        border-radius: v.$border-radius;
+        text-decoration: none;
+        transition: background-color 150ms ease;
+        display: inline-block;
+
+        &:hover {
+            background-color: color.adjust(v.$primary-color, $lightness: -10%);
+        }
+    }
+}

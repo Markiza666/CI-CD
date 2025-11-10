@@ -1,10 +1,16 @@
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
+@use 'sass:color';
+@use '../abstracts/mixins' as m;
+
+.btn {
+    @include m.button-base(v.$primary-color, v.$bg-white); // Ger en basfärg till .btn
+}
 
 .submit-button {
     // Primary action button (e.g., Log In, Register)
     width: 100%;
-    background-color: v.$color-primary;
-    color: white;
+    background-color: v.$primary-color;
+    color: v.$bg-white;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     border: none;
@@ -17,9 +23,53 @@
     will-change: transform;
 
     &:hover {
-        background-color: v.$color-primary-hover;
+        background-color: v.$primary-color;
         transform: translateY(-2px);
         box-shadow: v.$shadow-hover;
+    }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: v.$shadow-default;
+    }
+}
+
+.delete-button {
+    @extend .submit-button; // Extend base button styles
+    width: auto; // Override width for group usage
+    background-color: v.$error-color;
+    color: v.$bg-white; // Changed from $bg-light for contrast
+    
+    //
+    &:hover {
+        background-color: color.adjust(v.$error-color, $lightness: -10%); 
+        transform: translateY(-2px);
+    }
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    
+    .submit-button {
+        flex-grow: 1;
+    }
+}
+
+.edit-link-button {
+    // Extends submit-button style for use as an inline link button
+    @extend .submit-button;
+    background-color: v.$secondary-color;
+    
+    display: inline-block; 
+    text-align: center;
+    padding: 0.5rem 1rem; 
+    width: auto;
+
+    &:hover {
+        background-color: color.adjust(v.$secondary-color, $lightness: -10%);
+        transform: translateY(-2px);
     }
 }
 
@@ -30,22 +80,37 @@
     font-weight: 600;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: background-color 150ms, color 150ms;
+    transition: background-color 150ms, color 150ms, border-color 150ms;
     
     &.register {
-        background-color: v.$color-primary;
+        background-color: v.$primary-color;
         color: white;
         &:hover {
-            background-color: v.$color-primary-hover;
+            background-color: color.adjust(v.$primary-color, $lightness: -5%); 
         }
     }
 
     &.unregister {
-        background-color: white;
-        color: v.$color-error;
-        border-color: v.$color-error;
+        background-color: v.$bg-white;
+        color: v.$error-color;
+        border-color: v.$error-color;
+        
+        // Adjusting lightness here to ensure hover state is lighter than white background
         &:hover {
-            background-color: lighten(v.$color-error, 40%);
+            background-color: color.adjust(v.$error-color, $lightness: 30%); // Light red background
         }
+    }
+}
+
+.logout-button {
+    @include m.button-base(v.$error-color, v.$bg-white); 
+    width: auto; 
+    padding: 0.5rem 1rem; // Mer kompakt än submit-knappen
+    font-size: 0.9rem;
+    box-shadow: none; // Ingen skugga på länk-knappar
+
+    &:hover {
+        background-color: color.adjust(v.$error-color, $lightness: -10%); 
+        transform: none; // Ingen lyft-effekt, bara färgbyte
     }
 }
