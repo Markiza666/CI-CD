@@ -33,6 +33,7 @@ router.get('/meetups', auth, async (req: Request, res: Response) => {
     }
 });*/
 router.get("/", auth, async (req: Request, res: Response) => {
+	console.log("✅ /api/profile route hit");
 	try {
 		const userId = req.userId;
 

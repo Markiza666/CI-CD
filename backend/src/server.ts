@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config(); console.log("🌐 Render PORT:", process.env.PORT);
 import express from "express";
 import cors from "cors";
 import helmet from "helmet"; 
@@ -51,11 +51,30 @@ app.use("/api/auth", authRoutes);
 app.use("/api/meetups", meetupRoutes);
 app.use("/api/profile", profileRoutes);
 
+//Test route
+app.get("/api/test", (req, res) => {
+	res.json({ message: "✅ Test route works!" });
+});
+//End test route
+
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.error("🔥 Uncaught error:", err);
 	res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(process.env.PORT || 5000, () => {
-	console.log("🚀 API running on port", process.env.PORT || 5000);
+/*const PORT = Number(process.env.PORT) || 5000;
+app.listen(PORT, () => {
+	console.log(`🚀 API running on port ${PORT}`);
+});*/
+const PORT = process.env.PORT || "5000";
+
+app.listen(Number(PORT), "0.0.0.0", () => {
+	console.log(`🚀 API running on port ${PORT}`);
+});
+// 🔻 Fånga Render’s nedstängningssignal
+process.on("SIGTERM", () => {
+	console.log("🛑 SIGTERM received — shutting down gracefully");
+});
+process.on("SIGINT", () => {
+	console.log("🛑 SIGINT received — exiting via Ctrl+C");
 });

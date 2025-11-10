@@ -20,5 +20,8 @@ RUN npm prune --production
 # Expose the port your Express app runs on
 EXPOSE 5000
 
+# Healthcheck for Render (optional but recommended)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \CMD wget --no-verbose --tries=1 --spider http://localhost:5000/health || exit 1
+
 # Start the app
-CMD [ "npm", "start" ]
+CMD ["node", "dist/server.js"]
