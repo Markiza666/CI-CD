@@ -62,7 +62,15 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 	res.status(500).json({ error: "Internal server error" });
 });
 
-const PORT = Number(process.env.PORT) || 5000;
+/*const PORT = Number(process.env.PORT) || 5000;
+app.listen(PORT, () => {
+	console.log(`🚀 API running on port ${PORT}`);
+});*/
+const PORT = Number(process.env.PORT);
+if (!PORT) {
+	throw new Error("❌ Missing PORT from environment");
+}
+
 app.listen(PORT, () => {
 	console.log(`🚀 API running on port ${PORT}`);
 });
