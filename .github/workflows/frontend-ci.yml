@@ -66,3 +66,25 @@ jobs:
           BUCKET="${{ secrets.AWS_S3_BUCKET }}"
           TARGET_DIR=$( [ -d build/dist ] && echo build/dist || echo build/build )
           aws s3 sync "$TARGET_DIR" "s3://$BUCKET" --delete
+  deploy_dev:
+    if: github.ref == 'refs/heads/dev'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3 (dev)
+        run: |
+          BUCKET="${{ secrets.AWS_S3_BUCKET_DEV }}"
+          TARGET_DIR=$( [ -d build/dist ] && echo build/dist || echo build/build )
+          aws s3 sync "$TARGET_DIR" "s3://$BUCKET" --delete
