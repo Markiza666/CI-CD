@@ -128,7 +128,7 @@ const MeetupDetail: React.FC = () => {
             <header className={styles.detailHeader}>
                 <h1 className={styles.detailTitle}>{meetup.title}</h1>
                 <p className={styles.detailMeta}>
-                    <span className={styles.metaItem}>{formatDate(meetup.date)}</span>
+                    <span className={styles.metaItem}>{formatDate(meetup.date_time)}</span>
                     <span className={`${styles.metaItem} ${styles.location}`}>Location: {meetup.location}</span>
                 </p>
                 

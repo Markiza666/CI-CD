@@ -51,7 +51,7 @@ const CreateMeetupForm: React.FC = () => {
         setIsSubmitting(true);
 
         // Simple validation check
-        if (!formData.title || !formData.date || !formData.location) {
+        if (!formData.title || !formData.date_time || !formData.location) {
             setError('Please fill in Title, Date, and Location.');
             setIsSubmitting(false);
             return;
@@ -134,7 +134,7 @@ const CreateMeetupForm: React.FC = () => {
                         type="datetime-local" 
                         id="date" 
                         name="date" 
-                        value={formData.date} 
+                        value={formData.date_time} 
                         onChange={handleChange} 
                         required 
                     />
