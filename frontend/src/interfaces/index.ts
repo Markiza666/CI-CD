@@ -61,7 +61,7 @@ export interface Meetup {
     _id: string;
     title: string;
     description: string;
-    date: string; 
+    date_time: string; 
     location: string;
     organizer: string; // User ID
     
@@ -93,7 +93,7 @@ export interface Meetup {
 export interface NewMeetup {
     title: string;
     description: string;
-    date: string; // Typically sent as an ISO string (e.g., from datetime-local input)
+    date_time: string; // Typically sent as an ISO string (e.g., from datetime-local input)
     location: string;
     category: string;
     capacity: number;
@@ -105,7 +105,7 @@ export interface NewMeetup {
 export interface MeetupFilter {
     searchQuery: string;
     city?: string;
-    date?: Date | string;
+    date_time?: Date | string;
     isAttending?: boolean;
     // we may want to add filters for category, rating, etc. in the future.
 }
