@@ -113,4 +113,4 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/meetup
 JWT_SECRET=din-lokala-hemlighet
 ```
 → Kopiera till .env och fyll i dina egna värden.
-Mer info kommer snart kanske
+Mer info kommer snart kanske förhoppningsvis
