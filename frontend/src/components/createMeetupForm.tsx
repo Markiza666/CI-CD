@@ -4,6 +4,15 @@ import apiClient from '../api/apiClient';
 import { NewMeetup } from '../interfaces'; 
 import { useAuth } from '../context/authContext'; 
 
+// Hjälpfunktion för att formatera ISO till datetime-local
+const formatForDateTimeLocal = (isoString: string) => {
+	if (!isoString) return "";
+	const date = new Date(isoString);
+	// Tar bort sekunder och tidszon
+	return date.toISOString().slice(0, 16);
+};
+
+
 // AC 5.1: Component for creating a new Meetup event.
 const CreateMeetupForm: React.FC = () => {
     const navigate = useNavigate();
@@ -136,7 +145,7 @@ const CreateMeetupForm: React.FC = () => {
                         type="datetime-local" 
                         id="date_time" 
                         name="date_time" 
-                        value={formData.date_time} 
+						value={formatForDateTimeLocal(formData.date_time)} 
                         onChange={handleChange} 
                         required 
                     />
