@@ -42,9 +42,9 @@ jobs:
           name: frontend-build
           path: |
             frontend/dist
-            frontend/build
+            
 
-  deploy:
+  deploy_main:
     if: github.ref == 'refs/heads/main'   # deploy ENDAST på main
     needs: build
     runs-on: ubuntu-latest
@@ -61,11 +61,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Sync to S3
+      - name: Sync to S3 (main)
         run: |
-          BUCKET="${{ secrets.AWS_S3_BUCKET }}"
-          TARGET_DIR=$( [ -d build/dist ] && echo build/dist || echo build/build )
-          aws s3 sync "$TARGET_DIR" "s3://$BUCKET" --delete
+          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }} --delete
+
   deploy_dev:
     if: github.ref == 'refs/heads/dev'
     needs: build
@@ -85,6 +84,4 @@ jobs:
 
       - name: Sync to S3 (dev)
         run: |
-          BUCKET="${{ secrets.AWS_S3_BUCKET_DEV }}"
-          TARGET_DIR=$( [ -d build/dist ] && echo build/dist || echo build/build )
-          aws s3 sync "$TARGET_DIR" "s3://$BUCKET" --delete
+          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET_DEV }} --delete
