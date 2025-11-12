@@ -12,7 +12,7 @@ const CreateMeetupForm: React.FC = () => {
     const [formData, setFormData] = useState<NewMeetup>({
         title: '',
         description: '',
-        date: '', 
+        date_time: '', 
         location: '',
         category: 'Technology',
         capacity: 50,
