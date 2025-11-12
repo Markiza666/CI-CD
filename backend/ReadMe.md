@@ -112,4 +112,4 @@ PORT=5000
 DATABASE_URL=postgresql://user:pass@localhost:5432/meetup
 JWT_SECRET=din-lokala-hemlighet
 ```
-→ Kopiera till .env och fyll i dina egna värden
+→ Kopiera till .env och fyll i dina egna värden.
