@@ -76,7 +76,7 @@ const CreateMeetupForm: React.FC = () => {
             alert('Meetup successfully created!');
             
             // Redirect to the newly created meetup's detail page
-            const newMeetupId = response.data._id; 
+            const newMeetupId = response.data.id; 
             navigate(`/meetups/${newMeetupId}`);
 
         } catch (err: any) {
