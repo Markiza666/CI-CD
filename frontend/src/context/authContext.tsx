@@ -28,7 +28,7 @@ const getValidPayload = (token: string): JwtPayload | null => {
     const userId = payload.id || payload.sub || payload.userId; 
 
     if (!userId) { 
-        console.warn("JWT payload is missing the critical '_id', 'sub', or 'userId' field. Token ignored.");
+        console.warn("JWT payload is missing the critical 'id', 'sub', or 'userId' field. Token ignored.");
         return null;
     }
 

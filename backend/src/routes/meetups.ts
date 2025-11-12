@@ -132,7 +132,7 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 	const capacityCheck = await db.query(
 		`
    SELECT capacity, (
-     SELECT COUNT(*) FROM registrations WHERE meetup_id = $1
+     SELECT COUNT(*) FROM registrations WHERE meetupid = $1
    ) AS current FROM meetups WHERE id = $1
 `,
 		[meetupId]
@@ -143,13 +143,13 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 	}
 
     //await db.query(
-	  //   `INSERT INTO registrations (id, user_id, meetup_id) VALUES ($1, $2, $3)`,
+	  //   `INSERT INTO registrations (id, userid, meetupid) VALUES ($1, $2, $3)`,
 	    // [uuidv4(), req.userId, meetupId]
 	   //);
 
 	const { v4: uuidv4 } = await import("uuid"); //  funkar i CJS
 	await db.query(
-		`INSERT INTO registrations (id, user_id, meetup_id)
+		`INSERT INTO registrations (id, userid, meetupid)
   VALUES ($1, $2, $3)`,
 		[uuidv4(), req.userId, meetupId]
 	);
@@ -178,7 +178,7 @@ router.post("/", auth, async (req: Request, res: Response) => {
 router.delete("/:id/register", auth, async (req: Request, res: Response) => {
 	const userId = req.userId;
 	const result = await db.query(
-		`DELETE FROM registrations WHERE meetup_id = $1 AND user_id = $2`,
+		`DELETE FROM registrations WHERE meetupid = $1 AND userid = $2`,
 		[req.params.id, userId]
 	);
 	if (result.rowCount === 0)

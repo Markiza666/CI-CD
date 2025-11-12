@@ -10,8 +10,8 @@ const router = Router();
 router.get('/meetups', auth, async (req: Request, res: Response) => {
     const result = await db.query(`
     SELECT m.* FROM meetups m
-    JOIN registrations r ON r.meetup_id = m.id
-    WHERE r.user_id = $1`
+    JOIN registrations r ON r.meetupid = m.id
+    WHERE r.userid = $1`
   , [req.userId]);
     res.json(result.rows);
 });
@@ -39,7 +39,7 @@ router.get("/", auth, async (req: Request, res: Response) => {
 
 		// 1. Hämta användardata
 		const userResult = await db.query(
-			`SELECT id AS "_id", email, name AS "firstName", city FROM users WHERE id = $1`,
+			`SELECT id AS "id", email, name AS "firstName", city FROM users WHERE id = $1`,
 			[userId]
 		);
 		if (userResult.rowCount === 0) {
@@ -57,8 +57,8 @@ router.get("/", auth, async (req: Request, res: Response) => {
 		// 3. Hämta meetups som användaren deltar i (men inte har skapat)
 		const attendingMeetupsResult = await db.query(
 			`SELECT m.* FROM meetups m
-             JOIN registrations r ON r.meetup_id = m.id
-             WHERE r.user_id = $1 AND m.created_by != $1
+             JOIN registrations r ON r.meetupid = m.id
+             WHERE r.userid = $1 AND m.created_by != $1
              ORDER BY m.date DESC`,
 			[userId]
 		);
