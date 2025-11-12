@@ -13,6 +13,7 @@ const app = express();
 const allowedOrigins = [
 	"http://localhost:5173",
 	"https://backend-api-latest-5mz4.onrender.com",
+	"https://my-frontend-dev-markiza.s3.eu-north-1.amazonaws.com"
 ];
 
 const corsOptions = {
