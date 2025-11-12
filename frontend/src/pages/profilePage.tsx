@@ -61,7 +61,7 @@ const ProfilePage: React.FC = () => {
                             <Link to={`/meetups/${meetup._id}`} className={styles.meetupLink}>
                                 {meetup.title}
                             </Link>
-                            <p className={styles.meetupDetails}>{formatDate(meetup.date)} at {meetup.location}</p>
+                            <p className={styles.meetupDetails}>{formatDate(meetup.date_time)} at {meetup.location}</p>
                         </li>
                     ))}
                 </ul>

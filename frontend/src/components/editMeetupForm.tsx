@@ -45,12 +45,12 @@ const EditMeetupForm: React.FC = () => {
 
             // Format the date for the HTML 'datetime-local' input (YYYY-MM-DDTHH:mm)
             // Se till att tiden är i UTC eller anpassas efter vad servern förväntar sig.
-            const formattedDate = new Date(meetup.date).toISOString().slice(0, 16);
+            const formattedDate = new Date(meetup.date_time).toISOString().slice(0, 16);
 
             setFormData({
                 title: meetup.title,
                 description: meetup.description,
-                date: formattedDate,
+                date_time: formattedDate,
                 location: meetup.location,
                 category: meetup.category,
                 capacity: Number(meetup.capacity),
@@ -212,7 +212,7 @@ const EditMeetupForm: React.FC = () => {
                         type="datetime-local" 
                         id="date" 
                         name="date" 
-                        value={formData.date} 
+                        value={formData.date_time} 
                         onChange={handleChange} 
                         required 
                     />

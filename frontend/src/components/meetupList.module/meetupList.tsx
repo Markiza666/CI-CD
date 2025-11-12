@@ -64,7 +64,7 @@ const MeetupList: React.FC = () => {
                             <Link to={`/meetups/${meetup._id}`} className={styles.cardLink}>
                                 {meetup.title}
                             </Link>
-                            <p className={styles.cardDate}>{formatDate(meetup.date)}</p>
+                            <p className={styles.cardDate}>{formatDate(meetup.date_time)}</p>
                             <p className={styles.cardLocation}>Location: {meetup.location}</p>
                             <p className={styles.cardDescription}>{meetup.description}</p>
                         </div>
