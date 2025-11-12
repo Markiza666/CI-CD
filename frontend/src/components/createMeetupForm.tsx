@@ -29,10 +29,12 @@ const CreateMeetupForm: React.FC = () => {
 
     // --- KORRIGERING: Lägg till HTMLSelectElement i typen ---
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
+        const { name, value } = e.target;
         let newValue: string | number;
-
-        if (name === 'capacity') {
+		if (name === "date_time") {
+			// Konvertera datetime-local värdet till ISO-string
+			newValue = new Date(value).toISOString();
+		}else if (name === 'capacity') {
             // Se till att capacity sparas som ett nummer, inte en sträng
             newValue = parseInt(value) || 0;
         } else {
@@ -128,12 +130,12 @@ const CreateMeetupForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="date">Date and Time</label>
+                    <label htmlFor="date_time">Date and Time</label>
                     {/* Using datetime-local input for easy ISO string format in browsers */}
                     <input 
                         type="datetime-local" 
-                        id="date" 
-                        name="date" 
+                        id="date_time" 
+                        name="date_time" 
                         value={formData.date_time} 
                         onChange={handleChange} 
                         required 
