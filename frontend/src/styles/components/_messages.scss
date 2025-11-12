@@ -1,4 +1,5 @@
-@use '../abstracts/variables' as v;
+@use '../config/variables' as v;
+@use 'sass:color';
 
 .status-message {
     text-align: center;
@@ -6,23 +7,27 @@
     padding: 1rem;
     border-radius: 0.5rem;
     font-weight: 500;
+    border: 1px solid transparent; // Added for consistent box model
 }
 
 .loading {
-    color: v.$color-primary;
-    background-color: lighten(v.$color-primary, 40%);
+    border-color: v.$primary-color;
+    background-color: color.adjust(v.$primary-color, $lightness: 40%);
+    color: color.adjust(v.$primary-color, $lightness: -10%);
 }
 
 .error-message {
-    color: v.$color-error;
-    background-color: lighten(v.$color-error, 40%);
-    border-left: 4px solid v.$color-error;
+    border-color: v.$error-color;
+    background-color: color.adjust(v.$error-color, $lightness: 40%);
+    color: color.adjust(v.$error-color, $lightness: -10%);
 }
 
 .empty-message {
     text-align: center;
-    color: v.$color-text-secondary;
+    color: v.$text-color-secondary;
     padding: 2rem;
-    border: 1px dashed #d1d5db;
+    border: 1px dashed v.$border-color;
     border-radius: 0.5rem;
+    // Added background to distinguish it from the main background
+    background-color: v.$bg-white; 
 }

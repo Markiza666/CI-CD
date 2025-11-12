@@ -1,0 +1,106 @@
+@use '../../styles/config/variables' as v;
+@use '../../styles/abstracts/mixins' as m;
+@use 'sass:color';
+@use 'sass:math';
+@use 'sass:map';
+
+.meetupListPage {
+    max-width: v.$max-width;
+    margin: v.$spacing-unit * 2 auto;
+    
+    padding: 0 v.$spacing-unit; 
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .pageTitle {
+        font-size: v.$font-size-xl;
+        font-weight: 600;
+        
+        margin: v.$spacing-unit 0; 
+        
+        color: v.$text-dark-color;
+    }
+}
+    
+.statusMessage {
+    padding: v.$spacing-unit;
+    margin-bottom: v.$spacing-unit;
+    border-radius: v.$border-radius;
+    font-weight: 500;
+    width: 100%;
+
+    &.loading {
+        background-color: color.adjust(v.$primary-color, $lightness: 60%); 
+        color: v.$text-color;
+        border: 1px solid v.$border-color;
+        text-align: center;
+    }
+
+    &.error {
+        background-color: color.adjust(v.$error-color, $lightness: 50%); 
+        color: color.adjust(v.$error-color, $lightness: -15%);
+        text-align: center;
+    }
+
+    &.info {
+        background-color: v.$bg-secondary; 
+        color: v.$text-color;
+        text-align: center;
+    }
+}
+
+.meetupGrid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(1, 1fr); 
+
+    @media (min-width: map.get(v.$media-breakpoints, tablet)) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: map.get(v.$media-breakpoints, desktop)) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.meetupCard {
+    background-color: v.$bg-white;
+    padding: v.$spacing-unit;
+    border: 1px solid v.$border-color;
+    border-radius: v.$border-radius;
+    box-shadow: v.$shadow-default;
+    transition: all 300ms ease;
+
+    &:hover {
+        box-shadow: v.$shadow-hover;
+    }
+
+    .cardLink {
+        font-size: v.$font-size-lg;
+        font-weight: 600;
+        color: v.$primary-color;
+        display: block;
+        margin-bottom: math.div(v.$spacing-unit, 2);
+        text-decoration: none;
+
+        &:hover {
+            color: color.adjust(v.$primary-color, $lightness: -10%);
+        }
+    }
+
+    .cardDate, .cardLocation {
+        font-size: v.$font-size-sm;
+        color: v.$text-color-secondary;
+        margin-bottom: math.div(v.$spacing-unit, 4);
+    }
+
+    .cardDescription {
+        color: v.$text-color;
+        overflow: hidden;
+        display: -webkit-box;
+        @include m.line-clamp(2);
+        -webkit-box-orient: vertical;
+    }
+}

@@ -1,39 +1,99 @@
-@use '../abstracts/variables' as v;
-@use'../abstracts/mixins' as m;
+@use '../config/variables' as v;
+@use '../abstracts/mixins' as m;
+@use 'sass:color';
 
-.main-header {
-    background-color: v.$color-text; 
+.app-header { // Matchar header.tsx
+    background-color: v.$text-color; // Mörk bakgrund
     box-shadow: v.$shadow-default;
-    padding: v.$spacing-unit;
-    
-    .header-container {
-        @include m.breakpoint(desktop) {
-            max-width: v.$max-width;
-            margin: 0 auto;
-        }
+    padding: 1rem 0;
 
+    .header-contentainer { // Matchar header.tsx
+        // FIX: DIREKT INKLUDERING AV CONTAINER-LAYOUT LOGIKEN
+        max-width: v.$max-width;
+        margin-left: auto;
+        margin-right: auto;
+        
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }
+        padding: 0 v.$spacing-unit; // Horizontal padding för mobil
 
-    .app-logo {
-        color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .nav-list {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-
+        // Logotyp/Titel
         a {
-            color: white;
-            padding: 0.5rem 0;
+            text-decoration: none;
+        }
+
+        .header-title { // Matchar header.tsx
+            color: v.$accent-color;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+            padding: 0;
+            letter-spacing: 0.05em;
+            
             &:hover {
-                color: v.$color-primary;
+                opacity: 0.9;
+            }
+        }
+
+        .header-nav { // Matchar header.tsx
+            display: flex;
+            align-items: center;
+            gap: 1.5rem; 
+
+            .nav-link { // Matchar header.tsx
+                color: v.$text-light-color; 
                 text-decoration: none;
+                transition: color 0.2s;
+                font-weight: 500;
+
+                &:hover {
+                    color: v.$secondary-color; 
+                }
+            }
+
+            // --- Inloggad Användare & Profil ---
+            .profile-link-group { // Matchar header.tsx
+                display: flex;
+                align-items: center;
+
+                .user-profile-icon { // Matchar header.tsx
+                    @extend .nav-link; // Ärver baslänk-stilar
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem; 
+                    
+                    .user-icon {
+                        width: 1.25rem;
+                        height: 1.25rem;
+                    }
+                    
+                    .username-text { // Matchar header.tsx
+                        font-size: 0.9rem;
+                    }
+                }
+            }
+            
+            // Log Out button (använder en befintlig knappstil)
+            .meetup-button--secondary {
+                @include m.button-base(v.$error-color, v.$text-light-color); // Använd RÖTT för Log Out
+                padding: 0.5rem 1rem;
+                font-weight: 600;
+            }
+
+            // --- Utloggad Vy: Logga in/Registrera ---
+            .login-button { // Matchar header.tsx
+                @include m.button-base(v.$secondary-color, v.$text-color);
+                display: flex;
+                align-items: center;
+                padding: 0.5rem 1rem;
+                font-weight: 600;
+
+                .login-icon { // Matchar header.tsx
+                    width: 1rem;
+                    height: 1rem;
+                    margin-right: 0.4rem;
+                }
             }
         }
     }
