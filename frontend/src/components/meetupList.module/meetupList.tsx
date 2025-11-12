@@ -60,8 +60,8 @@ const MeetupList: React.FC = () => {
             ) : (
                 <div className={styles.meetupGrid}>
                     {meetups.map(meetup => (
-                        <div key={meetup._id} className={styles.meetupCard}>
-                            <Link to={`/meetups/${meetup._id}`} className={styles.cardLink}>
+                        <div key={meetup.id} className={styles.meetupCard}>
+                            <Link to={`/meetups/${meetup.id}`} className={styles.cardLink}>
                                 {meetup.title}
                             </Link>
                             <p className={styles.cardDate}>{formatDate(meetup.date_time)}</p>

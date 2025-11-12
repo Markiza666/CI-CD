@@ -7,7 +7,7 @@
  * NOTE: The password hash should NEVER be sent to the frontend.
  */
 export interface User {
-    _id: string;        // Unique ID, used as primary key
+    id: string;        // Unique ID, used as primary key
     email: string;      // User's email (unique)
     username?: string;
     firstName?: string; // Optional user details
@@ -20,7 +20,7 @@ export interface User {
  * This is used client-side to extract critical data like the user ID.
  */
 export interface JwtPayload {
-    _id?: string;        // The user's ID, used by the backend
+    id?: string;        // The user's ID, used by the backend
     sub?: string;
     userId?: string;
     username?: string;
@@ -58,7 +58,7 @@ export interface Review {
  * in App.tsx (UI rendering) and mock data.
  */
 export interface Meetup {
-    _id: string;
+    id: string;
     title: string;
     description: string;
     date_time: string; 

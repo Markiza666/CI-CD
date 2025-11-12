@@ -25,7 +25,7 @@ const getValidPayload = (token: string): JwtPayload | null => {
     
     if (!payload) return null;
     
-    const userId = payload._id || payload.sub || payload.userId; 
+    const userId = payload.id || payload.sub || payload.userId; 
 
     if (!userId) { 
         console.warn("JWT payload is missing the critical '_id', 'sub', or 'userId' field. Token ignored.");
@@ -41,7 +41,7 @@ const getValidPayload = (token: string): JwtPayload | null => {
 }
 
 const mapPayloadToUser = (payload: JwtPayload): User => {
-    const userId = payload._id || payload.sub || payload.userId || "";
+    const userId = payload.id || payload.sub || payload.userId || "";
     
     const primaryName = payload.username || payload.username; 
     let userIdentifier: string;
@@ -55,7 +55,7 @@ const mapPayloadToUser = (payload: JwtPayload): User => {
     }
     
     return {
-        _id: userId,
+        id: userId,
         email: payload.email,
         name: userIdentifier,
     } as User;

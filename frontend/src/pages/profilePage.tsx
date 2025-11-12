@@ -57,8 +57,8 @@ const ProfilePage: React.FC = () => {
             ) : (
                 <ul className={styles.meetupList}>
                     {meetups.map(meetup => (
-                        <li key={meetup._id} className={styles.meetupItem}>
-                            <Link to={`/meetups/${meetup._id}`} className={styles.meetupLink}>
+                        <li key={meetup.id} className={styles.meetupItem}>
+                            <Link to={`/meetups/${meetup.id}`} className={styles.meetupLink}>
                                 {meetup.title}
                             </Link>
                             <p className={styles.meetupDetails}>{formatDate(meetup.date_time)} at {meetup.location}</p>

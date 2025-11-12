@@ -17,7 +17,7 @@ const EditMeetupForm: React.FC = () => {
     
     // Get the actual user ID from the Context for authorization checks
     // Detta är säkrare än manuell tokenavkodning
-    const currentUserId = user?._id || null; 
+    const currentUserId = user?.id || null; 
 
     // State for form data, initialized as null until data is fetched
     const [formData, setFormData] = useState<NewMeetup | null>(null);

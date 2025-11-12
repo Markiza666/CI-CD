@@ -23,7 +23,7 @@ const MeetupDetail: React.FC = () => {
     const { isAuthenticated, user, loading } = useAuth(); 
     
     // GET ACTUAL USER ID FROM CONTEXT (Säkrare än manuell avkodning)
-    const currentUserId = user?._id || null; 
+    const currentUserId = user?.id || null; 
 
     // --- Data Fetching (AC 3.2) ---
     const fetchMeetupDetails = useCallback(async () => {
@@ -90,7 +90,7 @@ const MeetupDetail: React.FC = () => {
             const endpoint = isAttending ? '/meetups/unregister' : '/meetups/register';
             
             // AC 4.1: Call the registration/unregistration endpoint (token skickas via Interceptor)
-            await apiClient.post(endpoint, { meetupId: meetup._id });
+            await apiClient.post(endpoint, { meetupId: meetup.id });
             
             // Toggle local state and update participants count
             setIsAttending(!isAttending);
@@ -145,7 +145,7 @@ const MeetupDetail: React.FC = () => {
                     
                     {/* Edit Button (AC 5.2) - Only shown to creator */}
                     {isAuthenticated && currentUserId === meetup.creator && (
-                        <Link to={`/meetups/edit/${meetup._id}`} className={styles.editLinkButton}>
+                        <Link to={`/meetups/edit/${meetup.id}`} className={styles.editLinkButton}>
                             Edit Meetup
                         </Link>
                     )}
