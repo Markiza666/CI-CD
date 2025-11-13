@@ -18,7 +18,7 @@ RUN npm run build
 RUN npm prune --production
 
 # Expose the port your Express app runs on
-EXPOSE 5000
+EXPOSE 10000
 
 
 # Start the app
