@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
-# Installera endast production dependencies
+# Installera endast production dependencies 
 RUN npm ci --omit=dev
 
 # Expose port
