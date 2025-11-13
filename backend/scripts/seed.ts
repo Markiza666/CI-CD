@@ -11,46 +11,30 @@ const pool = new Pool({
 });
 
 async function main() {
-	// 1) Bas: extension + kolumner + DEFAULT för location (så seed alltid funkar)
+	// 1) Säkerställ rätt kolumner i meetups-tabellen
 	await pool.query(`
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-    ALTER TABLE meetups
-      ADD COLUMN IF NOT EXISTS "title"       text,
-      ADD COLUMN IF NOT EXISTS "description" text,
-      ADD COLUMN IF NOT EXISTS "startAt"     timestamptz,
-      ADD COLUMN IF NOT EXISTS "capacity"    integer,
-      ADD COLUMN IF NOT EXISTS "location"    text;
-
-    -- om location råkar vara NOT NULL utan default → sätt default
-    ALTER TABLE meetups ALTER COLUMN "location" SET DEFAULT 'Online';
+ALTER TABLE meetups
+  ADD COLUMN IF NOT EXISTS id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ADD COLUMN IF NOT EXISTS title TEXT NOT NULL,
+  ADD COLUMN IF NOT EXISTS description TEXT,
+  ADD COLUMN IF NOT EXISTS date_time TIMESTAMP, -- utan tidszon, kan vara NULL
+  ADD COLUMN IF NOT EXISTS location TEXT NOT NULL DEFAULT 'Online',
+  ADD COLUMN IF NOT EXISTS max_capacity INTEGER, -- kan vara NULL
+  ADD COLUMN IF NOT EXISTS host_id UUID, -- kan vara NULL
+  ADD COLUMN IF NOT EXISTS category meetup_category, -- ENUM-typen du skapade
+  ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'Europe/Stockholm');
   `);
 
-	// 2) Finns date_time-kolumnen?
-	const colCheck = await pool.query(`
-    SELECT 1
-    FROM information_schema.columns
-    WHERE table_name = 'meetups' AND column_name = 'date_time'
-    LIMIT 1
-  `);
-	const hasDateTime = (colCheck.rowCount ?? 0) > 0;
-
-	// 3) Seed – inkludera "location" i båda varianterna
-	const insertSQL = hasDateTime
-		? `
-      INSERT INTO meetups (id, "title", "description", "startAt", "capacity", "location", date_time)
-      VALUES
-        (gen_random_uuid(), 'React Meetup', 'Hooks, Zustand & RTK', NOW() + interval '3 days', 50, 'Online',       NOW() + interval '3 days'),
-        (gen_random_uuid(), 'DevOps Night', 'CI/CD på riktigt',     NOW() + interval '10 days', 40, 'Stockholm HQ', NOW() + interval '10 days')
-      ON CONFLICT DO NOTHING;
-    `
-		: `
-      INSERT INTO meetups (id, "title", "description", "startAt", "capacity", "location")
-      VALUES
-        (gen_random_uuid(), 'React Meetup', 'Hooks, Zustand & RTK', NOW() + interval '3 days', 50, 'Online'),
-        (gen_random_uuid(), 'DevOps Night', 'CI/CD på riktigt',     NOW() + interval '10 days', 40, 'Stockholm HQ')
-      ON CONFLICT DO NOTHING;
-    `;
+	// 2) Lägg in exempeldata
+	const insertSQL = `
+    INSERT INTO meetups (title, description, date_time, location, max_capacity, host_id, category)
+    VALUES
+      ('React Meetup', 'Hooks, Zustand & RTK', NOW() + interval '3 days', 'Online', 50, gen_random_uuid(), 'Tech'),
+      ('DevOps Night', 'CI/CD på riktigt', NOW() + interval '10 days', 'Stockholm HQ', 40, gen_random_uuid(), 'DevOps')
+    ON CONFLICT DO NOTHING;
+  `;
 
 	await pool.query(insertSQL);
 

@@ -49,7 +49,7 @@ router.get("/", auth, async (req: Request, res: Response) => {
 
 		// 2. Hämta meetups som användaren har skapat
 		const createdMeetupsResult = await db.query(
-			`SELECT * FROM meetups WHERE created_by = $1 ORDER BY date DESC`,
+			`SELECT * FROM meetups WHERE host_id = $1 ORDER BY date_time DESC`,
 			[userId]
 		);
 		const createdMeetups = createdMeetupsResult.rows;
@@ -57,9 +57,9 @@ router.get("/", auth, async (req: Request, res: Response) => {
 		// 3. Hämta meetups som användaren deltar i (men inte har skapat)
 		const attendingMeetupsResult = await db.query(
 			`SELECT m.* FROM meetups m
-             JOIN registrations r ON r.meetupid = m.id
-             WHERE r.userid = $1 AND m.created_by != $1
-             ORDER BY m.date DESC`,
+             JOIN registrations r ON r.meetup_id = m.id
+             WHERE r.user_id = $1 AND m.host_id != $1
+             ORDER BY m.date_time DESC`,
 			[userId]
 		);
 		const attendingMeetups = attendingMeetupsResult.rows;
