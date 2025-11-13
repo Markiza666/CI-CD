@@ -60,12 +60,12 @@ const MeetupFilterForm: React.FC<MeetupFilterFormProps> = ({ onFilterChange, cur
 
                 {/* City Filter (US 4.2) - Simple text input for now */}
                 <div className={`${styles.formGroupInput} ${styles.formGroupCity}`}>
-                    <label htmlFor="city" className={styles.formLabel}>City</label>
+                    <label htmlFor="location" className={styles.formLabel}>Location</label>
                     <input 
                         type="text"
-                        id="city"
-                        name="city"
-                        value={filters.city || ''}
+                        id="location"
+                        name="location"
+                        value={filters.location || ''}
                         onChange={handleChange}
                         placeholder="e.g., Stockholm"
                         className={styles.inputFieldStandard}

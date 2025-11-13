@@ -104,7 +104,7 @@ export interface NewMeetup {
  */
 export interface MeetupFilter {
     searchQuery: string;
-    city?: string;
+    location?: string;
     date_time?: Date | string;
     isAttending?: boolean;
     // we may want to add filters for category, rating, etc. in the future.
