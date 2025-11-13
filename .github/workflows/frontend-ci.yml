@@ -1,5 +1,9 @@
 name: Frontend CI/CD
 
+permissions:
+  id-token: write   # krävs för OIDC (assume-role till AWS)
+  contents: read    # krävs för att kunna läsa repo-innehåll
+
 on:
   workflow_dispatch: {}
   pull_request:
