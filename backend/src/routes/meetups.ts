@@ -7,7 +7,53 @@ import authMiddleware from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req: Request, res: Response) => {
+	try {
+		console.log("🔍 Incoming query params:", req.query);
+
+		const rawQ = req.query.q ?? req.query.searchQuery ?? "";
+		const q = Array.isArray(rawQ) ? rawQ[0] : rawQ;
+		const term = String(q).trim();
+
+		const whereParts: string[] = [];
+		const params: any[] = [];
+
+		// Sök i titel/description
+		if (term) {
+			params.push(`%${term}%`);
+			whereParts.push(`(title ILIKE $${params.length} OR description ILIKE $${params.length})`);
+		}
+
+		// Filtrera på location
+		if (req.query.location) {
+			params.push(`%${req.query.location}%`);
+			whereParts.push(`location ILIKE $${params.length}`);
+		}
+
+		// Filtrera på meetups som användaren deltar i
+		if (req.query.attending && req.userId) {
+			params.push(req.userId);
+			whereParts.push(`id IN (
+        SELECT meetup_id FROM registrations WHERE user_id = $${params.length}
+      )`);
+		}
+
+		const whereSQL = whereParts.length ? `WHERE ${whereParts.join(" AND ")}` : "";
+		const orderSQL = `ORDER BY date_time ASC NULLS LAST`;
+
+		const sql = `SELECT * FROM meetups ${whereSQL} ${orderSQL}`;
+		console.log("🔍 Running query:", sql, params);
+
+		const result = await db.query(sql, params);
+		return res.json(result.rows);
+	} catch (err: any) {
+		console.error("GET /meetups failed:", err?.code, err?.message, err?.detail);
+		return res.status(500).json({ error: "Failed to fetch meetups" });
+	}
+});
+
+
+/*router.get("/", async (req, res) => {
 	try {
 		console.log("🔍 Incoming query params:", req.query);
 
@@ -36,12 +82,21 @@ router.get("/", async (req, res) => {
 		console.error("GET /meetups failed:", err?.code, err?.message, err?.detail);
 		return res.status(500).json({ error: "Failed to fetch meetups" });
 	}
-});
+});*/
 
 router.get("/:id", async (req: Request, res: Response) => {
 	try {
-		const result = await db.query(
+		/*const result = await db.query(
 			`SELECT * FROM meetups WHERE id = $1`,
+			[req.params.id]
+		);*/
+		const result = await db.query(
+			`SELECT m.*, 
+          COALESCE(array_agg(r.user_id), '{}') AS participants
+   FROM meetups m
+   LEFT JOIN registrations r ON r.meetup_id = m.id
+   WHERE m.id = $1
+   GROUP BY m.id`,
 			[req.params.id]
 		);
 
