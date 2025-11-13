@@ -57,7 +57,7 @@ const mapPayloadToUser = (payload: JwtPayload): User => {
     return {
         id: userId,
         email: payload.email,
-        name: userIdentifier,
+        firstName: userIdentifier,
     } as User;
 }
 
