@@ -27,6 +27,8 @@ router.get("/", async (req: Request, res: Response) => {
 			? "date"
 			: colset.has("startAt")
 				? `"startAt"`
+				: colset.has("date_time")
+					? "date_time"
 				: null;
 		const hasDescription = colset.has("description");
 
@@ -72,37 +74,20 @@ router.get("/", async (req: Request, res: Response) => {
 				const id1 = uuidv4();
 				const id2 = uuidv4();
 
-				if (nameCol && dateCol) {
-					// name/date-variant
+				if (colset.has("title") && colset.has("date_time")) {
+					// title/date_time-variant
 					await db.query(
 						`
-            INSERT INTO meetups (id, ${nameCol}, ${hasDescription ? "description," : ""
-						} ${dateCol}, capacity)
-            VALUES
-              ($1, 'React Meetup'${hasDescription ? ", 'Hooks, Zustand & RTK'" : ""
-						}, NOW() + interval '3 days', 50),
-              ($2, 'DevOps Night'${hasDescription ? ", 'CI/CD på riktigt'" : ""
-						}, NOW() + interval '10 days', 40)
-            ON CONFLICT DO NOTHING
-          `,
-						[id1, id2]
-					);
-				} else if (colset.has("title") && colset.has("startAt")) {
-					// title/"startAt"-variant
-					await db.query(
-						`
-            INSERT INTO meetups (id, "title", ${hasDescription ? "description," : ""
-						} "startAt", capacity)
-            VALUES
-              ($1, 'React Meetup'${hasDescription ? ", 'Hooks, Zustand & RTK'" : ""
-						}, NOW() + interval '3 days', 50),
-              ($2, 'DevOps Night'${hasDescription ? ", 'CI/CD på riktigt'" : ""
-						}, NOW() + interval '10 days', 40)
-            ON CONFLICT DO NOTHING
-          `,
+    INSERT INTO meetups (id, "title", ${hasDescription ? "description," : ""} date_time, max_capacity)
+    VALUES
+      ($1, 'React Meetup'${hasDescription ? ", 'Hooks, Zustand & RTK'" : ""}, NOW() + interval '3 days', 50),
+      ($2, 'DevOps Night'${hasDescription ? ", 'CI/CD på riktigt'" : ""}, NOW() + interval '10 days', 40)
+    ON CONFLICT DO NOTHING
+    `,
 						[id1, id2]
 					);
 				}
+
 
 				// hämta igen efter seed
 				result = await db.query(sql, params);
@@ -131,7 +116,7 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 
 	const capacityCheck = await db.query(
 		`
-   SELECT capacity, (
+   SELECT max_capacity, (
      SELECT COUNT(*) FROM registrations WHERE meetupid = $1
    ) AS current FROM meetups WHERE id = $1
 `,
@@ -163,7 +148,7 @@ router.post("/", auth, async (req: Request, res: Response) => {
 
 	try {
 		await db.query(
-			`INSERT INTO meetups (id, title, description, date_time, capacity)
+			`INSERT INTO meetups (id, title, description, date_time, max_capacity)
        VALUES ($1, $2, $3, $4, $5)`,
 			[uuidv4(), title, description, date_time, capacity]
 		);

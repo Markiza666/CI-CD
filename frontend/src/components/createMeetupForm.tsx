@@ -43,7 +43,7 @@ const CreateMeetupForm: React.FC = () => {
 		if (name === "date_time") {
 			// Konvertera datetime-local värdet till ISO-string
 			newValue = new Date(value).toISOString();
-		}else if (name === 'capacity') {
+		}else if (name === 'max_capacity') {
             // Se till att capacity sparas som ett nummer, inte en sträng
             newValue = parseInt(value) || 0;
         } else {
@@ -121,8 +121,8 @@ const CreateMeetupForm: React.FC = () => {
                         {/* Lägg till dina faktiska kategorier här */}
                         <option value="Technology">Technology</option>
                         <option value="Nature">Nature</option>
-                        <option value="Art">Art & Culture</option>
-                        <option value="Food">Food & Drink</option>
+						<option value="Art & Culture">Art & Culture</option>
+						<option value="Food & Drink">Food & Drink</option>
                     </select>
                 </div>
                 
