@@ -73,7 +73,7 @@ export interface Meetup {
     category: string; 
     time: string; // E.g. "18:00"
     host: string; // The name of the host (can be the same as creator, but easier to render)
-    capacity: number;
+    max_capacity: number;
     attendees: string;
     isAttending: boolean; // Flag for current user
     isPast: boolean; // Flag to indicate if the meeting has passed
@@ -96,7 +96,7 @@ export interface NewMeetup {
     date_time: string; // Typically sent as an ISO string (e.g., from datetime-local input)
     location: string;
     category: string;
-    capacity: number;
+    max_capacity: number;
 }
 
 /**

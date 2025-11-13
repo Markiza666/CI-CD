@@ -53,7 +53,7 @@ const EditMeetupForm: React.FC = () => {
                 date_time: formattedDate,
                 location: meetup.location,
                 category: meetup.category,
-                capacity: Number(meetup.capacity),
+                max_capacity: Number(meetup.max_capacity),
             });
             
         } catch (err: any) {
@@ -225,7 +225,7 @@ const EditMeetupForm: React.FC = () => {
                         type="number" 
                         id="capacity" 
                         name="capacity" 
-                        value={formData.capacity} 
+                        value={formData.max_capacity} 
                         onChange={handleChange} 
                         min="1"
                         required 

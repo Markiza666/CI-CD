@@ -24,7 +24,7 @@ const CreateMeetupForm: React.FC = () => {
         date_time: '', 
         location: '',
         category: 'Technology',
-        capacity: 50,
+        max_capacity: 50,
     });
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -152,12 +152,12 @@ const CreateMeetupForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="capacity">Max Participants (Capacity)</label>
+                    <label htmlFor="max_capacity">Max Participants (Capacity)</label>
                     <input 
                         type="number" 
-                        id="capacity" 
-                        name="capacity" 
-                        value={formData.capacity} 
+                        id="max_capacity" 
+                        name="max_capacity" 
+                        value={formData.max_capacity} 
                         onChange={handleChange} 
                         min="1"
                         required 
