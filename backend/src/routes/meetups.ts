@@ -169,7 +169,7 @@ router.post("/:id/register", authMiddleware, async (req: Request, res: Response)
        VALUES ($1, $2, NOW())`,
 			[userId, meetupId]
 		);
-
+		
 		return res.status(201).json({ message: "Registered successfully" });
 	} catch (err: any) {
 		console.error("POST /:id/register failed:", err?.code, err?.message, err?.detail);
@@ -193,11 +193,22 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
 	try {
 		const newMeetupId = uuidv4();
 
-		await db.query(
-			`INSERT INTO meetups (id, title, description, date_time, max_capacity, host_id, category, location)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		/*await db.query(
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
 			[newMeetupId, title, description, date_time, max_capacity, hostId, category, location]
-		);
+		);*/
+		//TEST börjar här
+		const query = `
+      INSERT INTO meetups (id, title, description, date_time, max_capacity, host_id, category, location)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `;
+		const values = [newMeetupId, title, description, date_time, max_capacity, hostId, category, location];
+
+		// 🔍 Lägg loggen här
+		console.log("Running INSERT:", query, values);
+
+		await db.query(query, values);
+		//TEST slutar här
 
 		res.status(201).json({ message: "✅ Meetup skapad", id: newMeetupId });
 	} catch (err) {

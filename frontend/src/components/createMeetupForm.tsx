@@ -69,6 +69,7 @@ const CreateMeetupForm: React.FC = () => {
         }
 
         try {
+			console.log("Sending meetup:", formData); //Test log
             // AC 5.1: Call the protected API endpoint (POST /api/meetups)
             // The Auth interceptor adds the token automatically.
             const response = await apiClient.post('/meetups', formData);
