@@ -23,12 +23,12 @@ router.get("/", async (req: Request, res: Response) => {
 			: colset.has("title")
 				? `"title"`
 				: null;
-		const dateCol = colset.has("date")
-			? "date"
+		const dateCol = colset.has("date_time")
+			? "date_time"
 			: colset.has("startAt")
 				? `"startAt"`
-				: colset.has("date_time")
-					? "date_time"
+				: colset.has("date")
+					? "date"
 				: null;
 		const hasDescription = colset.has("description");
 
@@ -123,7 +123,7 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 		[meetupId]
 	);
 
-	if (capacityCheck.rows[0].current >= capacityCheck.rows[0].capacity) {
+	if (capacityCheck.rows[0].current >= capacityCheck.rows[0].max_capacity) {
 		return res.status(400).json({ error: "Meetup is full" });
 	}
 
