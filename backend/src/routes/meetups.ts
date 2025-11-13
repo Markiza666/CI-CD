@@ -143,14 +143,14 @@ router.post("/:id/register", auth, async (req: Request, res: Response) => {
 });
 // Route to create a new meetup TESTING PURPOSES
 router.post("/", auth, async (req: Request, res: Response) => {
-	const { title, description, date_time, capacity } = req.body;
+	const { title, description, date_time, max_capacity } = req.body;
 	const { v4: uuidv4 } = await import("uuid");
 
 	try {
 		await db.query(
 			`INSERT INTO meetups (id, title, description, date_time, max_capacity)
        VALUES ($1, $2, $3, $4, $5)`,
-			[uuidv4(), title, description, date_time, capacity]
+			[uuidv4(), title, description, date_time, max_capacity]
 		);
 		res.status(201).json({ message: "✅ Meetup skapad" });
 	} catch (err) {
