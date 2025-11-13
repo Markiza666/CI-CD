@@ -1,25 +1,33 @@
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies (inklusive dev för att kunna bygga)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY tsconfig.json ./
+COPY src ./src
+
+# Build TypeScript
+RUN npm run build
+
+# Stage 2: Run
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Kopiera bara dist och package.json från builder
+COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies)
-RUN npm install
+# Installera endast production dependencies
+RUN npm ci --omit=dev
 
-# Copy the rest of the project
-COPY . .
-
-# Build TypeScript to dist/
-RUN npm run build
-
-# Remove devDependencies for production
-RUN npm prune --production
-
-# Expose the port your Express app runs on
+# Expose port
 EXPOSE 10000
 
-
-# Start the app
+# Starta appen
 CMD ["node", "dist/server.js"]
