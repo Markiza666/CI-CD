@@ -40,8 +40,17 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
 	try {
-		const result = await db.query(
+		/*const result = await db.query(
 			`SELECT * FROM meetups WHERE id = $1`,
+			[req.params.id]
+		);*/
+		const result = await db.query(
+			`SELECT m.*, 
+          COALESCE(array_agg(r.user_id), '{}') AS participants
+   FROM meetups m
+   LEFT JOIN registrations r ON r.meetup_id = m.id
+   WHERE m.id = $1
+   GROUP BY m.id`,
 			[req.params.id]
 		);
 

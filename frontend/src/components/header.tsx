@@ -32,7 +32,7 @@ const Header: React.FC = () => {
                             <span className="profile-link-group">
                                 <Link to="/profile" className="user-profile-icon" title="View Profile">
                                     <User className="user-icon" />
-                                    {user && <span className="username-text">{user.username}</span>}
+                                    {user && <span className="username-text">{user.firstName}</span>}
                                 </Link>
                             </span>
                             
