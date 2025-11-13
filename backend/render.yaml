@@ -1,11 +1,9 @@
 services:
   - type: web
     name: backend-api-latest
-    runtime: node
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
