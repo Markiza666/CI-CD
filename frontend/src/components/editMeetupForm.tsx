@@ -103,7 +103,7 @@ const EditMeetupForm: React.FC = () => {
     // --- Handler for form field changes ---
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         // Hantera konvertering av kapacitet till nummer
-        const value = e.target.name === 'capacity' 
+        const value = e.target.name === 'max_capacity' 
             ? parseInt(e.target.value) || 0 
             : e.target.value;
 
@@ -207,24 +207,24 @@ const EditMeetupForm: React.FC = () => {
 
                 {/* Date and Time */}
                 <div className="form-group">
-                    <label htmlFor="date">Date and Time</label>
+                    <label htmlFor="date_time">Date and Time</label>
                     <input 
                         type="datetime-local" 
-                        id="date" 
-                        name="date" 
+                        id="date_time" 
+                        name="date_time" 
                         value={formData.date_time} 
                         onChange={handleChange} 
                         required 
                     />
                 </div>
                 
-                {/* Capacity */}
+                {/* Max_Capacity */}
                 <div className="form-group">
-                    <label htmlFor="capacity">Max Participants (Capacity)</label>
+                    <label htmlFor="max_capacity">Max Participants (Capacity)</label>
                     <input 
                         type="number" 
-                        id="capacity" 
-                        name="capacity" 
+                        id="max_capacity" 
+                        name="max_capacity"
                         value={formData.max_capacity} 
                         onChange={handleChange} 
                         min="1"

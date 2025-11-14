@@ -87,10 +87,12 @@ const MeetupDetail: React.FC = () => {
         }
 
         try {
-            const endpoint = isAttending ? '/meetups/unregister' : '/meetups/register';
+            const endpoint = isAttending 
+                ? `/meetups/${meetup.id}/unregister` 
+                : `/meetups/${meetup.id}/register`;
             
             // AC 4.1: Call the registration/unregistration endpoint (token skickas via Interceptor)
-            await apiClient.post(endpoint, { meetupId: meetup.id });
+            await apiClient.post(endpoint, {});
             
             // Toggle local state and update participants count
             setIsAttending(!isAttending);
