@@ -1,0 +1,73 @@
+{
+	"info": {
+		"name": "Backend API Dev",
+		"_postman_id": "12345678-abcd-efgh-ijkl-9876543210",
+		"description": "Collection för att testa auth och profile endpoints mot Render-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"kent@example.com\",\n  \"password\": \"dittLösenord\"\n}"
+				},
+				"url": {
+					"raw": "https://backend-api-dev-jd5g.onrender.com/api/auth/login",
+					"protocol": "https",
+					"host": [
+						"backend-api-dev-jd5g",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://backend-api-dev-jd5g.onrender.com/api/profile",
+					"protocol": "https",
+					"host": [
+						"backend-api-dev-jd5g",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"api",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
