@@ -54,3 +54,5 @@ After running `npm run dev`, open your web browser and navigate to the address p
 -React Documentation: [https://react.dev/Sass](https://react.dev/Sass)
 -Module System (@use): [https://sass-lang.com/documentation/at-rules/use](https://sass-lang.com/documentation/at-rules/use)
 ci test Fri Oct 31 21:22:54 CET 2025 # ändra nåt i frontend/
+
+Fine
