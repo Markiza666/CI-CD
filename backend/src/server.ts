@@ -10,6 +10,8 @@ import profileRoutes from "./routes/profile";
 
 const app = express();
 
+console.log("Backend v3.2 deployed")
+
 const allowedOrigins = [
 	"http://localhost:5173",
 	"https://backend-api-dev-jd5g.onrender.com",

@@ -22,6 +22,17 @@ pool.connect()
 		process.exit(1);
 	});
 
+// Wrapper med logging
 export default {
-	query: (text: string, params?: any[]) => pool.query(text, params),
+	query: (text: string, params?: any[]) => {
+		console.log("📜 SQL Query:", text);
+		if (params && params.length > 0) {
+			console.log("🔧 Parameters:", params);
+		}
+		return pool.query(text, params);
+	},
 };
+//Bortkommenterad på grund av test se ovan
+/*export default {
+	query: (text: string, params?: any[]) => pool.query(text, params),
+};*/
