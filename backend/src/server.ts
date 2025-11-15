@@ -16,7 +16,8 @@ const allowedOrigins = [
 	"http://localhost:5173",
 	"https://backend-api-dev-jd5g.onrender.com",
 	"https://backend-api-latest-5mz4.onrender.com",
-	"https://my-frontend-dev-markiza.s3.eu-north-1.amazonaws.com" // Example frontend URL
+	//"https://my-frontend-dev-markiza.s3.eu-north-1.amazonaws.com",
+	"http://my-frontend-dev-markiza.s3-website.eu-north-1.amazonaws.com" 
 ];
 
 const corsOptions = {
