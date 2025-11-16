@@ -85,14 +85,21 @@ const MeetupDetail: React.FC = () => {
             alert('Cannot determine user ID. Please log in again.');
             return;
         }
-
-        try {
-            const endpoint = isAttending 
+		
+       try {
+            /*const endpoint = isAttending 
                 ? `/meetups/${meetup.id}/unregister` 
                 : `/meetups/${meetup.id}/register`;
             
             // AC 4.1: Call the registration/unregistration endpoint (token skickas via Interceptor)
-            await apiClient.post(endpoint, {});
+            await apiClient.post(endpoint, {});*/
+			   if (isAttending) {
+				   // Unregister → DELETE /:id/register
+				   await apiClient.delete(`/meetups/${meetup.id}/register`);
+			   } else {
+				   // Register → POST /:id/register
+				   await apiClient.post(`/meetups/${meetup.id}/register`, {});
+			   }
             
             // Toggle local state and update participants count
             setIsAttending(!isAttending);
@@ -111,6 +118,8 @@ const MeetupDetail: React.FC = () => {
             setError(msg);
         }
     };
+	
+		
 
     const formatDate = (dateString: Date | string) => {
         return new Date(dateString).toLocaleDateString('sv-SE', {
