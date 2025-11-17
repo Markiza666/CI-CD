@@ -86,11 +86,26 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
 	try {
-		/*const result = await db.query(
-			`SELECT * FROM meetups WHERE id = $1`,
-			[req.params.id]
-		);*/
 		const result = await db.query(
+			`SELECT m.*,
+              COALESCE(
+                json_agg(
+                  json_build_object(
+                    'id', u.id,
+                    'username', u.username,
+                    'registered_at', r.registered_at
+                  )
+                ) FILTER (WHERE u.id IS NOT NULL),
+                '[]'
+              ) AS participants
+       FROM meetups m
+       LEFT JOIN registrations r ON r.meetup_id = m.id
+       LEFT JOIN users u ON r.user_id = u.id
+       WHERE m.id = $1
+       GROUP BY m.id`,
+			[req.params.id]
+		);
+		/*const result = await db.query(
 			`SELECT m.*, 
           COALESCE(array_agg(r.user_id), '{}') AS participants
    FROM meetups m
@@ -98,7 +113,7 @@ router.get("/:id", async (req: Request, res: Response) => {
    WHERE m.id = $1
    GROUP BY m.id`,
 			[req.params.id]
-		);
+		);*/
 
 		if (result.rowCount === 0) {
 			return res.status(404).json({ error: "Meetup not found" });

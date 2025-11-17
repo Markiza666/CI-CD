@@ -174,11 +174,18 @@ const MeetupDetail: React.FC = () => {
                 {meetup.participants.length === 0 ? (
                     <p className={styles.emptyMessage}>Be the first to join this meetup!</p>
                 ) : (
-                    <p className={styles.participantCount}>
-                        {meetup.participants.length} people are attending.
-                    </p>
-                )}
-            </section>
+					<ul className={styles.participantList}>
+						{meetup.participants.map((p: any) => (
+							<li key={p.id} className={styles.participantItem}>
+								<span className={styles.participantName}>{p.username}</span>
+								<span className={styles.registeredAt}>
+									(joined {new Date(p.registered_at).toLocaleDateString('sv-SE')})
+								</span>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
         </article>
     );
 };
