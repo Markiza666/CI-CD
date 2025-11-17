@@ -40,7 +40,13 @@ const MeetupDetail: React.FC = () => {
             // FIX: Axios Interceptor sköter Authorization-headern
             const response = await apiClient.get<Meetup>(`/meetups/${id}`);
             const fetchedMeetup = response.data;
-            
+
+			// 👇 Debug-loggning av participants
+			if (fetchedMeetup.participants) {
+				console.log("Fetched participants IDs:", fetchedMeetup.participants.map(p => p.id));
+				console.log("Fetched participants full objects:", fetchedMeetup.participants);
+			}
+			
             setMeetup(fetchedMeetup);
             
             // Determine if the current user is attending (AC 4.1)
