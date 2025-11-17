@@ -6,7 +6,7 @@
 export interface User {
   id: string;        // Unique ID, primary key
   email: string;      // User's email (unique)
-  firstName: string;  // Mappas från DB-kolumn 'name' via SQL alias
+  name: string;  // Mappas från DB-kolumn 'name' via SQL alias
   created_at: string   // ISO date string from DB 
 }
 
@@ -41,7 +41,12 @@ export interface Review {
     rating: number; // T.ex. 1 till 5
 }
 
-
+export interface Participant {
+	id: string;
+	name: string;
+	email: string;
+	registered_at: string;
+}
 export interface Meetup {
     id: string;
     title: string;
@@ -52,8 +57,7 @@ export interface Meetup {
 	max_capacity: number;
 	host_id: string;
 	created_at: string;  // ISO date string
-
-	participants: string[];
+	participants: Participant[];
 
 	// UI/extra fields (optional)
 	organizer?: string;

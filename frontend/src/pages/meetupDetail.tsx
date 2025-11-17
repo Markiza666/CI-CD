@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/apiClient';
-import { Meetup, User } from '../interfaces'; 
+import { Meetup, Participant, User } from '../interfaces'; 
 import { useAuth } from '../context/authContext'; 
 // FIX: decodeJwt behöver inte importeras här längre
 import { Link } from 'react-router-dom';
@@ -46,7 +46,7 @@ const MeetupDetail: React.FC = () => {
             // Determine if the current user is attending (AC 4.1)
             // Låter denna köras även om currentUserId är null (görs i if-satsen nedan)
             if (currentUserId && fetchedMeetup.participants) {
-                setIsAttending(fetchedMeetup.participants.includes(currentUserId));
+                setIsAttending(fetchedMeetup.participants.some((p: Participant) => p.id === currentUserId));
             } else {
                 setIsAttending(false);
             }
@@ -93,31 +93,76 @@ const MeetupDetail: React.FC = () => {
             
             // AC 4.1: Call the registration/unregistration endpoint (token skickas via Interceptor)
             await apiClient.post(endpoint, {});*/
-			   if (isAttending) {
+			   if (isAttending) {/*
 				   // Unregister → DELETE /:id/register
 				   await apiClient.delete(`/meetups/${meetup.id}/register`);
+				   const newParticipants = meetup.participants.filter(
+					   (p: Participant) => p.id !== currentUserId
+				   );
+				   setMeetup({ ...meetup, participants: newParticipants });
+				   setIsAttending(false);
 			   } else {
 				   // Register → POST /:id/register
 				   await apiClient.post(`/meetups/${meetup.id}/register`, {});
-			   }
+				   const newParticipant: Participant = {
+					   id: currentUserId,
+					   name: user?.name || "You",
+					   email: user?.email || "",
+					   registered_at: new Date().toISOString(),
+				   };
+			   
             
             // Toggle local state and update participants count
-            setIsAttending(!isAttending);
+            /*setIsAttending(!isAttending);
             if (meetup.participants) {
                 const newParticipants = isAttending 
                     ? meetup.participants.filter(uid => uid !== currentUserId) // Unregister: remove ID
                     : [...meetup.participants, currentUserId];                 // Register: add ID
-                
-                setMeetup({...meetup, participants: newParticipants});
+                */
+                /*setMeetup({
+					...meetup, 
+					participants: [ ...meetup.participants, newParticipant]
+				});
+				setIsAttending(true);
             }
 
             alert(isAttending ? 'Successfully unregistered.' : 'Successfully registered!');
         } catch (err: any) {
             console.error("Registration failed:", err);
             const msg = err.response?.data?.message || 'Failed to update registration status.';
-            setError(msg);
-        }
-    };
+            setError(msg);*/
+				// Unregister → DELETE /:id/register
+				const response = await apiClient.delete<Participant>(`/meetups/${meetup.id}/register`);
+
+				// Ta bort den deltagare som backend returnerar
+				const removed = response.data;
+				setMeetup({
+					...meetup,
+					participants: meetup.participants.filter(p => p.id !== removed.id),
+				});
+				setIsAttending(false);
+				alert('Successfully unregistered.');
+			} else {
+				// Register → POST /:id/register
+				const response = await apiClient.post<Participant>(`/meetups/${meetup.id}/register`, {});
+
+				// Lägg till den deltagare som backend returnerar
+				const newParticipant = response.data;
+				setMeetup({
+					...meetup,
+					participants: [...meetup.participants, newParticipant],
+				});
+				setIsAttending(true);
+				alert('Successfully registered!');
+			}
+		} catch (err: any) {
+			console.error("Registration failed:", err);
+			const msg = err.response?.data?.error || 'Failed to update registration status.';
+			setError(msg);
+		}
+	};
+    
+    
 	
 		
 
@@ -175,11 +220,17 @@ const MeetupDetail: React.FC = () => {
                     <p className={styles.emptyMessage}>Be the first to join this meetup!</p>
                 ) : (
 					<ul className={styles.participantList}>
-						{meetup.participants.map((p: any) => (
+						{meetup.participants.map((p: Participant) => (
 							<li key={p.id} className={styles.participantItem}>
-								<span className={styles.participantName}>{p.username}</span>
+								<span className={styles.participantName}>{p.name}</span>
 								<span className={styles.registeredAt}>
-									(joined {new Date(p.registered_at).toLocaleDateString('sv-SE')})
+									(joined {new Date(p.registered_at).toLocaleDateString('sv-SE', {
+										year: 'numeric',
+										month: 'short',
+										day: 'numeric',
+										hour: '2-digit',
+										minute: '2-digit'
+									})})
 								</span>
 							</li>
 						))}

@@ -72,7 +72,7 @@ const ProfilePage: React.FC = () => {
     return (
         <div className={styles.profilePage}>
             <header className={styles.profileHeader}>
-                <h1 className={styles.title}>Welcome, {user.firstName || user.email}!</h1>
+                <h1 className={styles.title}>Welcome, {user.name || user.email}!</h1>
                 <button type='button'
                     onClick={logout}
                     className={styles.logoutButton}
@@ -84,7 +84,7 @@ const ProfilePage: React.FC = () => {
             <section className={styles.userDetails}>
                 <h2 className={styles.sectionTitle}>Your Details</h2>
                 <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Name:</strong> {user.firstName}</p>
+                <p><strong>Name:</strong> {user.name}</p>
                 <p><strong>Joined:</strong> {formatDate(user.created_at)}</p>
             </section>
 

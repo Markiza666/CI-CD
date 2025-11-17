@@ -87,12 +87,13 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
 	try {
 		const result = await db.query(
-			`SELECT m.*,
+			`SELECT m.id, m.title, m.description, m.date_time, m.location, m.category, m.max_capacity, m.host_id,
               COALESCE(
                 json_agg(
                   json_build_object(
                     'id', u.id,
-                    'username', u.username,
+                    'name', u.name,
+                    'email', u.email,
                     'registered_at', r.registered_at
                   )
                 ) FILTER (WHERE u.id IS NOT NULL),
@@ -218,7 +219,6 @@ router.post("/:id/register", authMiddleware, async (req: Request, res: Response)
 		}
 
 		const { max_capacity, current } = capacityCheck.rows[0];
-
 		if (current >= max_capacity) {
 			return res.status(400).json({ error: "Meetup is full" });
 		}
@@ -233,13 +233,34 @@ router.post("/:id/register", authMiddleware, async (req: Request, res: Response)
 			return res.status(400).json({ error: "Already registered" });
 		}
 
+
 		// Lägg till registrering
-		await db.query(
+		const insertResult = await db.query(
 			`INSERT INTO registrations (user_id, meetup_id, registered_at)
-       VALUES ($1, $2, NOW())`,
+       VALUES ($1, $2, NOW())
+			RETURNING registered_at`,
 			[userId, meetupId]
 		);
-		
+		//test
+		const registeredAt = insertResult.rows[0].registered_at;
+		const userResult = await db.query(
+			`SELECT id, name, email FROM users WHERE id = $1`,
+			[userId]
+		);
+
+		if (userResult.rowCount === 0) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		const { id, name, email } = userResult.rows[0];
+
+		const participant = {
+			id,
+			name,
+			email,
+			registered_at: registeredAt
+		};
+		//test
 		return res.status(201).json({ message: "Registered successfully" });
 	} catch (err: any) {
 		console.error("POST /:id/register failed:", err?.code, err?.message, err?.detail);
@@ -296,8 +317,43 @@ router.delete("/:id/register", authMiddleware, async (req: Request, res: Respons
 			return res.status(401).json({ error: "User not authenticated" });
 		}
 
+		// Kontrollera att registreringen finns
+		const existing = await db.query(
+			`SELECT r.registered_at, u.id, u.name, u.email
+       FROM registrations r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.user_id = $1 AND r.meetup_id = $2`,
+			[userId, meetupId]
+		);
+
+		if (existing.rowCount === 0) {
+			return res.status(404).json({ error: "Not registered for this meetup" });
+		}
+
+		const participant = existing.rows[0];
+
+		// Ta bort registreringen
+		await db.query(
+			`DELETE FROM registrations WHERE user_id = $1 AND meetup_id = $2`,
+			[userId, meetupId]
+		);
+
+		// Returnera det borttagna Participant‑objektet
+		return res.status(200).json({
+			id: participant.id,
+			name: participant.name,
+			email: participant.email,
+			registered_at: participant.registered_at
+		});
+	} catch (err: any) {
+		console.error("DELETE /:id/register failed:", err?.code, err?.message, err?.detail);
+		return res.status(500).json({ error: "Failed to unregister from meetup" });
+	}
+});
+
+		export default router;
 		// Kontrollera att meetup finns
-		const meetupCheck = await db.query(
+		/*const meetupCheck = await db.query(
 			`SELECT 1 FROM meetups WHERE id = $1`,
 			[meetupId]
 		);
@@ -325,11 +381,11 @@ router.delete("/:id/register", authMiddleware, async (req: Request, res: Respons
 		console.error("DELETE /:id/register failed:", err?.code, err?.message, err?.detail);
 		return res.status(500).json({ error: "Failed to unregister from meetup" });
 	}
-});
+});*/
 
 
 
 
 
-export default router;
+
 
