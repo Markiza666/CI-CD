@@ -84,7 +84,6 @@ export interface NewMeetup {
     max_capacity: number;
 }
 
-
 export interface MeetupFilter {
     searchQuery: string;
     location?: string;
