@@ -174,9 +174,38 @@ router.get("/users/:id/registrations", authMiddleware, async (req: Request, res:
 		if (userCheck.rowCount === 0) {
 			return res.status(404).json({ error: "User not found" });
 		}
+		// Hämta framtida meetups
+		const upcomingResult = await db.query(
+			`SELECT m.id, m.title, m.description, m.date_time, m.location, m.category, m.max_capacity, r.registered_at
+       FROM registrations r
+       JOIN meetups m ON r.meetup_id = m.id
+       WHERE r.user_id = $1 AND m.date_time > NOW()
+       ORDER BY m.date_time ASC`,
+			[userId]
+		);
 
+		// Hämta tidigare meetups
+		const pastResult = await db.query(
+			`SELECT m.id, m.title, m.description, m.date_time, m.location, m.category, m.max_capacity, r.registered_at
+       FROM registrations r
+       JOIN meetups m ON r.meetup_id = m.id
+       WHERE r.user_id = $1 AND m.date_time <= NOW()
+       ORDER BY m.date_time DESC`,
+			[userId]
+		);
+
+		return res.json({
+			user_id: userId,
+			upcoming: upcomingResult.rows,
+			past: pastResult.rows
+		});
+	} catch (err: any) {
+		console.error("GET /users/:id/meetups failed:", err?.code, err?.message, err?.detail);
+		return res.status(500).json({ error: "Failed to fetch user meetups" });
+	}
+});
 		// Hämta alla meetups som användaren är registrerad på
-		const meetups = await db.query(
+		/*const meetups = await db.query(
 			`SELECT m.id, m.title, m.description, m.date_time, m.location, m.category, m.max_capacity, r.registered_at
        FROM registrations r
        JOIN meetups m ON r.meetup_id = m.id
@@ -193,7 +222,7 @@ router.get("/users/:id/registrations", authMiddleware, async (req: Request, res:
 		console.error("GET /users/:id/registrations failed:", err?.code, err?.message, err?.detail);
 		return res.status(500).json({ error: "Failed to fetch user registrations" });
 	}
-});
+});*/
 
 
 router.post("/:id/register", authMiddleware, async (req: Request, res: Response) => {
