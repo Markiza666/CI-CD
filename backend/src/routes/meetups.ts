@@ -261,7 +261,8 @@ router.post("/:id/register", authMiddleware, async (req: Request, res: Response)
 			registered_at: registeredAt
 		};
 		//test
-		return res.status(201).json({ message: "Registered successfully" });
+		//return res.status(201).json({ message: "Registered successfully" });
+		return res.status(201).json(participant);
 	} catch (err: any) {
 		console.error("POST /:id/register failed:", err?.code, err?.message, err?.detail);
 		return res.status(500).json({ error: "Failed to register for meetup" });
