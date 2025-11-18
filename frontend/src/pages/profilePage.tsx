@@ -22,7 +22,8 @@ const ProfilePage: React.FC = () => {
 
 		const fetchUserMeetups = async () => {
 			try {
-				const registrationsResponse = await apiClient.get(`/users/${user.id}/registrations`);
+				// ✅ Justerad URL för att matcha backend mount: /api/meetups
+				const registrationsResponse = await apiClient.get(`/meetups/users/${user.id}/registrations`);
 				setUpcoming(registrationsResponse.data.upcoming);
 				setPast(registrationsResponse.data.past);
 
