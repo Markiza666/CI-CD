@@ -219,27 +219,38 @@ const MeetupDetail: React.FC = () => {
                 <h2 className={styles.sectionTitle}>Description</h2>
                 <p className={styles.descriptionText}>{meetup.description}</p>
             </section>
-
-            <section className={`${styles.detailSection} ${styles.participantsSection}`}>
-                <h2 className={styles.sectionTitle}>Attendees ({meetup.participants.length})</h2>
-                {meetup.participants.length === 0 ? (
-                    <p className={styles.emptyMessage}>Be the first to join this meetup!</p>
-                ) : (
+				
+			<section className={`${styles.detailSection} ${styles.participantsSection}`}>
+				<h2 className={styles.sectionTitle}>
+					Attendees ({meetup.participants.length})
+				</h2>
+				{meetup.participants.length === 0 ? (
+					<p className={styles.emptyMessage}>Be the first to join this meetup!</p>
+				) : (
 					<ul className={styles.participantList}>
-						{meetup.participants.map((p: Participant) => (
-							<li key={p.id} className={styles.participantItem}>
-								<span className={styles.participantName}>{p.name}</span>
-								<span className={styles.registeredAt}>
-									(joined {new Date(p.registered_at).toLocaleDateString('sv-SE', {
-										year: 'numeric',
-										month: 'short',
-										day: 'numeric',
-										hour: '2-digit',
-										minute: '2-digit'
-									})})
-								</span>
-							</li>
-						))}
+						{meetup.participants.map((p: Participant, idx) => {
+							// 👇 Debug-loggning inline
+							console.log(`Participant ${idx}: id=${p.id}, name=${p.name}`);
+
+							return (
+								<li key={p.id ?? `${p.email}-${idx}`} className={styles.participantItem}>
+									<span className={styles.participantName}>
+										{p.name} <small>(debug id: {p.id})</small>
+									</span>
+									<span className={styles.registeredAt}>
+										(joined{" "}
+										{new Date(p.registered_at).toLocaleDateString("sv-SE", {
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+											hour: "2-digit",
+											minute: "2-digit",
+										})}
+										)
+									</span>
+								</li>
+							);
+						})}
 					</ul>
 				)}
 			</section>
