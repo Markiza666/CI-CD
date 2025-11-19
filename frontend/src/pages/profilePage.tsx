@@ -32,11 +32,12 @@ const ProfilePage: React.FC = () => {
 
 				// 🔑 Merge profile data into context
 				updateUser({
+					id: user.id,
 					name: profileData.name,
 					email: profileData.email,
 					created_at: profileData.created_at,
 				});
-				console.log("Efter updateUser, user i context:", profileData.name, profileData.email, profileData.created_at);
+				console.log("Efter updateUser, user i context:", profileData);
 
 				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
@@ -49,7 +50,7 @@ const ProfilePage: React.FC = () => {
 		};
 
 		fetchUserMeetups();
-	}, [isAuthenticated, user?.id, updateUser]);
+	}, [isAuthenticated, user?.id]);
 
 	const formatDate = (dateString: Date | string) => {
 		return new Date(dateString).toLocaleDateString('sv-SE', {
