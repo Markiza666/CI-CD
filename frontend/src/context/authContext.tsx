@@ -71,9 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [token, setToken] = useState<string | null>(initialToken);
 
 	// Funktion för att uppdatera användardata
-	const updateUser = (newUser: Partial<User>) => {
+	const updateUser = useCallback((newUser: Partial<User>) => {
 		setUser(prev => prev ? { ...prev, ...newUser } : (newUser as User));
-	};
+	}, []);
 
     const logout = useCallback(() => {
         setIsAuthenticated(false);
