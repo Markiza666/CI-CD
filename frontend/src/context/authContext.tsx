@@ -14,6 +14,7 @@ interface AuthContextType {
     login: (token: string) => void;
     logout: () => void;
     loading: boolean;
+updateUser: (newUser: Partial<User>)=> void;  // Ny funktion för att uppdatera användardata
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,6 +70,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState<boolean>(true);
     const [token, setToken] = useState<string | null>(initialToken);
 
+	// Funktion för att uppdatera användardata
+	const updateUser = (newUser: Partial<User>) => {
+		setUser(prev => prev ? { ...prev, ...newUser } : (newUser as User));
+	};
+
     const logout = useCallback(() => {
         setIsAuthenticated(false);
         setUser(null);
@@ -120,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         loading,
         token,
+		updateUser, // Lägg till funktionen i context-värdet
     };
 
     return (

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import styles from '../pages/profilePage.module.scss';
 
 const ProfilePage: React.FC = () => {
-	const { isAuthenticated, user, logout } = useAuth();
+	const { isAuthenticated, user, logout, updateUser} = useAuth();
 	const [upcoming, setUpcoming] = useState<Meetup[]>([]);
 	const [past, setPast] = useState<Meetup[]>([]);
 	const [createdMeetups, setCreatedMeetups] = useState<Meetup[]>([]);
@@ -28,6 +28,15 @@ const ProfilePage: React.FC = () => {
 				setPast(registrationsResponse.data.past);
 
 				const profileResponse = await apiClient.get(`/profile`);
+				const profileData = profileResponse.data;
+
+				// 🔑 Merge profile data into context
+				updateUser({
+					name: profileData.name,
+					email: profileData.email,
+					created_at: profileData.created_at,
+				});
+
 				setCreatedMeetups(profileResponse.data.createdMeetups);
 			} catch (err: any) {
 				console.error("Failed to fetch user meetups:", err);
@@ -39,7 +48,7 @@ const ProfilePage: React.FC = () => {
 		};
 
 		fetchUserMeetups();
-	}, [isAuthenticated, user?.id]);
+	}, [isAuthenticated, user?.id, updateUser]);
 
 	const formatDate = (dateString: Date | string) => {
 		return new Date(dateString).toLocaleDateString('sv-SE', {
