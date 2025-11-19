@@ -5,9 +5,9 @@
 
 export interface User {
   id: string;        // Unique ID, primary key
-  email: string;      // User's email (unique)
-  name: string;  // Mappas från DB-kolumn 'name' via SQL alias
-  created_at: string   // ISO date string from DB 
+  email?: string;     // User's email (unique)
+  name?: string;      // Mappas från DB-kolumn 'name' via SQL alias
+  created_at?: string;   // ISO date string from DB 
 }
 
 

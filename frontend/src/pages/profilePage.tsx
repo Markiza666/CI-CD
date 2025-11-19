@@ -36,6 +36,7 @@ const ProfilePage: React.FC = () => {
 					email: profileData.email,
 					created_at: profileData.created_at,
 				});
+				console.log("Efter updateUser, user i context:", profileData.name, profileData.email, profileData.created_at);
 
 				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
