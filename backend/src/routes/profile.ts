@@ -39,8 +39,9 @@ router.get("/", auth, async (req: Request, res: Response) => {
 
 		// 1. Hämta användardata
 		const userResult = await db.query(
-			`SELECT id AS "id", email, name AS "firstName", created_at 
-   FROM users WHERE id = $1`,
+			`SELECT id, email, name, created_at 
+   FROM users 
+   WHERE id = $1`,
 			[userId]
 		);
 		if (userResult.rowCount === 0) {
