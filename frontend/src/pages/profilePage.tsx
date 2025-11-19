@@ -37,7 +37,7 @@ const ProfilePage: React.FC = () => {
 					created_at: profileData.created_at,
 				});
 
-				setCreatedMeetups(profileResponse.data.createdMeetups);
+				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
 				console.error("Failed to fetch user meetups:", err);
 				const msg = err.response?.data?.error || 'Could not load meetups.';
