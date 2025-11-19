@@ -6,13 +6,14 @@ import { Link } from 'react-router-dom';
 import styles from '../pages/profilePage.module.scss';
 
 const ProfilePage: React.FC = () => {
-	const { isAuthenticated, user, logout, updateUser} = useAuth();
+	const { isAuthenticated, user, logout, updateUser } = useAuth();
 	const [upcoming, setUpcoming] = useState<Meetup[]>([]);
 	const [past, setPast] = useState<Meetup[]>([]);
 	const [createdMeetups, setCreatedMeetups] = useState<Meetup[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	// 🔹 Hämtar profilinfo
 	useEffect(() => {
 		if (!isAuthenticated || !user?.id) {
 			setIsLoading(false);
@@ -20,28 +21,42 @@ const ProfilePage: React.FC = () => {
 			return;
 		}
 
-		const fetchUserMeetups = async () => {
+		const fetchProfile = async () => {
 			try {
-				// ✅ Justerad URL för att matcha backend mount: /api/meetups
-				const registrationsResponse = await apiClient.get(`/meetups/users/${user.id}/registrations`);
-				setUpcoming(registrationsResponse.data.upcoming);
-				setPast(registrationsResponse.data.past);
-
 				const profileResponse = await apiClient.get(`/profile`);
 				const profileData = profileResponse.data;
 
-				// 🔑 Merge profile data into context
 				updateUser({
-					id: user.id,
+					id: user.id, // behåll samma id
 					name: profileData.name,
 					email: profileData.email,
 					created_at: profileData.created_at,
 				});
+
 				console.log("Efter updateUser, user i context:", profileData);
 
 				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
-				console.error("Failed to fetch user meetups:", err);
+				console.error("Failed to fetch profile:", err);
+				const msg = err.response?.data?.error || 'Could not load profile.';
+				setError(msg);
+			}
+		};
+
+		fetchProfile();
+	}, [isAuthenticated, user?.id]);
+
+	// 🔹 Hämtar meetups
+	useEffect(() => {
+		if (!isAuthenticated || !user?.id) return;
+
+		const fetchMeetups = async () => {
+			try {
+				const registrationsResponse = await apiClient.get(`/meetups/users/${user.id}/registrations`);
+				setUpcoming(registrationsResponse.data.upcoming);
+				setPast(registrationsResponse.data.past);
+			} catch (err: any) {
+				console.error("Failed to fetch meetups:", err);
 				const msg = err.response?.data?.error || 'Could not load meetups.';
 				setError(msg);
 			} finally {
@@ -49,12 +64,13 @@ const ProfilePage: React.FC = () => {
 			}
 		};
 
-		fetchUserMeetups();
+		fetchMeetups();
 	}, [isAuthenticated, user?.id]);
 
 	const formatDate = (dateString: Date | string) => {
 		return new Date(dateString).toLocaleDateString('sv-SE', {
-			year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+			year: 'numeric', month: 'long', day: 'numeric',
+			hour: '2-digit', minute: '2-digit'
 		});
 	};
 
@@ -90,10 +106,7 @@ const ProfilePage: React.FC = () => {
 		<div className={styles.profilePage}>
 			<header className={styles.profileHeader}>
 				<h1 className={styles.title}>Welcome, {user?.name || user?.email}!</h1>
-				<button type='button'
-					onClick={logout}
-					className={styles.logoutButton}
-				>
+				<button type='button' onClick={logout} className={styles.logoutButton}>
 					Logout
 				</button>
 			</header>

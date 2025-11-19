@@ -23,11 +23,9 @@ const getValidPayload = (token: string): JwtPayload | null => {
     if (!token) return null;
 
     const payload = decodeJwt(token);
-    
     if (!payload) return null;
     
     const userId = payload.id || payload.sub || payload.userId; 
-
     if (!userId) { 
         console.warn("JWT payload is missing the critical 'id', 'sub', or 'userId' field. Token ignored.");
         return null;
@@ -43,10 +41,9 @@ const getValidPayload = (token: string): JwtPayload | null => {
 
 const mapPayloadToUser = (payload: JwtPayload): User => {
     const userId = payload.id || payload.sub || payload.userId || "";
-    
     const primaryName = payload.username || payload.username; 
+
     let userIdentifier: string;
-    
     if (primaryName) {
         userIdentifier = primaryName;
     } else if (payload.email) {
@@ -92,9 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsAuthenticated(true);
 
             localStorage.setItem(AUTH_TOKEN_KEY, newToken);
-
             apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-
         } else {
             console.error("Attempted login with an invalid or expired token. Logging out.");
             logout(); 
@@ -108,7 +103,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (payload) {
                 setUser(mapPayloadToUser(payload));
                 setIsAuthenticated(true);
-                
                 apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`; 
             } else {
                 logout();
@@ -116,10 +110,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         setLoading(false);
-        
     }, [logout, token]);
 
-    const value = {
+	const value: AuthContextType = {
         isAuthenticated,
         user,
         login, 
