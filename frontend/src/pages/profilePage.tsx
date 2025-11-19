@@ -27,13 +27,13 @@ const ProfilePage: React.FC = () => {
 				const profileData = profileResponse.data;
 
 				updateUser({
-					id: user.id, // behåll samma id
+					id: profileData.id,
 					name: profileData.name,
 					email: profileData.email,
 					created_at: profileData.created_at,
 				});
 
-				console.log("Efter updateUser, user i context:", profileData);
+				console.log("Efter updateUser, user i context:", user);
 
 				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
