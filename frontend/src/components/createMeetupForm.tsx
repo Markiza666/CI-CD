@@ -67,16 +67,19 @@ const CreateMeetupForm: React.FC = () => {
             setIsSubmitting(false);
             return;
         }
+		// 🔹 Ny validering: datumet måste vara idag eller framåt
+		const selectedDate = new Date(formData.date_time);
+		const now = new Date();
+		if (selectedDate < now) {
+			setError("You cannot create a meetup in the past.");
+			setIsSubmitting(false);
+			return;
+		}
 
         try {
 			console.log("Sending meetup:", formData); //Test log
-            // AC 5.1: Call the protected API endpoint (POST /api/meetups)
-            // The Auth interceptor adds the token automatically.
             const response = await apiClient.post('/meetups', formData);
-            
             alert('Meetup successfully created!');
-            
-            // Redirect to the newly created meetup's detail page
             const newMeetupId = response.data.id; 
             navigate(`/meetups/${newMeetupId}`);
 
@@ -149,6 +152,7 @@ const CreateMeetupForm: React.FC = () => {
 						value={formatForDateTimeLocal(formData.date_time)} 
                         onChange={handleChange} 
                         required 
+						min={new Date().toISOString().slice(0, 16)} // 🔹 dagens datum/tid
                     />
                 </div>
 
