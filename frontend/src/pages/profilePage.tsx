@@ -26,14 +26,18 @@ const ProfilePage: React.FC = () => {
 				const profileResponse = await apiClient.get(`/profile`);
 				const profileData = profileResponse.data;
 				console.log("Profile API response:", profileData);
-				updateUser({
+				/*updateUser({
 					id: profileData.id,
 					name: profileData.name,
 					email: profileData.email,
 					created_at: profileData.created_at,
+				});*/
+				updateUser({
+					created_at: profileData.user.created_at,
+					name: profileData.user.name,
+					email: profileData.user.email,
 				});
-
-				console.log("Efter updateUser, user i context:", user);
+				//console.log("Efter updateUser, user i context:", user);
 
 				setCreatedMeetups(profileData.createdMeetups);
 			} catch (err: any) {
