@@ -25,7 +25,7 @@ const ProfilePage: React.FC = () => {
 			try {
 				const profileResponse = await apiClient.get(`/profile`);
 				const profileData = profileResponse.data;
-
+				console.log("Profile API response:", profileData);
 				updateUser({
 					id: profileData.id,
 					name: profileData.name,
