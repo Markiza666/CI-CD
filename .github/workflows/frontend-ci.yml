@@ -65,7 +65,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync to S3 (main)
-        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }}/main --delete
+        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }}/main/ --delete
 
   deploy_dev:
     if: github.ref == 'refs/heads/dev'
@@ -86,4 +86,4 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync to S3 (dev)
-        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }}/dev --delete
+        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }}/dev/ --delete
