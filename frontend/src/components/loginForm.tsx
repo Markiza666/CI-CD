@@ -23,6 +23,7 @@ const LoginForm: React.FC = () => {
     // Determine where the user came from (default to /profile). Used for protected routes redirection.
     const state = location.state as any;
     const from = state?.from || '/';
+	const registered = state?.registered || false;
 
     const { login } = useAuth();
 
@@ -57,6 +58,13 @@ const LoginForm: React.FC = () => {
     return (
         <div className="form-container">
             <h2 className="form-title">Log In</h2>
+			
+			{/* Flash message från RegisterForm */}
+			{registered && (
+				<p className="success-message">
+					Registration successful! Please log in.
+				</p>
+			)}
             
             {/* Error Message Display */}
             {error && (
