@@ -177,8 +177,10 @@ router.post("/:id/register", authMiddleware, async (req: Request, res: Response)
 		}
 
 		// Kontrollera att meetup finns och hämta kapacitet
+		//Lagt till datumkontroll här
 		const capacityCheck = await db.query(
 			`SELECT max_capacity,
+			date_time,
               (SELECT COUNT(*) FROM registrations WHERE meetup_id = $1) AS current
        FROM meetups
        WHERE id = $1`,
