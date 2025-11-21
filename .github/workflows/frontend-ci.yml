@@ -45,10 +45,9 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist
-            
 
   deploy_main:
-    if: github.ref == 'refs/heads/main'   # deploy ENDAST på main
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -61,14 +60,12 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # ANVÄNDER NYCKLAR (Korrekt för den nya IAM User)
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync to S3 (main)
-        run: |
-          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }} --delete
+        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET_MAIN }} --delete
 
   deploy_dev:
     if: github.ref == 'refs/heads/dev'
@@ -84,12 +81,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # FIX: Bytar från role-to-assume till Access Keys
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }} <-- Borttagen/Ignorerad
 
       - name: Sync to S3 (dev)
-        run: |
-          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET_DEV }} --delete
+        run: aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET_DEV }} --delete
