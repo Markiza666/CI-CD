@@ -1,101 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
-// AC 7.3: Import the common interfaces for consistency
-import { User, Meetup } from '../interfaces'; 
+import { Meetup } from '../interfaces/index';
+import { useAuth } from '../context/authContext';
+import { Link } from 'react-router-dom';
+import styles from '../pages/profilePage.module.scss';
 
-// AC 7.2: Component responsible for displaying protected user data.
 const ProfilePage: React.FC = () => {
-    // State now uses the imported types User and Meetup
-    const [user, setUser] = useState<User | null>(null);
-    const [attendingMeetups, setAttendingMeetups] = useState<Meetup[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
+	const { isAuthenticated, user, logout, updateUser } = useAuth();
+	const [upcoming, setUpcoming] = useState<Meetup[]>([]);
+	const [past, setPast] = useState<Meetup[]>([]);
+	const [createdMeetups, setCreatedMeetups] = useState<Meetup[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        
-        // AC 7.1: Security Check 1 - If no token exists, redirect to login
-        if (!token) {
-            navigate('/login');
-            return;
-        }
+	// 🔹 Hämtar profilinfo
+	useEffect(() => {
+		if (!isAuthenticated || !user?.id) {
+			setIsLoading(false);
+			setError('You must be logged in to view your profile.');
+			return;
+		}
 
-        const fetchProfileData = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                // AC 7.2 & 7.3: Call P1's protected API (GET /api/user/profile)
-                const response = await apiClient.get('/user/profile');
-                const { user, attendingMeetups } = response.data;
-                
-                setUser(user);
-                setAttendingMeetups(attendingMeetups || []);
-            } catch (err: any) {
-                // AC 7.2: Security Check 2 - Handle token expiration or invalid token (401/403 errors)
-                if (err.response?.status === 401 || err.response?.status === 403) {
-                    localStorage.removeItem('authToken');
-                    navigate('/login');
-                } else {
-                    setError('Could not load profile data. Please try again later.'); 
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        };
+		const fetchProfile = async () => {
+			try {
+				const profileResponse = await apiClient.get(`/profile`);
+				const profileData = profileResponse.data;
+				console.log("Profile API response:", profileData);
+				/*updateUser({
+					id: profileData.id,
+					name: profileData.name,
+					email: profileData.email,
+					created_at: profileData.created_at,
+				});*/
+				updateUser({
+					created_at: profileData.user.created_at,
+					name: profileData.user.name,
+					email: profileData.user.email,
+				});
+				//console.log("Efter updateUser, user i context:", user);
 
-        fetchProfileData();
-    }, [navigate]);
-    
-    // Loading state
-    if (isLoading) return <p className="status-message loading">Loading your profile...</p>;
-    
-    // Error state
-    if (error) return <p className="status-message error">{error}</p>;
-    
-    // Not Logged In state
-    if (!user) return <p className="status-message">You must be logged in to view this page.</p>;
+				setCreatedMeetups(profileData.createdMeetups);
+			} catch (err: any) {
+				console.error("Failed to fetch profile:", err);
+				const msg = err.response?.data?.error || 'Could not load profile.';
+				setError(msg);
+			}
+		};
 
-    return (
-        <div className="profile-page"> 
-            <h1 className="page-title">My Profile</h1>
-            
-            {/* User Information (AC 7.3) */}
-            <section className="profile-section user-info-card"> 
-                <h2 className="section-title">User Information</h2>
-                <p><strong>Email:</strong> {user.email}</p>
-                {/* Assuming user has an 'id' property or similar */}
-                <p><strong>User ID:</strong> {user._id || 'N/A'}</p> 
-            </section>
+		fetchProfile();
+	}, [isAuthenticated, user?.id]);
 
-            {/* Attending Meetups (AC 7.3) */}
-            <section className="profile-section meetups-card">
-                <h2 className="section-title">My Registered Meetups</h2>
-                
-                {attendingMeetups.length > 0 ? (
-                    <ul className="meetup-list">
-                        {attendingMeetups.map((meetup) => (
-                            // FIX: Using meetup._id if that's what the API returns, or meetup.id if that's in your shared interface.
-                            // I'm using meetup._id which is standard, assuming your shared interface uses it.
-                            <li key={meetup._id} className="meetup-list-item"> 
-                                {/* FIX: Using meetup._id for the Link, too. */}
-                                <Link to={`/meetups/${meetup._id}`} className="meetup-title-link"> 
-                                    {meetup.title}
-                                </Link>
-                                <span className="meetup-date-location">
-                                    {new Date(meetup.date).toLocaleDateString()}
-                                    {meetup.location}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="empty-message">You are not registered for any meetups yet.</p>
-                )}
-            </section>
-        </div>
-    );
+	// 🔹 Hämtar meetups
+	useEffect(() => {
+		if (!isAuthenticated || !user?.id) return;
+
+		const fetchMeetups = async () => {
+			try {
+				const registrationsResponse = await apiClient.get(`/meetups/users/${user.id}/registrations`);
+				setUpcoming(registrationsResponse.data.upcoming);
+				setPast(registrationsResponse.data.past);
+			} catch (err: any) {
+				console.error("Failed to fetch meetups:", err);
+				const msg = err.response?.data?.error || 'Could not load meetups.';
+				setError(msg);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchMeetups();
+	}, [isAuthenticated, user?.id]);
+
+	const formatDate = (dateString: Date | string) => {
+		return new Date(dateString).toLocaleDateString('sv-SE', {
+			year: 'numeric', month: 'long', day: 'numeric',
+			hour: '2-digit', minute: '2-digit'
+		});
+	};
+
+	const MeetupListSection: React.FC<{ title: string, meetups: Meetup[], showBadge?: boolean }> = ({ title, meetups, showBadge }) => (
+		<section className={styles.meetupListSection}>
+			<h2 className={styles.listTitle}>{title} ({meetups.length})</h2>
+			{meetups.length === 0 ? (
+				<p className={styles.emptyMessage}>No meetups found here.</p>
+			) : (
+				<ul className={styles.meetupList}>
+					{meetups.map(meetup => (
+						<li key={meetup.id} className={styles.meetupItem}>
+							<Link to={`/meetups/${meetup.id}`} className={styles.meetupLink}>
+								{meetup.title}
+							</Link>
+							<p className={styles.meetupDetails}>
+								{formatDate(meetup.date_time)} at {meetup.location}
+							</p>
+							{showBadge && (
+								<span className={styles.attendingBadge}>✔ You are attending</span>
+							)}
+						</li>
+					))}
+				</ul>
+			)}
+		</section>
+	);
+
+	if (isLoading) return <p className="status-message loading">Loading profile...</p>;
+	if (error) return <p className="status-message error">{error}</p>;
+
+	return (
+		<div className={styles.profilePage}>
+			<header className={styles.profileHeader}>
+				<h1 className={styles.title}>Welcome, {user?.name || user?.email}!</h1>
+				<button type='button' onClick={logout} className={styles.logoutButton}>
+					Logout
+				</button>
+			</header>
+
+			<section className={styles.userDetails}>
+				<h2 className={styles.sectionTitle}>Your Details</h2>
+				<p><strong>Email:</strong> {user?.email}</p>
+				<p><strong>Name:</strong> {user?.name}</p>
+				<p><strong>Joined:</strong> {user?.created_at ? formatDate(user.created_at) : "N/A"}</p>
+			</section>
+
+			<MeetupListSection title="Upcoming Meetups" meetups={upcoming} showBadge />
+			<hr className={styles.divider} />
+			<MeetupListSection title="Past Meetups" meetups={past} showBadge />
+			<hr className={styles.divider} />
+			<MeetupListSection title="Meetups You Created" meetups={createdMeetups} />
+
+			<footer className={styles.footer}>
+				<Link to="/create-meetup" className={styles.createButton}>
+					+ Create a New Meetup
+				</Link>
+			</footer>
+		</div>
+	);
 };
 
 export default ProfilePage;

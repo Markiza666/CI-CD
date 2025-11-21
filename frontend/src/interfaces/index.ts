@@ -2,65 +2,91 @@
 // 1. User and Authentication Interfaces (US 1, 2, 7)
 // -----------------------------------------------------------------------------
 
-/**
- * Defines the structure of a User object received from the backend.
- * NOTE: The password hash should NEVER be sent to the frontend.
- */
+
 export interface User {
-    _id: string;        // Postgres unique ID, used as primary key
-    email: string;      // User's email (unique)
-    firstName?: string; // Optional user details
-    lastName?: string;  // Optional user details
-    city?: string;      // Optional user location
+  id: string;        // Unique ID, primary key
+  email?: string;     // User's email (unique)
+  name?: string;      // Mappas från DB-kolumn 'name' via SQL alias
+  created_at?: string;   // ISO date string from DB 
 }
 
-/**
- * Defines the comprehensive data structure for the Profile Page response (AC 7.3).
- * This usually contains the user object and a list of related meetups.
- */
+
+export interface JwtPayload {
+  id?: string;        // The user's ID, used by the backend
+  sub?: string;
+  userId?: string;
+  username?: string;
+  email?: string;
+  iat?: number;        // Issued At timestamp
+  exp?: number;        // Expiration timestamp
+}
+
+// -----------------------------------------------------------------------------
+// 2. Profile Interfaces (US 7.3)
+// -----------------------------------------------------------------------------
 export interface ProfileData {
     user: User;
-    // We reuse the Meetup interface here
     attendingMeetups: Meetup[];
-    // add createdMeetups: Meetup[] here later if needed
+    createdMeetups: Meetup[]; 
 }
 
 // -----------------------------------------------------------------------------
-// 2. Meetup Interfaces (US 3, 4, 8)
+// 3. Meetup Interfaces (US 3, 4, 8)
 // -----------------------------------------------------------------------------
 
-/**
- * Defines the structure of a single Meetup event.
- */
+
+export interface Review {
+    user: string; // ID för användaren som skrivit recensionen
+    text: string;
+    rating: number; // T.ex. 1 till 5
+}
+
+export interface Participant {
+	id: string;
+	name: string;
+	email: string;
+	registered_at: string;
+}
 export interface Meetup {
-    _id: string;
+    id: string;
     title: string;
     description: string;
-    date: Date | string; // Date object or ISO string (recommended for API data)
+	date_time: string;   // ISO date string
     location: string;
-    // Participants array holds the IDs of the users attending (strings, likely User._id)
-    participants: string[]; 
-    creatorId: string;        // ID of the user who created the meetup (string, likely User._id)
+	category: string;
+	max_capacity: number;
+	host_id: string;
+	created_at: string;  // ISO date string
+	participants: Participant[];
+
+	// UI/extra fields (optional)
+	organizer?: string;
+	creator?: string;
+	time?: string;
+	host?: string;
+	attendees?: string;
+	isAttending?: boolean;
+	isPast?: boolean;
+	rating?: number;
+	reviews?: Review[];
 }
 
-/**
- * Defines the structure for creating a new Meetup (AC 5.1).
- * NOTE: 'creatorId' and 'participants' are handled by the backend.
- */
+// -----------------------------------------------------------------------------
+// 4. Meetup Creation & Filtering Interfaces (US 5, US 4)
+// -----------------------------------------------------------------------------
+
 export interface NewMeetup {
     title: string;
     description: string;
-    date: string; // Typically sent as an ISO string
+    date_time: string; 
     location: string;
+    category: string;
+    max_capacity: number;
 }
 
-/**
- * Defines the structure for search/filter criteria (US 4).
- */
 export interface MeetupFilter {
     searchQuery: string;
-    city?: string;
-    date?: Date | string;
+    location?: string;
+    date_time?: Date | string;
     isAttending?: boolean;
 }
-// -----------------------------------------------------------------------------

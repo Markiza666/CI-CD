@@ -1,25 +1,140 @@
-@mixin breakpoint($size) {
-    @if $size == desktop {
-        @media (min-width: 1024px) { @content; }
-    } @else if $size == tablet {
-        @media (min-width: 768px) and (max-width: 1023px) { @content; }
-    } @else {
-        // Fallback for custom values
-        @media (min-width: $size) { @content; }
+@use 'sass:map';
+@use 'sass:color';
+@use '../config/variables' as v; // Path to variables file
+
+// AC: Replaces the deprecated map-has-key() and map-get() and uses named arguments for color.adjust()
+// ------------------------------------------------------------------------------------------------
+
+@mixin button-base($background-color, $text-color) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem; // Slightly larger radius for buttons
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.1s;
+
+    background-color: $background-color;
+    color: $text-color;
+
+    // Default hover/focus state
+    &:hover,
+    &:focus {
+        // FIX: Använder namngivet argument $lightness med NEGATIVT värde för att MÖRKA
+        background-color: color.adjust($background-color, $lightness: -10%);
+    }
+
+    // Default active state
+    &:active {
+        transform: translateY(1px);
     }
 }
 
-/**
- * Mixin for applying line clamping to text.
- * @param {Number} $lines - The number of lines to clamp the text to.
- */
-@mixin line-clamp($lines) {
+// AC: Handles media queries based on sizes defined in $media-breakpoints map.
+@mixin breakpoint($size) {
+    // FIX: Använder map.has-key
+    @if map.has-key(v.$media-breakpoints, $size) {
+        // FIX: Använder map.get
+        $breakpoint-value: map.get(v.$media-breakpoints, $size); 
+        
+        @media (min-width: $breakpoint-value) {
+            @content; 
+        }
+    } @else {
+        @warn "Unknown breakpoint '#{$size}' used in @include breakpoint().";
+    }
+}
+
+// AC: Truncates text after a specified number of lines and adds an ellipsis.
+@mixin line-clamp($lines: 1) {
+    overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    
-    // Webkit- specific property for line clamping
-    -webkit-line-clamp: $lines;
-    
-    // Fallback for other browsers
-    overflow: hidden;
+    -webkit-line-clamp: $lines; 
+
+    @supports not (-webkit-line-clamp: $lines) {
+        max-height: 100% * $lines;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }
+
+
+// @use 'sass:map';
+// @use 'sass:color';
+// @use '../config/variables' as v;
+
+// @mixin button-base($background-color, $text-color) {
+//     display: inline-flex;
+//     align-items: center;
+//     justify-content: center;
+//     padding: 0.75rem 1.5rem;
+//     border: none;
+//     border-radius: 0.25rem;
+//     cursor: pointer;
+//     font-size: 1rem;
+//     font-weight: 600;
+//     text-decoration: none; // Important for button links (<a>)
+//     transition: background-color 0.2s ease, transform 0.1s;
+
+//     background-color: $background-color;
+//     color: $text-color;
+
+//     // Default hover/focus state
+//     &:hover,
+//     &:focus {
+// background-color: color.adjust($background-color, $lightness: -10%);    }
+
+//     // Default active state
+//     &:active {
+//         transform: translateY(1px);
+//     }
+// }
+
+// // Add other useful mixins here, like responsive design mixins
+// // @mixin media-tablet {
+// //     @media (min-width: 768px) {
+// //         @content;
+// //     }
+// // }
+
+// // AC: Truncates text after a specified number of lines and adds an ellipsis.
+// @mixin line-clamp($lines: 1) {
+//     overflow: hidden;
+//     display: -webkit-box;
+//     -webkit-box-orient: vertical;
+//     -webkit-line-clamp: $lines; // Number of lines to show
+
+//     // Fallback for browsers that don't support -webkit-line-clamp (e.g., Firefox)
+//     // You might choose to remove this fallback if you only target modern Chromium browsers.
+//     @supports not (-webkit-line-clamp: $lines) {
+//         max-height: 100% * $lines; // Rough height approximation (less reliable)
+//         text-overflow: ellipsis;
+//         white-space: nowrap;
+//     }
+// }
+
+// // AC: Handles media queries based on sizes defined in $media-breakpoints map.
+// @mixin breakpoint($size) {
+//     @if map.has-key(v.$media-breakpoints, $size) {
+//         $breakpoint-value: map.get(v.$media-breakpoints, $size); 
+        
+//         // Output the media query
+//         @media (min-width: $breakpoint-value) {
+//             @content; // Insert the content block passed to the mixin
+//         }
+//     } @else {
+//         // Error message if an unknown breakpoint is used
+//         @warn "Unknown breakpoint '#{$size}' used in @include breakpoint().";
+//     }
+// }
+
+// // @mixin media-desktop {
+// //     @media (min-width: 1024px) {
+// //         @content;
+// //     }
+// // }

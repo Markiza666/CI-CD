@@ -1,113 +1,112 @@
-import React, { useState } from 'react';
-import apiClient from '../api/apiClient';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../api/apiClient";
 
-// AC 1.1: Component responsible for user registration.
 const RegisterForm: React.FC = () => {
-    // Define state for form fields
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isSuccess, setIsSuccess] = useState(false);
-    
-    const navigate = useNavigate();
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [name, setName] = useState("");
+	const [error, setError] = useState<string | null>(null);
 
-    // Handles form submission (AC 1.2: Interaction with P1 API)
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setIsSuccess(false);
+	const navigate = useNavigate();
 
-        // AC 1.1: Client-side validation for minimum password length
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters long.');
-            return;
-        }
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setError(null);
 
-        try {
-            // AC 1.2: Call P1's API (POST /api/auth/register)
-            // AC 1.3: On success, a token should be returned
-            const response = await apiClient.post('/auth/register', {
-                email,
-                password,
-            });
+		if (password.length < 8) {
+			setError("Password must be at least 8 characters long.");
+			return;
+		}
+		if (!name.trim()) {
+			setError("Name is required.");
+			return;
+		}
 
-            // AC 1.3: Save the token and redirect on successful registration
-            const { token } = response.data; 
-            if (token) {
-                localStorage.setItem('authToken', token);
-                setIsSuccess(true);
-                console.log('Registration successful! Redirecting to profile.');
-                navigate('/profile'); 
-            }
+		try {
+			const response = await apiClient.post("/auth/register", {
+				email,
+				password,
+				name,
+			});
 
-        } catch (err: any) {
-            // AC 1.1: Display registration failure message (e.g., email already taken)
-            const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
-            setError(errorMessage);
-        }
-    };
+			if (response.status === 201 || response.status === 200) {
+				console.log("Registration successful:", response.data);
+				// 🔹 Skicka användaren till login-sidan med en flagga
+				navigate("/login", { state: { registered: true } });
+			}
+		} catch (err: any) {
+			const msg =
+				err.response?.data?.error || "Registration failed. Please try again.";
+			setError(msg);
+		}
+	};
 
-    return (
-        // AC 1.1: Registration form structure
-        <div className="form-container">
-            <h2 className="form-title">Register Account</h2>
-            
-            {/* Error Message Display */}
-            {error && (
-                <p className="error-message" role="alert">
-                    {error}
-                </p>
-            )}
-            {/* Success Message Display */}
-            {isSuccess && <p className="success-message">Registration successful! Redirecting...</p>}
+	return (
+		<div className="form-container">
+			<h2 className="form-title">Register Account</h2>
 
-            <form onSubmit={handleSubmit} className="form-layout">
-                {/* Email Field */}
-                <div className="input-group">
-                    <label 
-                        htmlFor="register-email" 
-                        className="input-label"
-                    >
-                        Email:
-                    </label>
-                    <input
-                        id="register-email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="input-field"
-                    />
-                </div>
-                
-                {/* Password Field */}
-                <div className="input-group">
-                    <label 
-                        htmlFor="register-password" 
-                        className="input-label"
-                    >
-                        Password (min 8 characters):
-                    </label>
-                    <input
-                        id="register-password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="input-field"
-                    />
-                </div>
-                
-                <button 
-                    type="submit"
-                    className="submit-button"
-                >
-                    Register Account
-                </button>
-            </form>
-        </div>
-    );
+			{error && (
+				<p className="error-message" role="alert">
+					{error}
+				</p>
+			)}
+
+			<form onSubmit={handleSubmit} className="form-layout">
+				<div className="input-group">
+					<label htmlFor="register-email" className="input-label">
+						Email:
+					</label>
+					<input
+						id="register-email"
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						required
+						className="input-field"
+						autoComplete="email"
+						placeholder="e.g., anna.developer@mail.com"
+					/>
+				</div>
+
+				<div className="input-group">
+					<label htmlFor="register-name" className="input-label">
+						Name:
+					</label>
+					<input
+						id="register-name"
+						type="text"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						required
+						className="input-field"
+						autoComplete="name"
+						placeholder="Your full name"
+					/>
+				</div>
+
+				<div className="input-group">
+					<label htmlFor="register-password" className="input-label">
+						Password (min 8 characters):
+					</label>
+					<input
+						id="register-password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+						className="input-field"
+						autoComplete="new-password"
+						placeholder="Min. 8 characters"
+					/>
+				</div>
+
+				<button type="submit" className="submit-button">
+					Register Account
+				</button>
+			</form>
+		</div>
+	);
 };
 
 export default RegisterForm;

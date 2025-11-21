@@ -1,0 +1,86 @@
+@use '../../styles/config/variables' as v;
+@use 'sass:color';
+
+.filterForm {
+    max-width: 900px;
+    padding: v.$spacing-unit;
+    background-color: v.$bg-light;
+    border-radius: v.$border-radius;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    margin-left: auto;
+    margin-right: auto;
+
+    .filterControls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+    }
+
+    .formGroupInput {
+        flex-grow: 1;
+        min-width: 200px;
+    }
+
+    .formLabel {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: v.$text-color;
+    }
+
+    .inputFieldStandard {
+        margin-top: 0.25rem;
+        display: block;
+        width: 100%;
+        border-radius: v.$border-radius;
+        border: 1px solid v.$border-color;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 0.75rem;
+        transition: all 0.15s ease-in-out;
+
+        &:focus {
+            border-color: #a5b4fc; // indigo-300
+            outline: 2px solid #c7d2fe; // indigo-200
+            outline-offset: 0px;
+            box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.5);
+        }
+    }
+
+    .checkboxGroup {
+        display: flex;
+        align-items: center;
+        padding-top: 0.5rem;
+    }
+
+    .checkboxInput {
+        height: 1rem;
+        width: 1rem;
+        color: v.$primary-color;
+        border-color: v.$border-color;
+        border-radius: 0.25rem;
+    }
+
+    .checkboxLabel {
+        margin-left: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: v.$text-color;
+    }
+
+    .submitButtonPrimary {
+        background-color: v.$primary-color;
+        color: white;
+        font-weight: 700;
+        padding: .55rem;
+        border-radius: v.$border-radius;
+        transition: background-color 0.15s ease-in-out;
+        border: none;
+        align-content: center;
+
+        &:hover {
+            background-color: v.$shadow-hover;
+        }
+    }
+}

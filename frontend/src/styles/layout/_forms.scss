@@ -1,17 +1,18 @@
-@use '../abstracts/variables' as v;
+@use 'sass:color';
+@use '../config/variables' as v;
 
 .form-container {
     max-width: 400px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: white;
+    background-color: v.$bg-white;
     box-shadow: v.$shadow-default;
-    border-radius: 0.75rem;
+    border-radius: v.$border-radius;
 
     .form-title {
         text-align: center;
         margin-bottom: 1.5rem;
-        color: v.$color-text;
+        color: v.$text-color;
     }
     
     .form-layout {
@@ -27,21 +28,21 @@
         display: block;
         margin-bottom: 0.25rem;
         font-weight: 500;
-        color: v.$color-text-secondary;
-        font-size: 0.875rem; // text-sm
+        color: v.$text-color-secondary; // Changed from $bg-secondary for better visibility
+        font-size: 0.8rem;
     }
 
-    .input-field {
+    .input-field, textarea {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid #d1d5db; // gray-300
         border-radius: 0.5rem;
-        transition: border-color 150ms;
+        transition: border-color 150ms, box-shadow 150ms; // Removed variable for transition
 
         &:focus {
             outline: none;
-            border-color: v.$color-primary;
-            box-shadow: 0 0 0 2px rgba(v.$color-primary, 0.2);
+            border-color: v.$primary-color;
+            box-shadow: 0 0 0 2px rgba(v.$primary-color, 0.2); // Uses Sass color variable
         }
     }
 
@@ -51,6 +52,6 @@
     }
 
     .register-link {
-        font-size: 0.875rem;
+        font-size: 0.8rem;
     }
 }
