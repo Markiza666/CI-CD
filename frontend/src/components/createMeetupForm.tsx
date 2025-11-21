@@ -41,14 +41,14 @@ const CreateMeetupForm: React.FC = () => {
         const { name, value } = e.target;
         let newValue: string | number;
 		if (name === "date_time") {
-			// Konvertera datetime-local värdet till ISO-string
-			newValue = new Date(value).toISOString();
-		}else if (name === 'max_capacity') {
-            // Se till att capacity sparas som ett nummer, inte en sträng
-            newValue = parseInt(value) || 0;
-        } else {
-            newValue = value;
-        }
+			const localDate = new Date(value);
+			const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+			newValue = utcDate.toISOString();
+		} else if (name === "max_capacity") {
+			newValue = parseInt(value) || 0;
+		} else {
+			newValue = value;
+		}
 
         setFormData({
             ...formData,

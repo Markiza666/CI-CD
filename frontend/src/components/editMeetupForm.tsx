@@ -1,270 +1,228 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../api/apiClient';
-import { Meetup, NewMeetup } from '../interfaces'; 
-// FIX: Använd useAuth för att få ut den avkodade användaren, inte token och decodeJwt manuellt
-import { useAuth } from '../context/authContext'; 
-// FIX: decodeJwt behöver inte importeras här längre
-// import { decodeJwt } from '../utils/jwt'; 
+import { Meetup, NewMeetup } from '../interfaces';
+import { useAuth } from '../context/authContext';
 
-// AC 5.2 & 5.3: Component for editing or deleting an existing Meetup event.
+// Hjälpfunktion för att formatera ISO till datetime-local
+const formatForDateTimeLocal = (isoString: string) => {
+	if (!isoString) return "";
+	const date = new Date(isoString);
+	return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+		.toISOString()
+		.slice(0, 16);
+};
+
 const EditMeetupForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // Meetup ID from URL
-    const navigate = useNavigate();
-    
-    // FIX: Hämta user-objektet (som är null om inte inloggad) och loading state
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
-    
-    // Get the actual user ID from the Context for authorization checks
-    // Detta är säkrare än manuell tokenavkodning
-    const currentUserId = user?.id || null; 
+	const { id } = useParams<{ id: string }>();
+	const navigate = useNavigate();
 
-    // State for form data, initialized as null until data is fetched
-    const [formData, setFormData] = useState<NewMeetup | null>(null);
-    const [loading, setLoading] = useState(true); // Lokal loading state för datahämtning
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+	const { user, isAuthenticated, loading: authLoading } = useAuth();
+	const currentUserId = user?.id || null;
 
-    // --- Data Fetching: Load existing Meetup details ---
-    const fetchMeetup = useCallback(async () => {
-        if (!id || !currentUserId) {
-            // Detta hanteras av yttre logik (useEffect) och ProtectedRoute
-            return;
-        }
+	const [formData, setFormData] = useState<NewMeetup | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-        try {
-            const response = await apiClient.get<Meetup>(`/meetups/${id}`);
-            const meetup = response.data;
+	// --- Data Fetching ---
+	const fetchMeetup = useCallback(async () => {
+		if (!id || !currentUserId) return;
 
-            // CRITICAL AUTHORIZATION CHECK (AC 5.2 & 5.3): 
-            if (meetup.creator !== currentUserId) {
-                setError('You are not authorized to edit this meetup.');
-                setLoading(false);
-                return;
-            }
+		try {
+			const response = await apiClient.get<Meetup>(`/meetups/${id}`);
+			const meetup = response.data;
 
-            // Format the date for the HTML 'datetime-local' input (YYYY-MM-DDTHH:mm)
-            // Se till att tiden är i UTC eller anpassas efter vad servern förväntar sig.
-            const formattedDate = new Date(meetup.date_time).toISOString().slice(0, 16);
+			if (meetup.creator !== currentUserId) {
+				setError('You are not authorized to edit this meetup.');
+				setLoading(false);
+				return;
+			}
 
-            setFormData({
-                title: meetup.title,
-                description: meetup.description,
-                date_time: formattedDate,
-                location: meetup.location,
-                category: meetup.category,
-                max_capacity: Number(meetup.max_capacity),
-            });
-            
-        } catch (err: any) {
-            console.error("Failed to load meetup:", err);
-            const status = err.response?.status;
-            let msg = 'Could not load meetup details for editing.';
+			const formattedDate = formatForDateTimeLocal(meetup.date_time);
 
-            if (status === 404) {
-                 msg = 'Meetup not found.';
-            } else if (status === 401 || status === 403) {
-                 msg = 'Authorization required. Please check your login status.';
-                 // Eventuellt: navigate('/login');
-            }
-            setError(msg);
-        } finally {
-            setLoading(false);
-        }
-    }, [id, currentUserId]); 
+			setFormData({
+				title: meetup.title,
+				description: meetup.description,
+				date_time: formattedDate,
+				location: meetup.location,
+				category: meetup.category,
+				max_capacity: Number(meetup.max_capacity),
+			});
+		} catch (err: any) {
+			console.error("Failed to load meetup:", err);
+			const status = err.response?.status;
+			let msg = 'Could not load meetup details for editing.';
 
-    // --- Effekt: Vänta på AuthContext och User ID ---
-    useEffect(() => {
-        // Om AuthContext laddar, gör inget ännu.
-        if (authLoading) return;
+			if (status === 404) msg = 'Meetup not found.';
+			else if (status === 401 || status === 403) msg = 'Authorization required. Please check your login status.';
 
-        // Kontrollera om ID saknas (navigeringsfel)
-        if (!id) {
-            setError('Meetup ID is missing.');
-            setLoading(false);
-            navigate('/');
-            return;
-        }
-        
-        // Kontrollera om användaren inte är inloggad eller om ID saknas i token
-        if (!isAuthenticated || !currentUserId) {
-            setError('You must be logged in to edit meetups.');
-            setLoading(false);
-            // Eftersom denna sida är skyddad av <ProtectedRoute />, 
-            // kan vi lita på att omdirigering sker där.
-            return;
-        }
+			setError(msg);
+		} finally {
+			setLoading(false);
+		}
+	}, [id, currentUserId]);
 
-        // Auth är klart och vi har ID, hämta data
-        fetchMeetup();
+	useEffect(() => {
+		if (authLoading) return;
+		if (!id) {
+			setError('Meetup ID is missing.');
+			setLoading(false);
+			navigate('/');
+			return;
+		}
+		if (!isAuthenticated || !currentUserId) {
+			setError('You must be logged in to edit meetups.');
+			setLoading(false);
+			return;
+		}
+		fetchMeetup();
+	}, [id, currentUserId, authLoading, isAuthenticated, fetchMeetup, navigate]);
 
-    }, [id, currentUserId, authLoading, isAuthenticated, fetchMeetup, navigate]); 
+	// --- Handle Change ---
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+	) => {
+		let value: string | number = e.target.value;
 
-    // --- Handler for form field changes ---
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        // Hantera konvertering av kapacitet till nummer
-        const value = e.target.name === 'max_capacity' 
-            ? parseInt(e.target.value) || 0 
-            : e.target.value;
+		if (e.target.name === "date_time") {
+			const localDate = new Date(value);
+			const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+			value = utcDate.toISOString(); // ✅ skickas som UTC
+		} else if (e.target.name === "max_capacity") {
+			value = parseInt(e.target.value) || 0;
+		}
 
-        setFormData(prev => ({
-            ...prev!, 
-            [e.target.name]: value,
-        }));
-    };
+		setFormData(prev => ({
+			...prev!,
+			[e.target.name]: value,
+		}));
+	};
 
-    // --- Handler for Edit Submission (AC 5.2) ---
-    const handleEditSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData || !id || isSubmitting) return;
+	// --- Submit Edit ---
+	const handleEditSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!formData || !id || isSubmitting) return;
 
-        setError(null);
-        setIsSubmitting(true);
+		setError(null);
+		setIsSubmitting(true);
 
-        try {
-            // AC 5.2: Call the protected API endpoint (PUT /api/meetups/:id)
-            // Token läggs till automatiskt av Axios Interceptor
-            await apiClient.put(`/meetups/${id}`, formData);
-            
-            alert('Meetup successfully updated!');
-            navigate(`/meetups/${id}`); // Redirect back to detail page
+		try {
+			await apiClient.put(`/meetups/${id}`, formData);
+			alert('Meetup successfully updated!');
+			navigate(`/meetups/${id}`);
+		} catch (err: any) {
+			console.error("Failed to update meetup:", err);
+			const msg = err.response?.data?.message || 'Failed to update meetup.';
+			setError(msg);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-        } catch (err: any) {
-            console.error("Failed to update meetup:", err);
-            const msg = err.response?.data?.message || 'Failed to update meetup.';
-            setError(msg);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-    
-    // --- Handler for Delete (AC 5.3) ---
-    const handleDelete = async () => {
-        if (!id || !window.confirm('Are you sure you want to delete this meetup?')) return;
-        
-        setError(null);
-        setIsSubmitting(true);
+	// --- Delete ---
+	const handleDelete = async () => {
+		if (!id || !window.confirm('Are you sure you want to delete this meetup?')) return;
+		setError(null);
+		setIsSubmitting(true);
 
-        try {
-            // AC 5.3: Call the protected API endpoint (DELETE /api/meetups/:id)
-            await apiClient.delete(`/meetups/${id}`);
-            
-            alert('Meetup successfully deleted!');
-            navigate('/'); // Redirect to the main list page
+		try {
+			await apiClient.delete(`/meetups/${id}`);
+			alert('Meetup successfully deleted!');
+			navigate('/');
+		} catch (err: any) {
+			console.error("Failed to delete meetup:", err);
+			const msg = err.response?.data?.message || 'Failed to delete meetup.';
+			setError(msg);
+			setIsSubmitting(false);
+		}
+	};
 
-        } catch (err: any) {
-            console.error("Failed to delete meetup:", err);
-            const msg = err.response?.data?.message || 'Failed to delete meetup.';
-            setError(msg);
-            setIsSubmitting(false);
-        }
-    };
+	// --- Render States ---
+	if (authLoading || loading) return <p className="status-message loading">Loading authentication and meetup data...</p>;
+	if (error) return <p className="status-message error">{error}</p>;
+	if (!formData) return <p className="status-message">Could not load meetup data.</p>;
 
-    // --- Render States ---
-    if (authLoading || loading) return <p className="status-message loading">Loading authentication and meetup data...</p>;
-    
-    if (error) return <p className="status-message error">{error}</p>; 
-    
-    if (!formData) return <p className="status-message">Could not load meetup data.</p>;
+	// --- Main Render ---
+	return (
+		<div className="edit-meetup-page">
+			<h1 className="page-title">Edit Meetup: {formData.title}</h1>
 
+			<form onSubmit={handleEditSubmit} className="meetup-form">
+				<div className="form-group">
+					<label htmlFor="category">Category</label>
+					<select
+						id="category"
+						name="category"
+						value={formData.category}
+						onChange={handleChange as (e: React.ChangeEvent<HTMLSelectElement>) => void}
+						required
+					>
+						<option value="Technology">Technology</option>
+						<option value="Nature">Nature</option>
+						<option value="Art & Culture">Art & Culture</option>
+						<option value="Food & Drink">Food & Drink</option>
+					</select>
+				</div>
 
-    // --- Main Render ---
-    return (
-        <div className="edit-meetup-page">
-            <h1 className="page-title">Edit Meetup: {formData.title}</h1>
-            
-            <form onSubmit={handleEditSubmit} className="meetup-form">
-                
-                {/* Fält för Category */}
-                <div className="form-group">
-                    <label htmlFor="category">Category</label>
-                    <select 
-                        id="category" 
-                        name="category" 
-                        value={formData.category} 
-                        onChange={handleChange as (e: React.ChangeEvent<HTMLSelectElement>) => void} 
-                        required
-                    >
-                        {/* Lägg till dina faktiska kategorier här */}
-                        <option value="Technology">Technology</option>
-                        <option value="Nature">Nature</option>
-                        <option value="Art">Art & Culture</option>
-                        <option value="Food">Food & Drink</option>
-                    </select>
-                </div>
-                
-                {/* Title */}
-                <div className="form-group">
-                    <label htmlFor="title">Title</label>
-                    <input type="text" id="title" name="title" value={formData.title} onChange={handleChange} required />
-                </div>
+				<div className="form-group">
+					<label htmlFor="title">Title</label>
+					<input type="text" id="title" name="title" value={formData.title} onChange={handleChange} required />
+				</div>
 
-                {/* Location */}
-                <div className="form-group">
-                    <label htmlFor="location">Location</label>
-                    <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} required />
-                </div>
+				<div className="form-group">
+					<label htmlFor="location">Location</label>
+					<input type="text" id="location" name="location" value={formData.location} onChange={handleChange} required />
+				</div>
 
-                {/* Date and Time */}
-                <div className="form-group">
-                    <label htmlFor="date_time">Date and Time</label>
-                    <input 
-                        type="datetime-local" 
-                        id="date_time" 
-                        name="date_time" 
-                        value={formData.date_time} 
-                        onChange={handleChange} 
-                        required 
-                    />
-                </div>
-                
-                {/* Max_Capacity */}
-                <div className="form-group">
-                    <label htmlFor="max_capacity">Max Participants (Capacity)</label>
-                    <input 
-                        type="number" 
-                        id="max_capacity" 
-                        name="max_capacity"
-                        value={formData.max_capacity} 
-                        onChange={handleChange} 
-                        min="1"
-                        required 
-                    />
-                </div>
+				<div className="form-group">
+					<label htmlFor="date_time">Date and Time</label>
+					<input
+						type="datetime-local"
+						id="date_time"
+						name="date_time"
+						value={formatForDateTimeLocal(formData.date_time)}
+						onChange={handleChange}
+						required
+					/>
+				</div>
 
-                {/* Description */}
-                <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea 
-                        id="description" 
-                        name="description" 
-                        value={formData.description} 
-                        onChange={handleChange} 
-                        rows={5}
-                    ></textarea>
-                </div>
-                
-                <div className="button-group">
-                    <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="submit-button primary"
-                    >
-                        {isSubmitting ? 'Updating...' : 'Save Changes'}
-                    </button>
-                    
-                    <button 
-                        type="button" 
-                        onClick={handleDelete}
-                        disabled={isSubmitting}
-                        className="submit-button delete-button"
-                    >
-                        Delete Meetup
-                    </button>
-                </div>
-            </form>
-        </div>
-    );
+				<div className="form-group">
+					<label htmlFor="max_capacity">Max Participants (Capacity)</label>
+					<input
+						type="number"
+						id="max_capacity"
+						name="max_capacity"
+						value={formData.max_capacity}
+						onChange={handleChange}
+						min="1"
+						required
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="description">Description</label>
+					<textarea
+						id="description"
+						name="description"
+						value={formData.description}
+						onChange={handleChange}
+						rows={5}
+					></textarea>
+				</div>
+
+				<div className="button-group">
+					<button type="submit" disabled={isSubmitting} className="submit-button primary">
+						{isSubmitting ? 'Updating...' : 'Save Changes'}
+					</button>
+
+					<button type="button" onClick={handleDelete} disabled={isSubmitting} className="submit-button delete-button">
+						Delete Meetup
+					</button>
+				</div>
+			</form>
+		</div>
+	);
 };
 
 export default EditMeetupForm;

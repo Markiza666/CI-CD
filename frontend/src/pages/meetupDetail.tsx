@@ -79,52 +79,7 @@ const MeetupDetail: React.FC = () => {
         }
     }, [loading, fetchMeetupDetails]); // Reagera på loading state från AuthContext
 
-    // --- Registration Logic (AC 4.1) ---
-    /*const handleRegisterToggle = async () => {
-        if (!isAuthenticated || !meetup) { 
-            alert('You must be logged in to register for a meetup.');
-            navigate('/login');
-            return;
-        }
-        
-        if (!currentUserId) {
-            alert('Cannot determine user ID. Please log in again.');
-            return;
-        }
-		
-       try {
-            
-			   if (isAttending) {
-			
-				const response = await apiClient.delete<Participant>(`/meetups/${meetup.id}/register`);
-
-				// Ta bort den deltagare som backend returnerar
-				const removed = response.data;
-				setMeetup({
-					...meetup,
-					participants: meetup.participants.filter(p => p.id !== removed.id),
-				});
-				setIsAttending(false);
-				alert('Successfully unregistered.');
-			} else {
-				// Register → POST /:id/register
-				const response = await apiClient.post<Participant>(`/meetups/${meetup.id}/register`, {});
-
-				// Lägg till den deltagare som backend returnerar
-				const newParticipant = response.data;
-				setMeetup({
-					...meetup,
-					participants: [...meetup.participants, newParticipant],
-				});
-				setIsAttending(true);
-				alert('Successfully registered!');
-			}
-		} catch (err: any) {
-			console.error("Registration failed:", err);
-			const msg = err.response?.data?.error || 'Failed to update registration status.';
-			setError(msg);
-		}
-	};*/
+    
 	const handleRegisterToggle = async () => {
 		if (!isAuthenticated || !meetup) {
 			alert("You must be logged in to register for a meetup.");
