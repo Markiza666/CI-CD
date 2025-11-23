@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+interface JwtPayloadDecoded { 
+    userId: string;
+    email?: string;
+    name?: string;
+}
+
 export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
 	console.log("🔐 authMiddleware triggered");
 	const header = req.headers.authorization;

@@ -15,10 +15,19 @@ const apiClient = axios.create({
 
 // Interceptor to attach the JWT token to every request if available
 apiClient.interceptors.request.use(config => {
-    const token = localStorage.getItem('authToken'); 
+    const tokenWithQuotes = localStorage.getItem('authToken'); 
     
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (tokenWithQuotes) {
+        let token;
+        try {
+            token = JSON.parse(tokenWithQuotes); 
+        } catch (e) {
+            token = tokenWithQuotes;
+        }
+
+        if (typeof token === 'string') {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     
     return config;

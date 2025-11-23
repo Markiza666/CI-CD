@@ -47,7 +47,6 @@ const Header: React.FC = () => {
                         </>
                     ) : (
                         <>
-                            {/* Utloggad vy */}
                             <Link to="/register" className="nav-link">Register</Link>
                             
                             <Link to="/login" className="login-button" title='Log in'>
