@@ -48,8 +48,6 @@ After running `npm run dev`, open your web browser and navigate to the address p
 
 [http://localhost:5174/](http://localhost:5174/)
 
-📚 Learn More 12
-
 -Vite Documentation: [https://vitejs.dev/guide/](ttps://vitejs.dev/guide/)
 -React Documentation: [https://react.dev/Sass](https://react.dev/Sass)
 -Module System (@use): [https://sass-lang.com/documentation/at-rules/use](https://sass-lang.com/documentation/at-rules/use)
