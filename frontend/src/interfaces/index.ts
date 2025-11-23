@@ -17,6 +17,8 @@ export interface JwtPayload {
   userId?: string;
   username?: string;
   email?: string;
+  name?: string;      
+  created_at?: string;
   iat?: number;        // Issued At timestamp
   exp?: number;        // Expiration timestamp
 }
@@ -26,6 +28,9 @@ export interface JwtPayload {
 // -----------------------------------------------------------------------------
 export interface ProfileData {
     user: User;
+    email: string;
+    firstName: string;
+    created_at: Date | string;
     attendingMeetups: Meetup[];
     createdMeetups: Meetup[]; 
 }

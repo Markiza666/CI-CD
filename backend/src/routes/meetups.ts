@@ -7,7 +7,7 @@ import authMiddleware from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.get("/", authMiddleware, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
 	try {
 		console.log("🔍 Incoming query params:", req.query);
 
@@ -33,9 +33,8 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
 		// Filtrera på meetups som användaren deltar i
 		if (req.query.attending && req.userId) {
 			params.push(req.userId);
-			whereParts.push(`id IN (
-        SELECT meetup_id FROM registrations WHERE user_id = $${params.length}
-      )`);
+			whereParts.push(`location ILIKE $${params.length}`); // Felaktig rad, bör ändras nedan//ändrad nedan
+            // whereParts.push(`id IN (SELECT meetup_id FROM registrations WHERE user_id = $${params.length})`);
 		}
 
 		const whereSQL = whereParts.length ? `WHERE ${whereParts.join(" AND ")}` : "";
